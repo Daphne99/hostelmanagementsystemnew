@@ -1,0 +1,85 @@
+<style type="text/css">
+	.selected-data-list .remove-all, .selected-data-list .remove-item { cursor: pointer; }
+	ul.list-group > li.list-group-item { padding: 7px !important; }
+	ul.list-group > li.list-group-item small { width: 80%; }
+</style>
+
+<div class="row page-titles">
+    <div class="col-md-6 col-8 align-self-center">
+        <h3 class="text-themecolor m-b-0 m-t-0"> Compose Notice </h3>
+    </div>
+</div>
+
+<div class="row" ng-show="views.create" ng-controller="communicationsFilterController">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-block">
+                <button type="button" ng-click="linkUser()" class="btn btn-success btn-flat pull-right mr-2">{{phrase.searchUsers}}</button>
+                <h4 class="card-title">Notice Details</h4>
+                <hr>
+                <div class="form">
+                    <form class="form-horizontal" name="sendNotice" role="form" ng-submit="sendTempNoticeNow()" novalidate>
+                        <div ng-include="'/assets/js/Angular/includes/communications-filter.html?id=5468'"></div>
+                        <hr>
+                        <div class="form-group row" ng-class="{'has-error': sendNotice.noticeTitle.$invalid}">
+                            <label class="col-sm-2 text-right control-label col-form-label">Notice Title *</label>
+                            <div class="col-sm-10">
+                                <input type="text" name="noticeTitle" class="form-control" ng-model="form.noticeTitle" placeholder="Enter the notice name" required />
+                            </div>
+                        </div>
+                        <div class="form-group row" ng-class="{'has-error': sendNotice.noticeDate.$invalid}">
+                            <label for="noticeDate" class="col-sm-2 text-right control-label col-form-label">Date *</label>
+                            <div class="col-sm-10">
+                                <input type="text" name="noticeDate" id="noticeDate" date-picker class="form-control" ng-model="form.noticeDate" placeholder="Enter the notice date" required />
+                            </div>
+                        </div>
+                        <div class="form-group row" ng-class="{'has-error': sendNotice.noticeContent.$invalid}">
+                            <label class="col-sm-2 text-right control-label col-form-label">Notice Content *</label>
+                            <div class="col-sm-10">
+                                <textarea ck-editor name="noticeContent" class="form-control" ng-model="form.noticeContent" placeholder="Enter the description regarding the notice" style="height:250px" required></textarea>
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <label class="col-sm-2 text-right control-label col-form-label">Image</label>
+                            <div class="col-sm-10">
+                                <input type="file" name="noticeImage" id="noticeImage" class="form-control" ng-model="form.noticeImage" accept="image/jpg, image/jpeg, image/png" />
+                            </div>
+                        </div>
+                        <div class="form-group m-b-0 row">
+                            <div class="offset-sm-2 col-sm-10">
+                                <button type="submit" class="btn btn-info waves-effect waves-light" ng-disabled="sendNotice.$invalid">Create Notice</button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+    <modal visible="searchUsers">
+        <div class="row">
+            <div class="col-md-8">
+                <input type="text" class="form-control" id="searchKeyword" placeholder="{{phrase.typeNameUserMail}}">
+            </div>
+            <div class="col-md-3">
+                <button type="button" ng-click="searchUserButton()" class="btn btn-danger btn-flat">{{phrase.searchUsers}}</button>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-12" style="padding-top:10px;">
+                <div class="box-body table-responsive">
+                    <table class="table table-bordered">
+                        <tbody>
+                            <tr ng-repeat="user in searchResults">
+                                <td>{{user.name}} - {{user.role}}</td>
+                                <td>{{user.email}}</td>
+                                <td class="no-print">
+                                    <button type="button" ng-click="linkStudentFinish(user)" class="btn btn-success btn-flat">{{phrase.select}}</button>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </modal>
+</div>

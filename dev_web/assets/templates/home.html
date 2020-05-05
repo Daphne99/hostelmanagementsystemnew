@@ -1,0 +1,441 @@
+<style type="text/css">
+    .custom-btn-success, .custom-btn-success.disabled { background: #7ace4c; border: 1px solid #7ace4c; color: white !important; }
+    .custom-btn-success:hover { background: #7ace4c; opacity: .8; border: 1px solid #7ace4c; }
+    .label-success { background-color: #7ace4c !important; }
+    .noTableData { text-align: center !important; }
+    .img-circle { border: 1px solid rgba(45, 45, 45, 0.1); padding: 2px; }
+    .birthday-buttons { border-bottom: 1px solid #EEE; padding: 5px; }
+    .birthday-buttons button { border-radius: 3px !important; }
+    .cellBackColor { cursor: pointer; background: #f2f7f8 !important; font-weight: 600; color: white !important; }
+    .attenBackColorP { background-color: #3c763d !important; }
+    .attenBackColorA { background-color: #f62d51 !important; }
+    .attenBackColorW { background-color: #009efb !important; }
+    .attenBackColorH { background-color: #ffbc34 !important; }
+    .cellBackColor:hover { background-color: #000 !important; color: #FFF !important; }
+    .panel-info { border-color: #41b3f9; }
+    .panel { border-radius:0; margin-bottom:30px; border:0; box-shadow:none }
+    .panel .panel-heading { border-radius: 0; font-weight: 500; font-size: 16px; padding: 10px 25px; }
+    .panel-blue .panel-heading, .panel-info .panel-heading { border-color: #41b3f9; color: #fff; background-color: #41b3f9; }
+    .collapse.in { display: block; }
+    .panel .panel-body { padding: 25px; background-color: white; }
+    .panel-custom { background-color: #F1F1F1; box-shadow: 0 1px 1px rgba(0, 0, 0, 0.05); padding: 10px 15px; }
+    .panel .panel-body:first-child h3 { margin-top: 0; font-weight: 500; font-family: Rubik,sans-serif; font-size: 14px; text-transform: uppercase; }
+    .box { border: 3px solid #F1F1F1; }
+    .panel-default { border-color: rgba(120,130,140,.13); }
+    .panel-default .panel-heading { color: #263238; background-color: #fff; border-bottom: 1px solid rgba(120,130,140,.13); }
+    .panel-default .panel-body { color: #263238; }
+    .details { font-size: 13px; color: #98a6ad; }
+    .panel .panel-footer { background: #fff; border-radius: 0; padding: 20px 25px; }
+    .panel-info .panel-footer { background: #fff; color: #263238; border-top: 2px solid #41b3f9; }
+    .panel-default .panel-footer { background: #fff; color: #263238; border-top: 2px solid rgba(120,130,140,.13); }
+    .label-rouded, .label-rounded { border-radius: 8px; padding: 6px 8px 5px; font-weight: 500; width: 65px !important; }
+    .attendanceHeader { font-size: 21px !important; }
+    .sessionName { color: black !important; border: 1px solid #41b3f9; background-color: white; border-radius: 10px; padding: 5px 30px; margin: 0px 25px; }
+    .arrowNavs { color: white !important; cursor: pointer; }
+    #attendanceTable { font-size: 75% !important; }
+    #attendanceTable thead tr th { font-size: 75% !important; }
+    #attendanceTable tbody tr td { font-size: 75% !important; }
+    .th-width { width: 121px !important; }
+    .dayNumber { font-size: x-small !important; font-weight: 500; }
+    .calendarCircles{ cursor: pointer; font-size: 6px !important; }
+    .sidebarCircles { cursor: pointer; }
+    .monthDay { cursor: pointer; }
+    .selectedMonthDay { background-color: #ffffe0; }
+    .monthDay:hover { background-color: #ffffe0; }
+    .calendarHeader { display: inline-flex; width: 100%; }
+    .monthName { color: black !important; border: 1px solid #41b3f9; background-color: white; border-radius: 10px; padding: 5px 30px; margin: 0px 25px; font-size: 21px !important; text-align: center; }
+    .custom-table-bordered { border: 1px solid #eceeef !important; font-size: small; }
+    .custom-table-bordered thead tr { border: 1px solid #eceeef !important; }
+    .custom-table-bordered thead tr th { border: 1px solid #eceeef !important; }
+    .custom-table-bordered tbody tr { border: 1px solid #eceeef !important; }
+    .custom-table-bordered tbody tr td { border: 1px solid #eceeef !important; }
+</style>
+
+<div class="row">
+    <div class="col-12 col-lg-6" ng-if="$root.can('dashboard.absentStudents')">
+        <div class="card" style="border: 1px solid #DDD">
+            <div class="row">
+                <div class="col-12">
+                    <h4 class="font-medium text-primary p-3" style="border-bottom: 1px solid #EEE; margin-bottom: 0">
+                        <i class="fa fa-users"></i>&nbsp; Absent students&nbsp; <span class="text-muted pull-right" style="font-size: 14px; line-height: 26px;">({{ current_date }})</span>
+                    </h4>
+                </div>
+                <div class="col-12 pt-2">
+                    <div id="absent-students-chart" absent-students-chart style="width: 100%; height: 340px"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-12 col-lg-6" ng-if="$root.can('dashboard.absentStaff')">
+        <div class="card" style="border: 1px solid #DDD">
+            <div class="row">
+                <div class="col-12">
+                    <h4 class="font-medium text-primary p-3" style="border-bottom: 1px solid #EEE; margin-bottom: 0"> <i class="fa fa-users"></i>&nbsp; Absent staff </h4>
+                </div>
+                <div class="col-12 pt-2">
+                    <div id="absent-staff-chart" absent-staff-chart style="width: 100%; height: 340px"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-12 col-lg-3" ng-if="$root.can('dashboard.birthdays')">
+        <div class="card" style="border: 1px solid #DDD">
+            <div class="row">
+                <div class="col-12">
+                    <h4 class="font-medium text-primary p-3" style="border-bottom: 1px solid #EEE; margin-bottom: 0">
+                        <i class="fa fa-birthday-cake"></i>&nbsp; Birthday list &nbsp;
+                    </h4>
+                    <div class="btn-group birthday-buttons d-flex justify-content-around" role="group" aria-label="Basic example">
+                        <button type="button" ng-click="loadBirthday('Yesterday')" class="btn btn-primary btn-sm">Yesterday</button>
+                        <button type="button" ng-click="loadBirthday('Today')" class="btn btn-success btn-sm">Today</button>
+                        <button type="button" ng-click="loadBirthday('Tomorrow')" class="btn btn-danger btn-sm">Tomorrow</button>
+                    </div>
+                </div>
+                <div class="col-12">
+                    <div class="message-box" scroll-box id="birthdayCeleb" height="571px">
+                        <div class="message-widget message-scroll">
+                            <!-- Message -->
+                            <a href="javascript:void(0)" ng-click="studentProfile( user.id )" ng-repeat="user in dashboardData.birthday">
+                                <div class="user-img" style="margin: 0">
+                                    <img ng-src="{{'index.php/dashboard/profileImage/'+user.id}}" alt="{{user.fullName}}" class="img-circle" style="width: 40px">
+                                </div>
+                                <div class="mail-contnet" style="width: auto;"> <h5>{{user.fullName}}</h5> Age : {{user.age}} </div>
+                            </a>
+                            <span style="display: block; text-align: center;padding:20px;" ng-show="!dashboardData.birthday.length">{{phrase.noDataAvailable}}</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-9 col-lg-9" ng-if="$root.can('dashboard.academicCalendar')">
+        <div class="card" style="border: 1px solid #DDD">
+            <div class="row">
+                <div class="col-12 mb-0">
+                    <h4 class="font-medium text-primary p-3 mb-0">
+                        <i class="fa fa-calendar"></i>&nbsp; Academic Calendar
+                        <div class="pull-right" style="font-size: 15px;">
+                            [ <span> <i class="fa fa-circle" style="color: #F62D51"></i> <span style="color: #F62D51">Event</span> </span> ] 
+                            [ <span> <i class="fa fa-circle" style="color: #ffbc34"></i> <span style="color: #ffbc34">Exam</span> </span> ] 
+                            [ <span> <i class="fa fa-circle" style="color: #007bff"></i> <span style="color: #007bff">Homework</span> </span> ] 
+                            [ <span> <i class="fa fa-circle" style="color: #7ace4c"></i> <span style="color: #7ace4c">Holiday</span> </span> ] 
+                            [ <span> <i class="fa fa-circle" style="color: #6c757d"></i> <span style="color: #6c757d">Notice</span> </span> ]
+                            <!-- #009efb -->
+                        </div>
+                    </h4>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-8 pr-1">
+                    <div class="container-fluid pr-1 pl-3 pt-0">
+                        <div class="panel panel-info m-0">
+                            <div class="panel-heading text-center calendarHeader">
+                                <a class="arrowNavs mt-2" ng-click="moveMonth('backward')" title="Previous month" tooltip> <i class="fa fa-play-circle fa-rotate-180"></i> </a>
+                                <input ng-model="calender_month" type="text" name="calendarMonth" id="calendarMonth" class="form-control monthName" ng-change="changeCalendarMonth()" placeholder="Select month" />
+                                <a class="arrowNavs mt-2" ng-click="moveMonth('forward')" title="Next month" tooltip> <i class="fa fa-play-circle"></i> </a> 
+                            </div>
+                        </div>
+                        <div id="mainCalendarElement" class="panel-wrapper collapse in" style="border: 3px solid #41b3f9;">
+                            <div class="panel-body">
+                                <div class="container-fluid pt-2 pb-2">
+                                    <div class="row">
+                                        <div class="col-12 pr-0 pl-0">
+                                            <table class="table table-bordered">
+                                                <thead>
+                                                    <tr>
+                                                        <th class="th-width text-center"> Mon </th>
+                                                        <th class="th-width text-center"> Tue </th>
+                                                        <th class="th-width text-center"> Wed </th>
+                                                        <th class="th-width text-center"> Thu </th>
+                                                        <th class="th-width text-center"> Fri </th>
+                                                        <th class="th-width text-center"> Sat </th>
+                                                        <th class="th-width text-center"> Sun </th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    <tr ng-repeat="week in calender track by $index" style="height: 70px;" ng-init="weekIndex = $index">
+                                                        <td ng-repeat="day in week track by $index" ng-class="{'monthDay': day != false, 'selectedMonthDay': day.selected == true}" ng-init="dayIndex = $index" ng-click="loadDayData(weekIndex, dayIndex)">
+                                                            <div class="row">
+                                                                <div class="col-3 pr-1 pl-1 dayNumber"> {{day.dayOfMonth}} </div>
+                                                                <div class="col-8 pr-0 pl-1">
+                                                                    <span ng-repeat="entry in day.payloads track by $index">
+                                                                        <i title="{{entry.name}}" ng-if="entry.type == 'Event'" class="fa fa-circle calendarCircles" style="color: #F62D51;" tooltip></i>
+                                                                        <i title="{{entry.name}}" ng-if="entry.type == 'Exam'" class="fa fa-circle calendarCircles" style="color: #ffbc34;" tooltip></i>
+                                                                        <i title="{{entry.name}}" ng-if="entry.type == 'Homework'" class="fa fa-circle calendarCircles" style="color: #007bff;" tooltip></i>
+                                                                        <i title="{{entry.name}}" ng-if="entry.type == 'Holiday'" class="fa fa-circle calendarCircles" style="color: #7ace4c;" tooltip></i>
+                                                                        <i title="{{entry.name}}" ng-if="entry.type == 'Notice'" class="fa fa-circle calendarCircles" style="color: #6c757d;" tooltip></i>
+                                                                    </span>
+                                                                </div>
+                                                            </div>
+                                                        </td>
+                                                    </tr>
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-4 pl-1">
+                    <div class="container-fluid pl-1 pr-3 pt-0">
+                        <div class="panel panel-info m-0">
+                            <div class="panel-heading text-center calendarHeader"> Content List </div>
+                        </div>
+                        <div id="sideCalendarElement" class="panel-wrapper collapse in" style="border: 3px solid #41b3f9; overflow-y: scroll;">
+                            <div class="panel-body">
+                                <div class="container-fluid pt-2 pb-2">
+                                    <div class="row">
+                                        <div class="col-12">
+                                            <div ng-repeat="oneDay in sidePayloads track by $index" class="row">
+                                                <div class="col-12 dayTitle pull-right"> <b class="pull-right">{{ oneDay.day }}</b> </div>
+                                                <div ng-repeat="dayPayload in oneDay.payloads track by $index" class="col-12 dayPayload">
+                                                    <span ng-click="readContent(dayPayload.type, dayPayload.id)" title="{{ dayPayload.name }}" style="cursor: pointer; font-size: x-small;" ng-if="dayPayload.type == 'Event'" tooltip> <i ng-if="dayPayload.type == 'Event'" class="fa fa-circle sidebarCircles" style="color: #F62D51;" ></i>  {{ dayPayload.name }} </span>
+                                                    <span ng-click="readContent(dayPayload.type, dayPayload.id)" title="{{ dayPayload.name }}" style="cursor: pointer; font-size: x-small;" ng-if="dayPayload.type == 'Exam'" tooltip> <i ng-if="dayPayload.type == 'Exam'" class="fa fa-circle sidebarCircles" style="color: #ffbc34;" ></i>  {{ dayPayload.name }} </span>
+                                                    <span ng-click="readContent(dayPayload.type, dayPayload.id)" title="{{ dayPayload.name }}" style="cursor: pointer; font-size: x-small;" ng-if="dayPayload.type == 'Homework'" tooltip> <i ng-if="dayPayload.type == 'Homework'" class="fa fa-circle sidebarCircles" style="color: #007bff;" ></i>  {{ dayPayload.name }} </span>
+                                                    <span ng-click="readContent(dayPayload.type, dayPayload.id)" title="{{ dayPayload.name }}" style="cursor: pointer; font-size: x-small;" ng-if="dayPayload.type == 'Holiday'" tooltip> <i ng-if="dayPayload.type == 'Holiday'" class="fa fa-circle sidebarCircles" style="color: #7ace4c;" ></i>  {{ dayPayload.name }} </span>
+                                                    <span ng-click="readContent(dayPayload.type, dayPayload.id)" title="{{ dayPayload.name }}" style="cursor: pointer; font-size: x-small;" ng-if="dayPayload.type == 'Notice'" tooltip> <i ng-if="dayPayload.type == 'Notice'" class="fa fa-circle sidebarCircles" style="color: #6c757d;" ></i>  {{ dayPayload.name }} </span>
+                                                </div>
+                                                <div class="col-12 text-center" ng-if="!oneDay.payloads.length"> <small style="font-size: x-small;"> No contents for this day </small> </div>
+                                            </div>
+                                            <div ng-if="!sidePayloads.length" class="row">
+                                                <div class="col-12 text-center"> <small style="font-size: x-small;"> No contents for this month yet </small> </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-12 col-lg-12" ng-if="$root.can('dashboard.feeDefaulters')">
+        <div class="card" style="border: 1px solid #DDD">
+            <div class="row">
+                <div class="col-12">
+                    <h4 class="font-medium text-primary p-3" style="border-bottom: 1px solid #EEE; margin-bottom: 0">
+                        <i class="fa fa-users"></i>&nbsp; Fee Defaulters &nbsp; <span class="text-muted" style="font-size: 14px; line-height: 26px;">({{ current_date2 }})</span>
+                        <select class="form-control pull-right form-control-sm" ng-if="fee_list.length" style="width: 250px" ng-model="filter.current_u_fee" ng-change="checkChangeFeetitle()">
+                            <option ng-repeat="u_fee in fee_list" ng-selected="u_fee.id == filter.current_u_fee" value="{{ u_fee.id }}">{{ u_fee.paymentTitle }}</option>
+                        </select>
+                    </h4>
+                </div>
+                <div class="col-12 pt-2"> <div id="unpaid-fees-chart" unpaid-fees-chart style="width: 100%; height: 340px"></div> </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-12 col-lg-12"  ng-if="$root.can('dashboard.myCalendar')">
+        <div class="card" style="border: 1px solid #DDD">
+            <div class="row">
+                <div class="col-12">
+                    <h4 class="font-medium text-primary p-3" style="border-bottom: 1px solid #EEE; margin-bottom: 0">
+                        <i class="fa fa-calendar"></i>&nbsp; My Attendance
+                        <select class="form-control pull-right form-control-sm" ng-if="wardList.length > 1" style="width: 250px" ng-model="studentId" ng-change="changeWard()">
+                            <option ng-repeat="ward in wardList" ng-selected="ward.id == filter.student" value="{{ ward.id }}">{{ ward.name }}</option>
+                        </select>
+                    </h4>
+                </div>
+                <div class="pr-5 pl-5 mt-3 col-12">
+                    <div class="panel panel-info m-0">
+                        <div class="panel-heading text-center attendanceHeader">
+                            <a class="arrowNavs" ng-click="moveSession('backward')" title="Previous session" tooltip> <i class="fa fa-play-circle fa-rotate-180"></i> </a> 
+                            <span class="sessionName"> Academic Session {{ attendance.current }} - {{ attendance.next }} </span>
+                            <a class="arrowNavs" ng-click="moveSession('forward')" title="Next session" tooltip> <i class="fa fa-play-circle"></i> </a> 
+                        </div>
+                    </div>
+                    <div class="panel-wrapper collapse in" style="border: 3px solid #41b3f9;">
+                        <div class="panel-body">
+                            <div class="container-fluid pt-2 pb-2">
+                                <div class="row">
+                                    <div class="col-12 mb-3">
+                                        <div class="table-responsive">
+                                            <table id="attendanceTable" class="mt-4 table table-bordered">
+                                                <thead>
+                                                    <th class="text-center">#</th>
+                                                    <th class="text-center" ng-repeat="oneDay in attendance.days track by $index"> {{ oneDay }} </th>
+                                                </thead>
+                                                <tbody>
+                                                    <tr>
+                                                        <td class="text-center"><b>Apr</b></td>
+                                                        <td class="text-center cellBackColor attenBackColor{{rowData.name}}" ng-repeat="rowData in attendance.data[0] track by $index" title="{{rowData.date}} - {{rowData.day}}" tooltip> {{ rowData.name }} </td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td class="text-center"><b>May</b></td>
+                                                        <td class="text-center cellBackColor attenBackColor{{rowData.name}}" ng-repeat="rowData in attendance.data[1] track by $index" title="{{rowData.date}} - {{rowData.day}}" tooltip> {{ rowData.name }} </td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td class="text-center"><b>Jun</b></td>
+                                                        <td class="text-center cellBackColor attenBackColor{{rowData.name}}" ng-repeat="rowData in attendance.data[2] track by $index" title="{{rowData.date}} - {{rowData.day}}" tooltip> {{ rowData.name }} </td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td class="text-center"><b>Jul</b></td>
+                                                        <td class="text-center cellBackColor attenBackColor{{rowData.name}}" ng-repeat="rowData in attendance.data[3] track by $index" title="{{rowData.date}} - {{rowData.day}}" tooltip> {{ rowData.name }} </td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td class="text-center"><b>Aug</b></td>
+                                                        <td class="text-center cellBackColor attenBackColor{{rowData.name}}" ng-repeat="rowData in attendance.data[4] track by $index" title="{{rowData.date}} - {{rowData.day}}" tooltip> {{ rowData.name }} </td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td class="text-center"><b>Sep</b></td>
+                                                        <td class="text-center cellBackColor attenBackColor{{rowData.name}}" ng-repeat="rowData in attendance.data[5] track by $index" title="{{rowData.date}} - {{rowData.day}}" tooltip> {{ rowData.name }} </td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td class="text-center"><b>Oct</b></td>
+                                                        <td class="text-center cellBackColor attenBackColor{{rowData.name}}" ng-repeat="rowData in attendance.data[6] track by $index" title="{{rowData.date}} - {{rowData.day}}" tooltip> {{ rowData.name }} </td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td class="text-center"><b>Nov</b></td>
+                                                        <td class="text-center cellBackColor attenBackColor{{rowData.name}}" ng-repeat="rowData in attendance.data[7] track by $index" title="{{rowData.date}} - {{rowData.day}}" tooltip> {{ rowData.name }} </td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td class="text-center"><b>Dec</b></td>
+                                                        <td class="text-center cellBackColor attenBackColor{{rowData.name}}" ng-repeat="rowData in attendance.data[8] track by $index" title="{{rowData.date}} - {{rowData.day}}" tooltip> {{ rowData.name }} </td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td class="text-center"><b>Jan</b></td>
+                                                        <td class="text-center cellBackColor attenBackColor{{rowData.name}}" ng-repeat="rowData in attendance.data[9] track by $index" title="{{rowData.date}} - {{rowData.day}}" tooltip> {{ rowData.name }} </td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td class="text-center"><b>Feb</b></td>
+                                                        <td class="text-center cellBackColor attenBackColor{{rowData.name}}" ng-repeat="rowData in attendance.data[10] track by $index" title="{{rowData.date}} - {{rowData.day}}" tooltip> {{ rowData.name }} </td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td class="text-center"><b>Mar</b></td>
+                                                        <td class="text-center cellBackColor attenBackColor{{rowData.name}}" ng-repeat="rowData in attendance.data[11] track by $index" title="{{rowData.date}} - {{rowData.day}}" tooltip> {{ rowData.name }} </td>
+                                                    </tr>
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </div>
+                                    <div class="col-12 text-center">
+                                        <label class="btn btn-md btn-warning text-white"> <b> Total Holidays: {{ attendance.total.holidays }} </b> </label>
+                                        <label class="btn btn-md btn-info text-white"> <b> Total Weekends: {{ attendance.total.weekends }} </b> </label>
+                                        <label class="btn btn-md btn-success text-white"> <b> Total Presents: {{ attendance.total.presents }} </b> </label>
+                                        <label class="btn btn-md btn-danger text-white"> <b> Total Absents: {{ attendance.total.absents }} </b> </label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<modal visible="calendarContent">
+    <div ng-if="calendarContentProccess == true" class="container-fluid">
+        <div class="row">
+            <div class="col-12 text-center">
+                <i class="fa fa-spinner fa-spin fa-fw"></i> Reading {{calendarType}} Data ...
+            </div>
+        </div>
+    </div>
+    <div ng-if="calendarContentProccess == false" class="container-fluid">
+        <div ng-if="calendarContentFailure == true" class="row">
+            <div class="col-12 text-center">
+                <i class="fa fa-times-circle text-danger"></i> Unable to read {{calendarType}} data
+            </div>
+        </div>
+        <div ng-if="calendarContentFailure == false" class="row">
+            <div ng-if="calendarType == 'event'" class="col-12">
+                <div class="row">
+                    <div class="col-4">
+                        <img style="height: 256px; width: 215px;" src="index.php/eventous/eventImage/{{calendarContentData.image}}" />
+                    </div>
+                    <div class="col-8">
+                        <table class='table table-hover custom-table-bordered' style='border: 1px solid #eceeef !important;'>
+                            <tbody>
+                                <tr> <td style='font-size: small;'>Title</td> <td style='font-size: small;' class='text-right'> {{ calendarContentData.name }} </td> </tr>
+                                <tr> <td style='font-size: small;'>From</td> <td style='font-size: small;' class='text-right'> {{ calendarContentData.startDate }} </td> </tr>
+                                <tr> <td style='font-size: small;'>To</td> <td style='font-size: small;' class='text-right'> {{ calendarContentData.endDate }} </td> </tr>
+                                <tr> <td style='font-size: small;'>Creator</td> <td style='font-size: small;' class='text-right'> {{ calendarContentData.createdBy }} </td> </tr>
+                                <tr> <td style='font-size: small;'>Description</td> <td style='font-size: small;' class='text-right' ng-bind-html="calendarContentData.desc"> </td> </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+            <div ng-if="calendarType == 'exam'" class="col-12">
+                <div class="row">
+                    <div class="col-5">
+                        <table class='table table-hover custom-table-bordered' style='border: 1px solid #eceeef !important;'>
+                            <tbody>
+                                <tr> <td style='font-size: small;'>Title</td> <td style='font-size: small;' class='text-right'> {{ calendarContentData.name }} </td> </tr>
+                                <tr> <td style='font-size: small;'>Start Date</td> <td style='font-size: small;' class='text-right'> {{ calendarContentData.startDate }} </td> </tr>
+                                <tr> <td style='font-size: small;'>End Date</td> <td style='font-size: small;' class='text-right'> {{ calendarContentData.endDate }} </td> </tr>
+                                <tr> <td style='font-size: small;'>Pass Marks</td> <td style='font-size: small;' class='text-right'> {{ calendarContentData.passMark }} </td> </tr>
+                                <tr> <td style='font-size: small;'>Max Marks</td> <td style='font-size: small;' class='text-right'> {{ calendarContentData.maxMark }} </td> </tr>
+                                <tr> <td style='font-size: small;'>Description</td> <td style='font-size: small;' class='text-right'> {{ calendarContentData.desc }} </td> </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="col-7">
+                        <table class='table table-hover custom-table-bordered'>
+                            <thead>
+                                <tr>
+                                    <th style="width: 120px;" class="align-middle text-center" rowspan="2"> subject </th>
+                                    <th style="width: 120px;" class="align-middle text-center" rowspan="2"> date </th>
+                                    <th class="text-center" colspan="2"> Duration </th>
+                                </tr>
+                                <tr>
+                                    <th style="width: 75px;" class="text-center">From</th>
+                                    <th style="width: 75px;" class="text-center">To</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr ng-repeat="schedule in calendarContentData.schedule track by $index">
+                                    <td> {{ schedule.name }} </td>
+                                    <td> {{ schedule.stDate }} </td>
+                                    <td> {{ schedule.start_time }} </td>
+                                    <td> {{ schedule.end_time }} </td>
+                                </tr>
+                                <tr ng-if="!calendarContentData.schedule.length"> <td class="noTableData" colspan="3"> No Subjects could be found for this exam </td> </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+            <div ng-if="calendarType == 'homework'" class="col-12">
+                <table class='table table-hover custom-table-bordered' style='border: 1px solid #eceeef !important;'>
+                    <tbody>
+                        <tr> <td style='font-size: small;'>Title</td> <td style='font-size: small;' class='text-right'> {{ calendarContentData.name }} </td> </tr>
+                        <tr> <td style='font-size: small;'>Deadline</td> <td style='font-size: small;' class='text-right'> {{ calendarContentData.date }} </td> </tr>
+                        <tr> <td style='font-size: small;'>Description</td> <td style='font-size: small;' class='text-right'> {{ calendarContentData.desc }} </td> </tr>
+                        <tr ng-if="calendarContentData.file == true"> <td style='font-size: small;'>Attachment</td> <td style='font-size: small;' class='text-right'> <a target="_blank" class="btn btn-xs custom-btn-success" href="index.php/assignments/download/{{calendarContentData.id}}"> <i class="fa fa-download"></i> </a> </td> </tr>
+                    </tbody>
+                </table>
+            </div>
+            <div ng-if="calendarType == 'holiday'" class="col-12">
+                <table class='table table-hover custom-table-bordered' style='border: 1px solid #eceeef !important;'>
+                    <tbody>
+                        <tr> <td style='font-size: small;'>Title</td> <td style='font-size: small;' class='text-right'> {{ calendarContentData.name }} </td> </tr>
+                        <tr> <td style='font-size: small;'>From</td> <td style='font-size: small;' class='text-right'> {{ calendarContentData.startDate }} </td> </tr>
+                        <tr> <td style='font-size: small;'>To</td> <td style='font-size: small;' class='text-right'> {{ calendarContentData.endDate }} </td> </tr>
+                        <tr> <td style='font-size: small;'>Notes</td> <td style='font-size: small;' class='text-right'> {{ calendarContentData.comment }} </td> </tr>
+                    </tbody>
+                </table>
+            </div>
+            <div ng-if="calendarType == 'notice'" class="col-12">
+                <div class="row">
+                    <div class="col-4">
+                        <img style="height: 256px; width: 215px;" src="index.php/notices/noticeImage/{{calendarContentData.image}}" />
+                    </div>
+                    <div class="col-8">
+                        <table class='table table-hover custom-table-bordered' style='border: 1px solid #eceeef !important;'>
+                            <tbody>
+                                <tr> <td style='font-size: small;'>Title</td> <td style='font-size: small;' class='text-right'> {{ calendarContentData.name }} </td> </tr>
+                                <tr> <td style='font-size: small;'>Content</td> <td style='font-size: small;' class='text-right' ng-bind-html="calendarContentData.desc"> </td> </tr>
+                                <tr> <td style='font-size: small;'>Data</td> <td style='font-size: small;' class='text-right'> {{ calendarContentData.date }} </td> </tr>
+                                <tr> <td style='font-size: small;'>Creator</td> <td style='font-size: small;' class='text-right'> {{ calendarContentData.createdBy }} </td> </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</modal>

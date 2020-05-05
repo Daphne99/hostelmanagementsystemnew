@@ -1,0 +1,1394 @@
+<style>
+    .custom-btn-success, .custom-btn-success.disabled { background: #7ace4c; border: 1px solid #7ace4c; color: white !important; }
+    .custom-btn-success:hover { background: #7ace4c; opacity: .8; border: 1px solid #7ace4c; }
+    .custom-table-bordered { border: 1px solid #ced2d3 !important; }
+    .custom-table-bordered thead { border: 1px solid #ced2d3 !important; }
+    .custom-table-bordered thead tr { border: 1px solid #ced2d3 !important; }
+    .custom-table-bordered thead tr th { border: 1px solid #ced2d3 !important; }
+    .custom-table-bordered tbody { border: 1px solid #ced2d3 !important; }
+    .custom-table-bordered tbody tr { border: 1px solid #ced2d3 !important; }
+    .custom-table-bordered tbody tr td { border: 1px solid #ced2d3 !important; }
+</style>
+<div class="row page-titles">
+    <div class="col-12 align-self-center" >
+        <h3 class="text-themecolor m-b-0 m-t-0"> Manage Roles/Permissions </h3>
+    </div>
+</div>
+
+<div class="row" ng-show="views.list">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-block">
+                <button ng-show="$root.can('roles.add_role')" ng-click="changeView('add')" class="mb-3 btn pull-right btn-success card-block-input-item" style="font-weight: bold;"> <i class="fa fa-plus-circle"></i> Add Role </button>
+                <div class="pull-right card-block-input-group card-block-input-item">
+                    <div class="input-group input-group-sm">
+                        <input type="text" name="table_search" ng-model="searchText" placeholder="{{phrase.Search}}" class="form-control input-sm">
+                        <span class="input-group-addon"><i class="fa fa-search"></i></span>
+                    </div>
+                </div>
+                <div class="table-responsive">
+                    <table class="table table-bordered table-hover">
+                        <tbody>
+                            <tr>
+                                <th> # </th>
+                                <th> Name </th>
+                                <th ng-show="$root.can('roles.modify_role') || $root.can('roles.delete_role')" style='width:160px;'> Actions </th>
+                            </tr>
+                            <tr dir-paginate="roles_one in roles | filter:searchText | itemsPerPage:20 track by $index" total-items="totalItems">
+                                <td> {{ $index + 1 }} </td>
+                                <td> {{ roles_one.role_title }} </td>
+                                <td ng-show="$root.can('roles.modify_role') || $root.can('roles.delete_role')">
+                                    <button ng-show="$root.can('roles.modify_role')" ng-click="edit(roles_one.id)" type="button" class="btn custom-btn-success btn btn-xs" title="Edit" tooltip><i class="fa fa-pencil-square-o"></i></button>
+                                    <button ng-show="$root.can('roles.delete_role')" ng-click="remove(roles_one,$index)" type="button" class="btn btn-danger btn-xs" title="Remove" tooltip><i class="fa fa-trash-o"></i></button>
+                                </td>
+                            </tr>
+                            <tr ng-show="!roles.length"><td class="noTableData" colspan="3"> No Roles are available at the moment </td></tr>
+                        </tbody>
+                    </table>
+                    <dir-pagination-controls
+                        on-page-change="pageChanged(newPageNumber)"
+                        template-url="assets/templates/dirPagination.html" >
+                    </dir-pagination-controls>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row" ng-show="views.add">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-block">
+                <button ng-show="$root.can('roles.list')" ng-click="changeView('list')" class="mb-3 btn pull-right btn-danger card-block-input-item"> Cancel Add </button>
+                <div class="card-title"> <h4>Add Role</h4> </div> <br />
+                <div class="card-body">
+                    <form class="form-horizontal" name="addRole" >
+                        <div class="form-group row" ng-class="{'has-error': addRole.name.$invalid}">
+                            <label class="col-2 pb-2 pl-3 control-label col-form-label">Role Name.<span class="text-danger">*</span></label>
+                            <div class="col-10">
+                                <input type="text" ng-model="form.role_title" class="form-control" required />
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <label class="col-2 pb-2 pl-3 control-label col-form-label">Role description</label>
+                            <div class="col-10">
+                                <textarea ng-model="form.role_description" class="form-control"></textarea>
+                            </div>
+                        </div>
+                        <div class="form-group row" ng-class="{'has-error': addRole.def_for.$invalid}">
+                            <label class="col-2 pb-2 pl-3 control-label col-form-label">Default For<span class="text-danger">*</span></label>
+                            <div class="col-10">
+                                <div class="radio-list">
+                                    <label> <input type="radio" name="def_for" value="none" ng-model="form.def_for" required> None </label>
+                                </div>
+                                <div class="radio-list">
+                                    <label> <input type="radio" name="def_for" value="teacher" ng-model="form.def_for" required> Teacher </label>
+                                </div>
+                                <div class="radio-list">
+                                    <label> <input type="radio" name="def_for" value="student" ng-model="form.def_for" required> Student </label>
+                                </div>
+                                <div class="radio-list">
+                                    <label> <input type="radio" name="def_for" value="parent" ng-model="form.def_for" required> Parent </label>
+                                </div>
+                                <div class="radio-list">
+                                    <label> <input type="radio" name="def_for" value="admin" ng-model="form.def_for" required> Administrators </label>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-group row" ng-class="{'has-error': addRole.role_permissions.$invalid}">
+                            <label class="col-2 pb-2 pl-3 control-label col-form-label">Permissions<span class="text-danger">*</span></label>
+                            <div class="col-10">
+                                <div class="row mb-3">
+                                    <div class="col-12">
+                                        <button ng-if="!isAll" ng-click="checkAll()" class="pull-right btn btn-info"> <i class="mdi mdi-check-all"></i> Check All </button>
+                                        <button ng-if="isAll" ng-click="checkAll()" class="pull-right btn btn-info"> <i class="fa fa-minus-circle"></i> Uncheck All </button>
+                                    </div>
+                                </div>
+                                <!-- <div ng-repeat="(key,inner_perms) in roles_perms" class="row mb-3">
+                                    <label class="col-2 pb-2 pl-3 control-label col-form-label"> <h6> <u>{{inner_perms.title}}</u> </h6></label>
+                                    <div class="col-10">
+                                        <div class="row">
+                                            <div ng-repeat="(innerKey, singleRole) in inner_perms.roles" class="radio-list col-sm-4">
+                                                <label> <input type="checkbox" checklist-model="form.role_permissions" checklist-value="key + '.' + innerKey" > {{singleRole}} </label>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div> -->
+                                <div class="row mb-3">
+                                    <div class="col-12">
+                                        <div class="table-responsive">
+                                            <table class="table custom-table-bordered table-bordered table-hover">
+                                                <thead>
+                                                    <th class="text-center"> Module </th>
+                                                    <th class="text-center"> Sub-Module </th>
+                                                    <th class="text-center"> Permission </th>
+                                                </thead>
+                                                <tbody>
+                                                    <tr>
+                                                        <td class="text-center align-middle" colspan="2"> Dashboard </td>
+                                                        <td>
+                                                            <div class="row">
+                                                                <div ng-repeat="(innerKey, singleRole) in customPerms.dashboard.roles" class="radio-list col-sm-4">
+                                                                    <label> <input type="checkbox" checklist-model="form.role_permissions" checklist-value="innerKey" > {{singleRole}} </label>
+                                                                </div>
+                                                            </div>
+                                                        </td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td class="text-center align-middle" rowspan="2"> Front Office </td>
+                                                        <td class="text-center align-middle"> Show Records </td>
+                                                        <td>
+                                                            <div ng-repeat="(key, inner_perms) in customPerms.viewRecords" class="row">
+                                                                <label class="col-12 pb-2 pl-3 control-label col-form-label"> <h6> <u>{{inner_perms.title}}</u> </h6></label>
+                                                                <div class="col-12 pl-5">
+                                                                    <div class="row">
+                                                                        <div ng-repeat="(innerKey, singleRole) in inner_perms.roles" class="radio-list col-sm-4">
+                                                                            <label> <input type="checkbox" checklist-model="form.role_permissions" checklist-value="inner_perms.index + '.' + innerKey" > {{singleRole}} </label>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td class="text-center align-middle"> Create Records </td>
+                                                        <td>
+                                                            <div ng-repeat="(key, inner_perms) in customPerms.addRecords" class="row">
+                                                                <label class="col-12 pb-2 pl-3 control-label col-form-label"> <h6> <u>{{inner_perms.title}}</u> </h6></label>
+                                                                <div class="col-12 pl-5">
+                                                                    <div class="row">
+                                                                        <div ng-repeat="(innerKey, singleRole) in inner_perms.roles" class="radio-list col-sm-4">
+                                                                            <label> <input type="checkbox" checklist-model="form.role_permissions" checklist-value="inner_perms.index + '.' + innerKey" > {{singleRole}} </label>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td class="text-center align-middle" rowspan="2"> Messaging </td>
+                                                        <td class="text-center align-middle"> Show messages </td>
+                                                        <td>
+                                                            <div class="row">
+                                                                <div ng-repeat="(innerKey, singleRole) in customPerms.viewMessages.roles" class="radio-list col-sm-4">
+                                                                    <label> <input type="checkbox" checklist-model="form.role_permissions" checklist-value="'messaging.' + innerKey" > {{singleRole}} </label>
+                                                                </div>
+                                                            </div>
+                                                        </td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td class="text-center align-middle"> Compose message </td>
+                                                        <td>
+                                                            <div class="row">
+                                                                <div ng-repeat="(innerKey, singleRole) in customPerms.composeMessage.roles" class="radio-list col-sm-4">
+                                                                    <label> <input type="checkbox" checklist-model="form.role_permissions" checklist-value="'messaging.' + innerKey" > {{singleRole}} </label>
+                                                                </div>
+                                                            </div>
+                                                        </td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td class="text-center align-middle" rowspan="2"> Events </td>
+                                                        <td class="text-center align-middle"> Show event </td>
+                                                        <td>
+                                                            <div class="row">
+                                                                <div ng-repeat="(innerKey, singleRole) in customPerms.viewEvents.roles" class="radio-list col-sm-4">
+                                                                    <label> <input type="checkbox" checklist-model="form.role_permissions" checklist-value="'events.' + innerKey" > {{singleRole}} </label>
+                                                                </div>
+                                                            </div>
+                                                        </td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td class="text-center align-middle"> Add events </td>
+                                                        <td>
+                                                            <div class="row">
+                                                                <div ng-repeat="(innerKey, singleRole) in customPerms.composeEvent.roles" class="radio-list col-sm-4">
+                                                                    <label> <input type="checkbox" checklist-model="form.role_permissions" checklist-value="'events.' + innerKey" > {{singleRole}} </label>
+                                                                </div>
+                                                            </div>
+                                                        </td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td class="text-center align-middle" rowspan="2"> Notices </td>
+                                                        <td class="text-center align-middle"> Show notices </td>
+                                                        <td>
+                                                            <div class="row">
+                                                                <div ng-repeat="(innerKey, singleRole) in customPerms.viewNotices.roles" class="radio-list col-sm-4">
+                                                                    <label> <input type="checkbox" checklist-model="form.role_permissions" checklist-value="'newsboard.' + innerKey" > {{singleRole}} </label>
+                                                                </div>
+                                                            </div>
+                                                        </td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td class="text-center align-middle"> Add notice </td>
+                                                        <td>
+                                                            <div class="row">
+                                                                <div ng-repeat="(innerKey, singleRole) in customPerms.composeNotice.roles" class="radio-list col-sm-4">
+                                                                    <label> <input type="checkbox" checklist-model="form.role_permissions" checklist-value="'newsboard.' + innerKey" > {{singleRole}} </label>
+                                                                </div>
+                                                            </div>
+                                                        </td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td class="text-center align-middle" rowspan="2"> Mail/SMS </td>
+                                                        <td class="text-center align-middle"> Show mail/sms </td>
+                                                        <td>
+                                                            <div class="row">
+                                                                <div ng-repeat="(innerKey, singleRole) in customPerms.viewMailSms.roles" class="radio-list col-sm-4">
+                                                                    <label> <input type="checkbox" checklist-model="form.role_permissions" checklist-value="'mailsms.' + innerKey" > {{singleRole}} </label>
+                                                                </div>
+                                                            </div>
+                                                        </td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td class="text-center align-middle"> Add mail/sms </td>
+                                                        <td>
+                                                            <div class="row">
+                                                                <div ng-repeat="(innerKey, singleRole) in customPerms.composeMailSms.roles" class="radio-list col-sm-4">
+                                                                    <label> <input type="checkbox" checklist-model="form.role_permissions" checklist-value="'mailsms.' + innerKey" > {{singleRole}} </label>
+                                                                </div>
+                                                            </div>
+                                                        </td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td class="text-center align-middle" rowspan="7"> Academic </td>
+                                                        <td class="text-center align-middle"> Academic years </td>
+                                                        <td>
+                                                            <div class="row">
+                                                                <div ng-repeat="(innerKey, singleRole) in customPerms.academicyears.roles" class="radio-list col-sm-4">
+                                                                    <label> <input type="checkbox" checklist-model="form.role_permissions" checklist-value="'academicyears.' + innerKey" > {{singleRole}} </label>
+                                                                </div>
+                                                            </div>
+                                                        </td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td class="text-center align-middle"> Add Subjects </td>
+                                                        <td>
+                                                            <div class="row">
+                                                                <div ng-repeat="(innerKey, singleRole) in customPerms.subjectAssign.roles" class="radio-list col-sm-4">
+                                                                    <label> <input type="checkbox" checklist-model="form.role_permissions" checklist-value="'Subjects.' + innerKey" > {{singleRole}} </label>
+                                                                </div>
+                                                            </div>
+                                                        </td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td class="text-center align-middle"> Classes, Sections and Teachers </td>
+                                                        <td>
+                                                            <div class="row">
+                                                                <div ng-repeat="(innerKey, singleRole) in customPerms.classSectionTeacher.roles" class="radio-list col-sm-3">
+                                                                    <label> <input type="checkbox" checklist-model="form.role_permissions" checklist-value="innerKey" > {{singleRole}} </label>
+                                                                </div>
+                                                            </div>
+                                                        </td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td class="text-center align-middle"> Homeworks </td>
+                                                        <td>
+                                                            <div class="row">
+                                                                <div ng-repeat="(innerKey, singleRole) in customPerms.homework.roles" class="radio-list col-sm-4">
+                                                                    <label> <input type="checkbox" checklist-model="form.role_permissions" checklist-value="'Homework.' + innerKey" > {{singleRole}} </label>
+                                                                </div>
+                                                            </div>
+                                                        </td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td class="text-center align-middle"> Assignments </td>
+                                                        <td>
+                                                            <div class="row">
+                                                                <div ng-repeat="(innerKey, singleRole) in customPerms.Assignments.roles" class="radio-list col-sm-4">
+                                                                    <label> <input type="checkbox" checklist-model="form.role_permissions" checklist-value="'Assignments.' + innerKey" > {{singleRole}} </label>
+                                                                </div>
+                                                            </div>
+                                                        </td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td class="text-center align-middle"> Syllabus </td>
+                                                        <td>
+                                                            <div class="row">
+                                                                <div ng-repeat="(innerKey, singleRole) in customPerms.studyMaterial.roles" class="radio-list col-sm-4">
+                                                                    <label> <input type="checkbox" checklist-model="form.role_permissions" checklist-value="'studyMaterial.' + innerKey" > {{singleRole}} </label>
+                                                                </div>
+                                                            </div>
+                                                        </td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td class="text-center align-middle"> My Subjects </td>
+                                                        <td>
+                                                            <div class="row">
+                                                                <div ng-repeat="(innerKey, singleRole) in customPerms.mySubjects.roles" class="radio-list col-sm-4">
+                                                                    <label> <input type="checkbox" checklist-model="form.role_permissions" checklist-value="'subjects.' + innerKey" > {{singleRole}} </label>
+                                                                </div>
+                                                            </div>
+                                                        </td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td class="text-center align-middle" colspan="2"> Student's Attendance </td>
+                                                        <td>
+                                                            <div class="row">
+                                                                <div ng-repeat="(innerKey, singleRole) in customPerms.studentsAttendance.roles" class="radio-list col-sm-4">
+                                                                    <label> <input type="checkbox" checklist-model="form.role_permissions" checklist-value="innerKey" > {{singleRole}} </label>
+                                                                </div>
+                                                            </div>
+                                                        </td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td class="text-center align-middle" rowspan="5"> Students </td>
+                                                        <td class="text-center align-middle"> Show Students </td>
+                                                        <td>
+                                                            <div class="row">
+                                                                <div ng-repeat="(innerKey, singleRole) in customPerms.showStudents.roles" class="radio-list col-sm-4">
+                                                                    <label> <input type="checkbox" checklist-model="form.role_permissions" checklist-value="'students.' + innerKey" > {{singleRole}} </label>
+                                                                </div>
+                                                            </div>
+                                                        </td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td class="text-center align-middle"> Create Student </td>
+                                                        <td>
+                                                            <div class="row">
+                                                                <div ng-repeat="(innerKey, singleRole) in customPerms.manageStudents.roles" class="radio-list col-sm-4">
+                                                                    <label> <input type="checkbox" checklist-model="form.role_permissions" checklist-value="innerKey" > {{singleRole}} </label>
+                                                                </div>
+                                                            </div>
+                                                        </td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td class="text-center align-middle"> Fee Group Type </td>
+                                                        <td>
+                                                            <div class="row">
+                                                                <div ng-repeat="(innerKey, singleRole) in customPerms.studentType.roles" class="radio-list col-sm-4">
+                                                                    <label> <input type="checkbox" checklist-model="form.role_permissions" checklist-value="innerKey" > {{singleRole}} </label>
+                                                                </div>
+                                                            </div>
+                                                        </td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td class="text-center align-middle"> Student Category </td>
+                                                        <td>
+                                                            <div class="row">
+                                                                <div ng-repeat="(innerKey, singleRole) in customPerms.studentCat.roles" class="radio-list col-sm-4">
+                                                                    <label> <input type="checkbox" checklist-model="form.role_permissions" checklist-value="innerKey" > {{singleRole}} </label>
+                                                                </div>
+                                                            </div>
+                                                        </td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td class="text-center align-middle"> Student Promotion </td>
+                                                        <td>
+                                                            <div class="row">
+                                                                <div ng-repeat="(innerKey, singleRole) in customPerms.Promotion.roles" class="radio-list col-sm-4">
+                                                                    <label> <input type="checkbox" checklist-model="form.role_permissions" checklist-value="innerKey" > {{singleRole}} </label>
+                                                                </div>
+                                                            </div>
+                                                        </td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td class="text-center align-middle" colspan="2"> View Teachers </td>
+                                                        <td>
+                                                            <div class="row">
+                                                                <div ng-repeat="(innerKey, singleRole) in customPerms.teachers.roles" class="radio-list col-sm-4">
+                                                                    <label> <input type="checkbox" checklist-model="form.role_permissions" checklist-value="innerKey" > {{singleRole}} </label>
+                                                                </div>
+                                                            </div>
+                                                        </td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td class="text-center align-middle" rowspan="5"> Timetable </td>
+                                                        <td class="text-center align-middle"> Class timetable </td>
+                                                        <td>
+                                                            <div class="row">
+                                                                <div ng-repeat="(innerKey, singleRole) in customPerms.timeTable.roles" class="radio-list col-sm-4">
+                                                                    <label> <input type="checkbox" checklist-model="form.role_permissions" checklist-value="innerKey" > {{singleRole}} </label>
+                                                                </div>
+                                                            </div>
+                                                        </td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td class="text-center align-middle"> Class wise </td>
+                                                        <td>
+                                                            <div class="row">
+                                                                <div ng-repeat="(innerKey, singleRole) in customPerms.timeTableClassWise.roles" class="radio-list col-sm-4">
+                                                                    <label> <input type="checkbox" checklist-model="form.role_permissions" checklist-value="innerKey" > {{singleRole}} </label>
+                                                                </div>
+                                                            </div>
+                                                        </td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td class="text-center align-middle"> Teacher wise </td>
+                                                        <td>
+                                                            <div class="row">
+                                                                <div ng-repeat="(innerKey, singleRole) in customPerms.timeTableTeacherWise.roles" class="radio-list col-sm-4">
+                                                                    <label> <input type="checkbox" checklist-model="form.role_permissions" checklist-value="innerKey" > {{singleRole}} </label>
+                                                                </div>
+                                                            </div>
+                                                        </td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td class="text-center align-middle"> Teacher Availability </td>
+                                                        <td>
+                                                            <div class="row">
+                                                                <div ng-repeat="(innerKey, singleRole) in customPerms.teacherAvailability.roles" class="radio-list col-sm-4">
+                                                                    <label> <input type="checkbox" checklist-model="form.role_permissions" checklist-value="innerKey" > {{singleRole}} </label>
+                                                                </div>
+                                                            </div>
+                                                        </td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td class="text-center align-middle"> Teacher Presence </td>
+                                                        <td>
+                                                            <div class="row">
+                                                                <div ng-repeat="(innerKey, singleRole) in customPerms.teacherPresence.roles" class="radio-list col-sm-4">
+                                                                    <label> <input type="checkbox" checklist-model="form.role_permissions" checklist-value="innerKey" > {{singleRole}} </label>
+                                                                </div>
+                                                            </div>
+                                                        </td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td class="text-center align-middle" rowspan="3"> Fees </td>
+                                                        <td class="text-center align-middle"> Collect Payments </td>
+                                                        <td class="align-middle" rowspan="3">
+                                                            <div class="row">
+                                                                <div ng-repeat="(innerKey, singleRole) in customPerms.Invoices.roles" class="radio-list col-sm-4">
+                                                                    <label> <input type="checkbox" checklist-model="form.role_permissions" checklist-value="innerKey" > {{singleRole}} </label>
+                                                                </div>
+                                                            </div>
+                                                        </td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td class="text-center align-middle"> Create Fee </td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td class="text-center align-middle"> Bulk edit fees </td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td class="text-center align-middle" rowspan="5"> Exams </td>
+                                                        <td class="text-center align-middle"> Grade view </td>
+                                                        <td>
+                                                            <div class="row">
+                                                                <div ng-repeat="(innerKey, singleRole) in customPerms.gradeLevels.roles" class="radio-list col-sm-4">
+                                                                    <label> <input type="checkbox" checklist-model="form.role_permissions" checklist-value="'gradeLevels.' + innerKey" > {{singleRole}} </label>
+                                                                </div>
+                                                            </div>
+                                                        </td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td class="text-center align-middle"> Exam schedule </td>
+                                                        <td>
+                                                            <div class="row">
+                                                                <div ng-repeat="(innerKey, singleRole) in customPerms.examsList.roles" class="radio-list col-sm-4">
+                                                                    <label> <input type="checkbox" checklist-model="form.role_permissions" checklist-value="'examsList.' + innerKey" > {{singleRole}} </label>
+                                                                </div>
+                                                            </div>
+                                                        </td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td class="text-center align-middle"> Online exams </td>
+                                                        <td>
+                                                            <div class="row">
+                                                                <div ng-repeat="(innerKey, singleRole) in customPerms.onlineExams.roles" class="radio-list col-sm-4">
+                                                                    <label> <input type="checkbox" checklist-model="form.role_permissions" checklist-value="'onlineExams.' + innerKey" > {{singleRole}} </label>
+                                                                </div>
+                                                            </div>
+                                                        </td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td class="text-center align-middle"> School terms </td>
+                                                        <td>
+                                                            <div class="row">
+                                                                <div ng-repeat="(innerKey, singleRole) in customPerms.schoolTerms.roles" class="radio-list col-sm-4">
+                                                                    <label> <input type="checkbox" checklist-model="form.role_permissions" checklist-value="'schoolTerms.' + innerKey" > {{singleRole}} </label>
+                                                                </div>
+                                                            </div>
+                                                        </td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td class="text-center align-middle"> Report card </td>
+                                                        <td>
+                                                            <div class="row">
+                                                                <div ng-repeat="(innerKey, singleRole) in customPerms.genMarksheet.roles" class="radio-list col-sm-4">
+                                                                    <label> <input type="checkbox" checklist-model="form.role_permissions" checklist-value="'genMarksheet.' + innerKey" > {{singleRole}} </label>
+                                                                </div>
+                                                            </div>
+                                                        </td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td class="text-center align-middle" colspan="2"> Subject videos </td>
+                                                        <td>
+                                                            <div class="row">
+                                                                <div ng-repeat="(innerKey, singleRole) in customPerms.subjectVideos.roles" class="radio-list col-sm-4">
+                                                                    <label> <input type="checkbox" checklist-model="form.role_permissions" checklist-value="innerKey" > {{singleRole}} </label>
+                                                                </div>
+                                                            </div>
+                                                        </td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td class="text-center align-middle" rowspan="3"> Transportation </td>
+                                                        <td class="text-center align-middle"> Manage transports </td>
+                                                        <td>
+                                                            <div class="row">
+                                                                <div ng-repeat="(innerKey, singleRole) in customPerms.transportation.roles" class="radio-list col-sm-4">
+                                                                    <label> <input type="checkbox" checklist-model="form.role_permissions" checklist-value="innerKey" > {{singleRole}} </label>
+                                                                </div>
+                                                            </div>
+                                                        </td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td class="text-center align-middle"> Find members </td>
+                                                        <td>
+                                                            <div class="row">
+                                                                <div ng-repeat="(innerKey, singleRole) in customPerms.transportationMembers.roles" class="radio-list col-sm-4">
+                                                                    <label> <input type="checkbox" checklist-model="form.role_permissions" checklist-value="innerKey" > {{singleRole}} </label>
+                                                                </div>
+                                                            </div>
+                                                        </td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td class="text-center align-middle"> Track Bus </td>
+                                                        <td>
+                                                            <div class="row">
+                                                                <div ng-repeat="(innerKey, singleRole) in customPerms.busTracker.roles" class="radio-list col-sm-4">
+                                                                    <label> <input type="checkbox" checklist-model="form.role_permissions" checklist-value="innerKey" > {{singleRole}} </label>
+                                                                </div>
+                                                            </div>
+                                                        </td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td class="text-center align-middle" rowspan="2"> Hostelry </td>
+                                                        <td class="text-center align-middle"> Manage hostels </td>
+                                                        <td>
+                                                            <div class="row">
+                                                                <div ng-repeat="(innerKey, singleRole) in customPerms.hostel.roles" class="radio-list col-sm-4">
+                                                                    <label> <input type="checkbox" checklist-model="form.role_permissions" checklist-value="innerKey" > {{singleRole}} </label>
+                                                                </div>
+                                                            </div>
+                                                        </td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td class="text-center align-middle"> Find members </td>
+                                                        <td>
+                                                            <div class="row">
+                                                                <div ng-repeat="(innerKey, singleRole) in customPerms.hostelMembers.roles" class="radio-list col-sm-4">
+                                                                    <label> <input type="checkbox" checklist-model="form.role_permissions" checklist-value="innerKey" > {{singleRole}} </label>
+                                                                </div>
+                                                            </div>
+                                                        </td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td class="text-center align-middle" rowspan="5"> HR </td>
+                                                        <td class="text-center align-middle"> Manage roles </td>
+                                                        <td>
+                                                            <div class="row">
+                                                                <div ng-repeat="(innerKey, singleRole) in customPerms.hrRoles.roles" class="radio-list col-sm-4">
+                                                                    <label> <input type="checkbox" checklist-model="form.role_permissions" checklist-value="innerKey" > {{singleRole}} </label>
+                                                                </div>
+                                                            </div>
+                                                        </td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td class="text-center align-middle"> Manage Employees </td>
+                                                        <td>
+                                                            <div ng-repeat="(key, inner_perms) in customPerms.hrEmployees" class="row">
+                                                                <label class="col-12 pb-2 pl-3 control-label col-form-label"> <h6> <u>{{inner_perms.title}}</u> </h6></label>
+                                                                <div class="col-12 pl-5">
+                                                                    <div class="row">
+                                                                        <div ng-repeat="(innerKey, singleRole) in inner_perms.roles" class="radio-list col-sm-4">
+                                                                            <label> <input type="checkbox" checklist-model="form.role_permissions" checklist-value="inner_perms.index + '.' + innerKey" > {{singleRole}} </label>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td class="text-center align-middle"> Manage Leaves </td>
+                                                        <td>
+                                                            <div ng-repeat="(key, inner_perms) in customPerms.hrLeaves" class="row">
+                                                                <label class="col-12 pb-2 pl-3 control-label col-form-label"> <h6> <u>{{inner_perms.title}}</u> </h6></label>
+                                                                <div class="col-12 pl-5">
+                                                                    <div class="row">
+                                                                        <div ng-repeat="(innerKey, singleRole) in inner_perms.roles" class="radio-list col-sm-4">
+                                                                            <label> <input type="checkbox" checklist-model="form.role_permissions" checklist-value="inner_perms.index + '.' + innerKey" > {{singleRole}} </label>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td class="text-center align-middle"> Manage Attendance </td>
+                                                        <td>
+                                                            <div ng-repeat="(key, inner_perms) in customPerms.hrAttendance" class="row">
+                                                                <label class="col-12 pb-2 pl-3 control-label col-form-label"> <h6> <u>{{inner_perms.title}}</u> </h6></label>
+                                                                <div class="col-12 pl-5">
+                                                                    <div class="row">
+                                                                        <div ng-repeat="(innerKey, singleRole) in inner_perms.roles" class="radio-list col-sm-4">
+                                                                            <label> <input type="checkbox" checklist-model="form.role_permissions" checklist-value="inner_perms.index + '.' + innerKey" > {{singleRole}} </label>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td class="text-center align-middle"> Manage Payroll </td>
+                                                        <td>
+                                                            <div ng-repeat="(key, inner_perms) in customPerms.hrPayroll" class="row">
+                                                                <label class="col-12 pb-2 pl-3 control-label col-form-label"> <h6> <u>{{inner_perms.title}}</u> </h6></label>
+                                                                <div class="col-12 pl-5">
+                                                                    <div class="row">
+                                                                        <div ng-repeat="(innerKey, singleRole) in inner_perms.roles" class="radio-list col-sm-4">
+                                                                            <label> <input type="checkbox" checklist-model="form.role_permissions" checklist-value="inner_perms.index + '.' + innerKey" > {{singleRole}} </label>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td class="text-center align-middle" colspan="2"> Gallery </td>
+                                                        <td>
+                                                            <div class="row">
+                                                                <div ng-repeat="(innerKey, singleRole) in customPerms.mediaCenter.roles" class="radio-list col-sm-4">
+                                                                    <label> <input type="checkbox" checklist-model="form.role_permissions" checklist-value="innerKey" > {{singleRole}} </label>
+                                                                </div>
+                                                            </div>
+                                                        </td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td class="text-center align-middle" colspan="2"> Disciplines </td>
+                                                        <td>
+                                                            <div class="row">
+                                                                <div ng-repeat="(innerKey, singleRole) in customPerms.disciplines.roles" class="radio-list col-sm-4">
+                                                                    <label> <input type="checkbox" checklist-model="form.role_permissions" checklist-value="innerKey" > {{singleRole}} </label>
+                                                                </div>
+                                                            </div>
+                                                        </td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td class="text-center align-middle" colspan="2"> Teacher feedback </td>
+                                                        <td>
+                                                            <div class="row">
+                                                                <div ng-repeat="(innerKey, singleRole) in customPerms.feedbacks.roles" class="radio-list col-sm-4">
+                                                                    <label> <input type="checkbox" checklist-model="form.role_permissions" checklist-value="innerKey" > {{singleRole}} </label>
+                                                                </div>
+                                                            </div>
+                                                        </td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td class="text-center align-middle" rowspan="3"> Administrative </td>
+                                                        <td class="text-center align-middle"> Global </td>
+                                                        <td>
+                                                            <div class="row">
+                                                                <div ng-repeat="(innerKey, singleRole) in customPerms.settings.roles" class="radio-list col-sm-4">
+                                                                    <label> <input type="checkbox" checklist-model="form.role_permissions" checklist-value="innerKey" > {{singleRole}} </label>
+                                                                </div>
+                                                            </div>
+                                                        </td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td class="text-center align-middle"> Mobile </td>
+                                                        <td>
+                                                            <div class="row">
+                                                                <div ng-repeat="(innerKey, singleRole) in customPerms.mobile.roles" class="radio-list col-sm-4">
+                                                                    <label> <input type="checkbox" checklist-model="form.role_permissions" checklist-value="innerKey" > {{singleRole}} </label>
+                                                                </div>
+                                                            </div>
+                                                        </td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td class="text-center align-middle"> Biometric </td>
+                                                        <td>
+                                                            <div class="row">
+                                                                <div ng-repeat="(innerKey, singleRole) in customPerms.biometric.roles" class="radio-list col-sm-4">
+                                                                    <label> <input type="checkbox" checklist-model="form.role_permissions" checklist-value="innerKey" > {{singleRole}} </label>
+                                                                </div>
+                                                            </div>
+                                                        </td>
+                                                    </tr>
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-group m-b-0">
+                            <div class="offset-sm-2 col-sm-10">
+                                <button ng-if="edittingInProgress == false" ng-click="confirmSaveRole()" class="btn btn-success waves-effect waves-light" ng-disabled="addRole.$invalid || !form.role_permissions.length"> <i class="fa fa-save"></i> Save Role </button>
+                                <button ng-if="edittingInProgress == true" class="btn btn-success waves-effect waves-light" disabled> <i class="fa fa-spinner fa-spin fa-fw"></i> Saving </button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row" ng-show="views.edit">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-block">
+                <button ng-show="$root.can('roles.list')" ng-click="changeView('list')" class="mb-3 btn pull-right btn-danger card-block-input-item"> Cancel Edit </button>
+                <div class="card-title"> <h4>Edit Role</h4> </div> <br />
+                <div class="card-body">
+                    <form class="form-horizontal" name="editRole" >
+                        <div class="form-group row" ng-class="{'has-error': editRole.name.$invalid}">
+                            <label class="col-2 pb-2 pl-3 control-label col-form-label">Role Name.<span class="text-danger">*</span></label>
+                            <div class="col-10">
+                                <input type="text" ng-model="form.role_title" class="form-control" required />
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <label class="col-2 pb-2 pl-3 control-label col-form-label">Role description</label>
+                            <div class="col-10">
+                                <textarea ng-model="form.role_description" class="form-control"></textarea>
+                            </div>
+                        </div>
+                        <div class="form-group row" ng-class="{'has-error': editRole.def_for.$invalid}">
+                            <label class="col-2 pb-2 pl-3 control-label col-form-label">Default For<span class="text-danger">*</span></label>
+                            <div class="col-10">
+                                <div class="radio-list">
+                                    <label> <input type="radio" name="def_for" value="none" ng-model="form.def_for" required> None </label>
+                                </div>
+                                <div class="radio-list">
+                                    <label> <input type="radio" name="def_for" value="teacher" ng-model="form.def_for" required> Teacher </label>
+                                </div>
+                                <div class="radio-list">
+                                    <label> <input type="radio" name="def_for" value="student" ng-model="form.def_for" required> Student </label>
+                                </div>
+                                <div class="radio-list">
+                                    <label> <input type="radio" name="def_for" value="parent" ng-model="form.def_for" required> Parent </label>
+                                </div>
+                                <div class="radio-list">
+                                    <label> <input type="radio" name="def_for" value="admin" ng-model="form.def_for" required> Administrators </label>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-group row" ng-class="{'has-error': editRole.role_permissions.$invalid}">
+                            <label class="col-2 pb-2 pl-3 control-label col-form-label">Permissions<span class="text-danger">*</span></label>
+                            <div class="col-10">
+                                <div class="row mb-3">
+                                    <div class="col-12">
+                                        <button ng-if="!isAll" ng-click="checkAll()" class="pull-right btn btn-info"> <i class="mdi mdi-check-all"></i> Check All </button>
+                                        <button ng-if="isAll" ng-click="checkAll()" class="pull-right btn btn-info"> <i class="fa fa-minus-circle"></i> Uncheck All </button>
+                                    </div>
+                                </div>
+                                <!-- <div ng-repeat="(key,inner_perms) in roles_perms" class="row mb-3">
+                                    <label class="col-2 pb-2 pl-3 control-label col-form-label"> <h6> <u>{{inner_perms.title}}</u> </h6></label>
+                                    <div class="col-10">
+                                        <div class="row">
+                                            <div ng-repeat="(innerKey, singleRole) in inner_perms.roles" class="radio-list col-sm-4">
+                                                <label> <input type="checkbox" checklist-model="form.role_permissions" checklist-value="key + '.' + innerKey" > {{singleRole}} </label>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div> -->
+                                <div class="row mb-3">
+                                    <div class="col-12">
+                                        <div class="table-responsive">
+                                            <table class="table custom-table-bordered table-bordered table-hover">
+                                                <thead>
+                                                    <th class="text-center"> Module </th>
+                                                    <th class="text-center"> Sub-Module </th>
+                                                    <th class="text-center"> Permission </th>
+                                                </thead>
+                                                <tbody>
+                                                    <tr>
+                                                        <td class="text-center align-middle" colspan="2"> Dashboard </td>
+                                                        <td>
+                                                            <div class="row">
+                                                                <div ng-repeat="(innerKey, singleRole) in customPerms.dashboard.roles" class="radio-list col-sm-4">
+                                                                    <label> <input type="checkbox" checklist-model="form.role_permissions" checklist-value="innerKey" > {{singleRole}} </label>
+                                                                </div>
+                                                            </div>
+                                                        </td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td class="text-center align-middle" rowspan="2"> Front Office </td>
+                                                        <td class="text-center align-middle"> Show Records </td>
+                                                        <td>
+                                                            <div ng-repeat="(key, inner_perms) in customPerms.viewRecords" class="row">
+                                                                <label class="col-12 pb-2 pl-3 control-label col-form-label"> <h6> <u>{{inner_perms.title}}</u> </h6></label>
+                                                                <div class="col-12 pl-5">
+                                                                    <div class="row">
+                                                                        <div ng-repeat="(innerKey, singleRole) in inner_perms.roles" class="radio-list col-sm-4">
+                                                                            <label> <input type="checkbox" checklist-model="form.role_permissions" checklist-value="inner_perms.index + '.' + innerKey" > {{singleRole}} </label>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td class="text-center align-middle"> Create Records </td>
+                                                        <td>
+                                                            <div ng-repeat="(key, inner_perms) in customPerms.addRecords" class="row">
+                                                                <label class="col-12 pb-2 pl-3 control-label col-form-label"> <h6> <u>{{inner_perms.title}}</u> </h6></label>
+                                                                <div class="col-12 pl-5">
+                                                                    <div class="row">
+                                                                        <div ng-repeat="(innerKey, singleRole) in inner_perms.roles" class="radio-list col-sm-4">
+                                                                            <label> <input type="checkbox" checklist-model="form.role_permissions" checklist-value="inner_perms.index + '.' + innerKey" > {{singleRole}} </label>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td class="text-center align-middle" rowspan="2"> Messaging </td>
+                                                        <td class="text-center align-middle"> Show messages </td>
+                                                        <td>
+                                                            <div class="row">
+                                                                <div ng-repeat="(innerKey, singleRole) in customPerms.viewMessages.roles" class="radio-list col-sm-4">
+                                                                    <label> <input type="checkbox" checklist-model="form.role_permissions" checklist-value="'messaging.' + innerKey" > {{singleRole}} </label>
+                                                                </div>
+                                                            </div>
+                                                        </td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td class="text-center align-middle"> Compose message </td>
+                                                        <td>
+                                                            <div class="row">
+                                                                <div ng-repeat="(innerKey, singleRole) in customPerms.composeMessage.roles" class="radio-list col-sm-4">
+                                                                    <label> <input type="checkbox" checklist-model="form.role_permissions" checklist-value="'messaging.' + innerKey" > {{singleRole}} </label>
+                                                                </div>
+                                                            </div>
+                                                        </td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td class="text-center align-middle" rowspan="2"> Events </td>
+                                                        <td class="text-center align-middle"> Show event </td>
+                                                        <td>
+                                                            <div class="row">
+                                                                <div ng-repeat="(innerKey, singleRole) in customPerms.viewEvents.roles" class="radio-list col-sm-4">
+                                                                    <label> <input type="checkbox" checklist-model="form.role_permissions" checklist-value="'events.' + innerKey" > {{singleRole}} </label>
+                                                                </div>
+                                                            </div>
+                                                        </td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td class="text-center align-middle"> Add events </td>
+                                                        <td>
+                                                            <div class="row">
+                                                                <div ng-repeat="(innerKey, singleRole) in customPerms.composeEvent.roles" class="radio-list col-sm-4">
+                                                                    <label> <input type="checkbox" checklist-model="form.role_permissions" checklist-value="'events.' + innerKey" > {{singleRole}} </label>
+                                                                </div>
+                                                            </div>
+                                                        </td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td class="text-center align-middle" rowspan="2"> Notices </td>
+                                                        <td class="text-center align-middle"> Show notices </td>
+                                                        <td>
+                                                            <div class="row">
+                                                                <div ng-repeat="(innerKey, singleRole) in customPerms.viewNotices.roles" class="radio-list col-sm-4">
+                                                                    <label> <input type="checkbox" checklist-model="form.role_permissions" checklist-value="'newsboard.' + innerKey" > {{singleRole}} </label>
+                                                                </div>
+                                                            </div>
+                                                        </td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td class="text-center align-middle"> Add notice </td>
+                                                        <td>
+                                                            <div class="row">
+                                                                <div ng-repeat="(innerKey, singleRole) in customPerms.composeNotice.roles" class="radio-list col-sm-4">
+                                                                    <label> <input type="checkbox" checklist-model="form.role_permissions" checklist-value="'newsboard.' + innerKey" > {{singleRole}} </label>
+                                                                </div>
+                                                            </div>
+                                                        </td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td class="text-center align-middle" rowspan="2"> Mail/SMS </td>
+                                                        <td class="text-center align-middle"> Show mail/sms </td>
+                                                        <td>
+                                                            <div class="row">
+                                                                <div ng-repeat="(innerKey, singleRole) in customPerms.viewMailSms.roles" class="radio-list col-sm-4">
+                                                                    <label> <input type="checkbox" checklist-model="form.role_permissions" checklist-value="'mailsms.' + innerKey" > {{singleRole}} </label>
+                                                                </div>
+                                                            </div>
+                                                        </td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td class="text-center align-middle"> Add mail/sms </td>
+                                                        <td>
+                                                            <div class="row">
+                                                                <div ng-repeat="(innerKey, singleRole) in customPerms.composeMailSms.roles" class="radio-list col-sm-4">
+                                                                    <label> <input type="checkbox" checklist-model="form.role_permissions" checklist-value="'mailsms.' + innerKey" > {{singleRole}} </label>
+                                                                </div>
+                                                            </div>
+                                                        </td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td class="text-center align-middle" rowspan="7"> Academic </td>
+                                                        <td class="text-center align-middle"> Academic years </td>
+                                                        <td>
+                                                            <div class="row">
+                                                                <div ng-repeat="(innerKey, singleRole) in customPerms.academicyears.roles" class="radio-list col-sm-4">
+                                                                    <label> <input type="checkbox" checklist-model="form.role_permissions" checklist-value="'academicyears.' + innerKey" > {{singleRole}} </label>
+                                                                </div>
+                                                            </div>
+                                                        </td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td class="text-center align-middle"> Add Subjects </td>
+                                                        <td>
+                                                            <div class="row">
+                                                                <div ng-repeat="(innerKey, singleRole) in customPerms.subjectAssign.roles" class="radio-list col-sm-4">
+                                                                    <label> <input type="checkbox" checklist-model="form.role_permissions" checklist-value="'Subjects.' + innerKey" > {{singleRole}} </label>
+                                                                </div>
+                                                            </div>
+                                                        </td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td class="text-center align-middle"> Classes, Sections and Teachers </td>
+                                                        <td>
+                                                            <div class="row">
+                                                                <div ng-repeat="(innerKey, singleRole) in customPerms.classSectionTeacher.roles" class="radio-list col-sm-3">
+                                                                    <label> <input type="checkbox" checklist-model="form.role_permissions" checklist-value="innerKey" > {{singleRole}} </label>
+                                                                </div>
+                                                            </div>
+                                                        </td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td class="text-center align-middle"> Homeworks </td>
+                                                        <td>
+                                                            <div class="row">
+                                                                <div ng-repeat="(innerKey, singleRole) in customPerms.homework.roles" class="radio-list col-sm-4">
+                                                                    <label> <input type="checkbox" checklist-model="form.role_permissions" checklist-value="'Homework.' + innerKey" > {{singleRole}} </label>
+                                                                </div>
+                                                            </div>
+                                                        </td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td class="text-center align-middle"> Assignments </td>
+                                                        <td>
+                                                            <div class="row">
+                                                                <div ng-repeat="(innerKey, singleRole) in customPerms.Assignments.roles" class="radio-list col-sm-4">
+                                                                    <label> <input type="checkbox" checklist-model="form.role_permissions" checklist-value="'Assignments.' + innerKey" > {{singleRole}} </label>
+                                                                </div>
+                                                            </div>
+                                                        </td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td class="text-center align-middle"> Syllabus </td>
+                                                        <td>
+                                                            <div class="row">
+                                                                <div ng-repeat="(innerKey, singleRole) in customPerms.studyMaterial.roles" class="radio-list col-sm-4">
+                                                                    <label> <input type="checkbox" checklist-model="form.role_permissions" checklist-value="'studyMaterial.' + innerKey" > {{singleRole}} </label>
+                                                                </div>
+                                                            </div>
+                                                        </td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td class="text-center align-middle"> My Subjects </td>
+                                                        <td>
+                                                            <div class="row">
+                                                                <div ng-repeat="(innerKey, singleRole) in customPerms.mySubjects.roles" class="radio-list col-sm-4">
+                                                                    <label> <input type="checkbox" checklist-model="form.role_permissions" checklist-value="'subjects.' + innerKey" > {{singleRole}} </label>
+                                                                </div>
+                                                            </div>
+                                                        </td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td class="text-center align-middle" colspan="2"> Student's Attendance </td>
+                                                        <td>
+                                                            <div class="row">
+                                                                <div ng-repeat="(innerKey, singleRole) in customPerms.studentsAttendance.roles" class="radio-list col-sm-4">
+                                                                    <label> <input type="checkbox" checklist-model="form.role_permissions" checklist-value="innerKey" > {{singleRole}} </label>
+                                                                </div>
+                                                            </div>
+                                                        </td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td class="text-center align-middle" rowspan="5"> Students </td>
+                                                        <td class="text-center align-middle"> Show Students </td>
+                                                        <td>
+                                                            <div class="row">
+                                                                <div ng-repeat="(innerKey, singleRole) in customPerms.showStudents.roles" class="radio-list col-sm-4">
+                                                                    <label> <input type="checkbox" checklist-model="form.role_permissions" checklist-value="'students.' + innerKey" > {{singleRole}} </label>
+                                                                </div>
+                                                            </div>
+                                                        </td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td class="text-center align-middle"> Create Student </td>
+                                                        <td>
+                                                            <div class="row">
+                                                                <div ng-repeat="(innerKey, singleRole) in customPerms.manageStudents.roles" class="radio-list col-sm-4">
+                                                                    <label> <input type="checkbox" checklist-model="form.role_permissions" checklist-value="innerKey" > {{singleRole}} </label>
+                                                                </div>
+                                                            </div>
+                                                        </td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td class="text-center align-middle"> Fee Group Type </td>
+                                                        <td>
+                                                            <div class="row">
+                                                                <div ng-repeat="(innerKey, singleRole) in customPerms.studentType.roles" class="radio-list col-sm-4">
+                                                                    <label> <input type="checkbox" checklist-model="form.role_permissions" checklist-value="innerKey" > {{singleRole}} </label>
+                                                                </div>
+                                                            </div>
+                                                        </td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td class="text-center align-middle"> Student Category </td>
+                                                        <td>
+                                                            <div class="row">
+                                                                <div ng-repeat="(innerKey, singleRole) in customPerms.studentCat.roles" class="radio-list col-sm-4">
+                                                                    <label> <input type="checkbox" checklist-model="form.role_permissions" checklist-value="innerKey" > {{singleRole}} </label>
+                                                                </div>
+                                                            </div>
+                                                        </td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td class="text-center align-middle"> Student Promotion </td>
+                                                        <td>
+                                                            <div class="row">
+                                                                <div ng-repeat="(innerKey, singleRole) in customPerms.Promotion.roles" class="radio-list col-sm-4">
+                                                                    <label> <input type="checkbox" checklist-model="form.role_permissions" checklist-value="innerKey" > {{singleRole}} </label>
+                                                                </div>
+                                                            </div>
+                                                        </td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td class="text-center align-middle" colspan="2"> View Teachers </td>
+                                                        <td>
+                                                            <div class="row">
+                                                                <div ng-repeat="(innerKey, singleRole) in customPerms.teachers.roles" class="radio-list col-sm-4">
+                                                                    <label> <input type="checkbox" checklist-model="form.role_permissions" checklist-value="innerKey" > {{singleRole}} </label>
+                                                                </div>
+                                                            </div>
+                                                        </td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td class="text-center align-middle" rowspan="5"> Timetable </td>
+                                                        <td class="text-center align-middle"> Class timetable </td>
+                                                        <td>
+                                                            <div class="row">
+                                                                <div ng-repeat="(innerKey, singleRole) in customPerms.timeTable.roles" class="radio-list col-sm-4">
+                                                                    <label> <input type="checkbox" checklist-model="form.role_permissions" checklist-value="innerKey" > {{singleRole}} </label>
+                                                                </div>
+                                                            </div>
+                                                        </td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td class="text-center align-middle"> Class wise </td>
+                                                        <td>
+                                                            <div class="row">
+                                                                <div ng-repeat="(innerKey, singleRole) in customPerms.timeTableClassWise.roles" class="radio-list col-sm-4">
+                                                                    <label> <input type="checkbox" checklist-model="form.role_permissions" checklist-value="innerKey" > {{singleRole}} </label>
+                                                                </div>
+                                                            </div>
+                                                        </td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td class="text-center align-middle"> Teacher wise </td>
+                                                        <td>
+                                                            <div class="row">
+                                                                <div ng-repeat="(innerKey, singleRole) in customPerms.timeTableTeacherWise.roles" class="radio-list col-sm-4">
+                                                                    <label> <input type="checkbox" checklist-model="form.role_permissions" checklist-value="innerKey" > {{singleRole}} </label>
+                                                                </div>
+                                                            </div>
+                                                        </td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td class="text-center align-middle"> Teacher Availability </td>
+                                                        <td>
+                                                            <div class="row">
+                                                                <div ng-repeat="(innerKey, singleRole) in customPerms.teacherAvailability.roles" class="radio-list col-sm-4">
+                                                                    <label> <input type="checkbox" checklist-model="form.role_permissions" checklist-value="innerKey" > {{singleRole}} </label>
+                                                                </div>
+                                                            </div>
+                                                        </td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td class="text-center align-middle"> Teacher Presence </td>
+                                                        <td>
+                                                            <div class="row">
+                                                                <div ng-repeat="(innerKey, singleRole) in customPerms.teacherPresence.roles" class="radio-list col-sm-4">
+                                                                    <label> <input type="checkbox" checklist-model="form.role_permissions" checklist-value="innerKey" > {{singleRole}} </label>
+                                                                </div>
+                                                            </div>
+                                                        </td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td class="text-center align-middle" rowspan="3"> Fees </td>
+                                                        <td class="text-center align-middle"> Collect Payments </td>
+                                                        <td class="align-middle" rowspan="3">
+                                                            <div class="row">
+                                                                <div ng-repeat="(innerKey, singleRole) in customPerms.Invoices.roles" class="radio-list col-sm-4">
+                                                                    <label> <input type="checkbox" checklist-model="form.role_permissions" checklist-value="innerKey" > {{singleRole}} </label>
+                                                                </div>
+                                                            </div>
+                                                        </td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td class="text-center align-middle"> Create Fee </td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td class="text-center align-middle"> Bulk edit fees </td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td class="text-center align-middle" rowspan="5"> Exams </td>
+                                                        <td class="text-center align-middle"> Grade view </td>
+                                                        <td>
+                                                            <div class="row">
+                                                                <div ng-repeat="(innerKey, singleRole) in customPerms.gradeLevels.roles" class="radio-list col-sm-4">
+                                                                    <label> <input type="checkbox" checklist-model="form.role_permissions" checklist-value="'gradeLevels.' + innerKey" > {{singleRole}} </label>
+                                                                </div>
+                                                            </div>
+                                                        </td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td class="text-center align-middle"> Exam schedule </td>
+                                                        <td>
+                                                            <div class="row">
+                                                                <div ng-repeat="(innerKey, singleRole) in customPerms.examsList.roles" class="radio-list col-sm-4">
+                                                                    <label> <input type="checkbox" checklist-model="form.role_permissions" checklist-value="'examsList.' + innerKey" > {{singleRole}} </label>
+                                                                </div>
+                                                            </div>
+                                                        </td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td class="text-center align-middle"> Online exams </td>
+                                                        <td>
+                                                            <div class="row">
+                                                                <div ng-repeat="(innerKey, singleRole) in customPerms.onlineExams.roles" class="radio-list col-sm-4">
+                                                                    <label> <input type="checkbox" checklist-model="form.role_permissions" checklist-value="'onlineExams.' + innerKey" > {{singleRole}} </label>
+                                                                </div>
+                                                            </div>
+                                                        </td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td class="text-center align-middle"> School terms </td>
+                                                        <td>
+                                                            <div class="row">
+                                                                <div ng-repeat="(innerKey, singleRole) in customPerms.schoolTerms.roles" class="radio-list col-sm-4">
+                                                                    <label> <input type="checkbox" checklist-model="form.role_permissions" checklist-value="'schoolTerms.' + innerKey" > {{singleRole}} </label>
+                                                                </div>
+                                                            </div>
+                                                        </td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td class="text-center align-middle"> Report card </td>
+                                                        <td>
+                                                            <div class="row">
+                                                                <div ng-repeat="(innerKey, singleRole) in customPerms.genMarksheet.roles" class="radio-list col-sm-4">
+                                                                    <label> <input type="checkbox" checklist-model="form.role_permissions" checklist-value="'genMarksheet.' + innerKey" > {{singleRole}} </label>
+                                                                </div>
+                                                            </div>
+                                                        </td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td class="text-center align-middle" colspan="2"> Subject videos </td>
+                                                        <td>
+                                                            <div class="row">
+                                                                <div ng-repeat="(innerKey, singleRole) in customPerms.subjectVideos.roles" class="radio-list col-sm-4">
+                                                                    <label> <input type="checkbox" checklist-model="form.role_permissions" checklist-value="innerKey" > {{singleRole}} </label>
+                                                                </div>
+                                                            </div>
+                                                        </td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td class="text-center align-middle" rowspan="3"> Transportation </td>
+                                                        <td class="text-center align-middle"> Manage transports </td>
+                                                        <td>
+                                                            <div class="row">
+                                                                <div ng-repeat="(innerKey, singleRole) in customPerms.transportation.roles" class="radio-list col-sm-4">
+                                                                    <label> <input type="checkbox" checklist-model="form.role_permissions" checklist-value="innerKey" > {{singleRole}} </label>
+                                                                </div>
+                                                            </div>
+                                                        </td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td class="text-center align-middle"> Find members </td>
+                                                        <td>
+                                                            <div class="row">
+                                                                <div ng-repeat="(innerKey, singleRole) in customPerms.transportationMembers.roles" class="radio-list col-sm-4">
+                                                                    <label> <input type="checkbox" checklist-model="form.role_permissions" checklist-value="innerKey" > {{singleRole}} </label>
+                                                                </div>
+                                                            </div>
+                                                        </td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td class="text-center align-middle"> Track Bus </td>
+                                                        <td>
+                                                            <div class="row">
+                                                                <div ng-repeat="(innerKey, singleRole) in customPerms.busTracker.roles" class="radio-list col-sm-4">
+                                                                    <label> <input type="checkbox" checklist-model="form.role_permissions" checklist-value="innerKey" > {{singleRole}} </label>
+                                                                </div>
+                                                            </div>
+                                                        </td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td class="text-center align-middle" rowspan="2"> Hostelry </td>
+                                                        <td class="text-center align-middle"> Manage hostels </td>
+                                                        <td>
+                                                            <div class="row">
+                                                                <div ng-repeat="(innerKey, singleRole) in customPerms.hostel.roles" class="radio-list col-sm-4">
+                                                                    <label> <input type="checkbox" checklist-model="form.role_permissions" checklist-value="innerKey" > {{singleRole}} </label>
+                                                                </div>
+                                                            </div>
+                                                        </td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td class="text-center align-middle"> Find members </td>
+                                                        <td>
+                                                            <div class="row">
+                                                                <div ng-repeat="(innerKey, singleRole) in customPerms.hostelMembers.roles" class="radio-list col-sm-4">
+                                                                    <label> <input type="checkbox" checklist-model="form.role_permissions" checklist-value="innerKey" > {{singleRole}} </label>
+                                                                </div>
+                                                            </div>
+                                                        </td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td class="text-center align-middle" rowspan="5"> HR </td>
+                                                        <td class="text-center align-middle"> Manage roles </td>
+                                                        <td>
+                                                            <div class="row">
+                                                                <div ng-repeat="(innerKey, singleRole) in customPerms.hrRoles.roles" class="radio-list col-sm-4">
+                                                                    <label> <input type="checkbox" checklist-model="form.role_permissions" checklist-value="innerKey" > {{singleRole}} </label>
+                                                                </div>
+                                                            </div>
+                                                        </td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td class="text-center align-middle"> Manage Employees </td>
+                                                        <td>
+                                                            <div ng-repeat="(key, inner_perms) in customPerms.hrEmployees" class="row">
+                                                                <label class="col-12 pb-2 pl-3 control-label col-form-label"> <h6> <u>{{inner_perms.title}}</u> </h6></label>
+                                                                <div class="col-12 pl-5">
+                                                                    <div class="row">
+                                                                        <div ng-repeat="(innerKey, singleRole) in inner_perms.roles" class="radio-list col-sm-4">
+                                                                            <label> <input type="checkbox" checklist-model="form.role_permissions" checklist-value="inner_perms.index + '.' + innerKey" > {{singleRole}} </label>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td class="text-center align-middle"> Manage Leaves </td>
+                                                        <td>
+                                                            <div ng-repeat="(key, inner_perms) in customPerms.hrLeaves" class="row">
+                                                                <label class="col-12 pb-2 pl-3 control-label col-form-label"> <h6> <u>{{inner_perms.title}}</u> </h6></label>
+                                                                <div class="col-12 pl-5">
+                                                                    <div class="row">
+                                                                        <div ng-repeat="(innerKey, singleRole) in inner_perms.roles" class="radio-list col-sm-4">
+                                                                            <label> <input type="checkbox" checklist-model="form.role_permissions" checklist-value="inner_perms.index + '.' + innerKey" > {{singleRole}} </label>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td class="text-center align-middle"> Manage Attendance </td>
+                                                        <td>
+                                                            <div ng-repeat="(key, inner_perms) in customPerms.hrAttendance" class="row">
+                                                                <label class="col-12 pb-2 pl-3 control-label col-form-label"> <h6> <u>{{inner_perms.title}}</u> </h6></label>
+                                                                <div class="col-12 pl-5">
+                                                                    <div class="row">
+                                                                        <div ng-repeat="(innerKey, singleRole) in inner_perms.roles" class="radio-list col-sm-4">
+                                                                            <label> <input type="checkbox" checklist-model="form.role_permissions" checklist-value="inner_perms.index + '.' + innerKey" > {{singleRole}} </label>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td class="text-center align-middle"> Manage Payroll </td>
+                                                        <td>
+                                                            <div ng-repeat="(key, inner_perms) in customPerms.hrPayroll" class="row">
+                                                                <label class="col-12 pb-2 pl-3 control-label col-form-label"> <h6> <u>{{inner_perms.title}}</u> </h6></label>
+                                                                <div class="col-12 pl-5">
+                                                                    <div class="row">
+                                                                        <div ng-repeat="(innerKey, singleRole) in inner_perms.roles" class="radio-list col-sm-4">
+                                                                            <label> <input type="checkbox" checklist-model="form.role_permissions" checklist-value="inner_perms.index + '.' + innerKey" > {{singleRole}} </label>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td class="text-center align-middle" colspan="2"> Gallery </td>
+                                                        <td>
+                                                            <div class="row">
+                                                                <div ng-repeat="(innerKey, singleRole) in customPerms.mediaCenter.roles" class="radio-list col-sm-4">
+                                                                    <label> <input type="checkbox" checklist-model="form.role_permissions" checklist-value="innerKey" > {{singleRole}} </label>
+                                                                </div>
+                                                            </div>
+                                                        </td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td class="text-center align-middle" colspan="2"> Disciplines </td>
+                                                        <td>
+                                                            <div class="row">
+                                                                <div ng-repeat="(innerKey, singleRole) in customPerms.disciplines.roles" class="radio-list col-sm-4">
+                                                                    <label> <input type="checkbox" checklist-model="form.role_permissions" checklist-value="innerKey" > {{singleRole}} </label>
+                                                                </div>
+                                                            </div>
+                                                        </td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td class="text-center align-middle" colspan="2"> Teacher feedback </td>
+                                                        <td>
+                                                            <div class="row">
+                                                                <div ng-repeat="(innerKey, singleRole) in customPerms.feedbacks.roles" class="radio-list col-sm-4">
+                                                                    <label> <input type="checkbox" checklist-model="form.role_permissions" checklist-value="innerKey" > {{singleRole}} </label>
+                                                                </div>
+                                                            </div>
+                                                        </td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td class="text-center align-middle" rowspan="3"> Administrative </td>
+                                                        <td class="text-center align-middle"> Global </td>
+                                                        <td>
+                                                            <div class="row">
+                                                                <div ng-repeat="(innerKey, singleRole) in customPerms.settings.roles" class="radio-list col-sm-4">
+                                                                    <label> <input type="checkbox" checklist-model="form.role_permissions" checklist-value="innerKey" > {{singleRole}} </label>
+                                                                </div>
+                                                            </div>
+                                                        </td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td class="text-center align-middle"> Mobile </td>
+                                                        <td>
+                                                            <div class="row">
+                                                                <div ng-repeat="(innerKey, singleRole) in customPerms.mobile.roles" class="radio-list col-sm-4">
+                                                                    <label> <input type="checkbox" checklist-model="form.role_permissions" checklist-value="innerKey" > {{singleRole}} </label>
+                                                                </div>
+                                                            </div>
+                                                        </td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td class="text-center align-middle"> Biometric </td>
+                                                        <td>
+                                                            <div class="row">
+                                                                <div ng-repeat="(innerKey, singleRole) in customPerms.biometric.roles" class="radio-list col-sm-4">
+                                                                    <label> <input type="checkbox" checklist-model="form.role_permissions" checklist-value="innerKey" > {{singleRole}} </label>
+                                                                </div>
+                                                            </div>
+                                                        </td>
+                                                    </tr>
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-group m-b-0">
+                            <div class="offset-sm-2 col-sm-10">
+                                <button ng-if="edittingInProgress == false" ng-click="confirmEditRole()" class="btn btn-info waves-effect waves-light" ng-disabled="editRole.$invalid || !form.role_permissions.length"> <i class="fa fa-pencil-square-o"></i> Save Role </button>
+                                <button ng-if="edittingInProgress == true" class="btn btn-info waves-effect waves-light" disabled> <i class="fa fa-spinner fa-spin fa-fw"></i> Saving </button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

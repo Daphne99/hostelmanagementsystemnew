@@ -1,0 +1,64 @@
+<style type="text/css">
+	#view-list-block {
+		padding: 15px 10px;
+	}
+	#view-list-block .search-input {
+		margin-bottom: 12px
+	}
+	.viewList .card {
+		margin-bottom: 15px;
+		border-radius: 10px 0;
+		box-shadow: 1px 1px 5px #CCC;
+	}
+	.viewList .card .card-title {
+		font-size: 20px;
+		margin-bottom: -5px;
+	}
+	.viewList .card-block {
+		padding: 15px;
+	}
+	.btn-circle {
+		width: 32px;
+		height: 32px;
+		padding: 6px;
+	}
+</style>
+
+<div class="row page-titles">
+    <div class="col-md-6 col-8 align-self-center">
+        <h3 class="text-themecolor m-b-0 m-t-0">Teacher logs</h3>
+    </div>
+</div>
+
+<div class="row viewList" ng-show="views.list">
+  <div class="col-12 listContent" ng-if="!loading">
+    <div class="card" dir-paginate="log in user_logs | itemsPerPage:10" total-items="totalItems">
+	        <div class="card-block">
+						  <div class="card-body">
+						    <div class="card-text">
+                	<div class="mb-2" ng-bind-html="log.user_info"></div>
+                  <div class="mb-2 text-danger">
+                  	{{log.module_name}} ->
+                  	{{log.action}}
+                  	<span ng-if="log.payload != NULL">
+                  		-> <span ng-bind-html="log.payload"></span>
+                  	</span>
+                  </div>
+                  <div>On {{log.current_date}}</div>
+						    </div>
+						  </div>
+	        </div>
+	  </div>
+	  <div ng-if="!user_logs.length" class="text-center mt-4" style="font-size: 18px; opacity: 0.5">
+	  	<img src="assets/images/empty-icon.svg" class="mb-3" width="50%"><br>
+	  	<b>There is no logs yet</b>
+	  </div>
+	  <dir-pagination-controls
+	   on-page-change="pageChanged(newPageNumber)"
+	   template-url="assets/templates/dirPagination.html" >
+	  </dir-pagination-controls>
+  </div>
+  <div class="col-12" ng-if="loading">
+		loading...
+	</div>
+</div>

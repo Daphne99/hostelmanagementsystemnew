@@ -1,0 +1,266 @@
+<link rel="stylesheet" href="assets/plugins/bootstrap-select/bootstrap4.1.1-dropdown.css" type="text/css" />
+<style type="text/css">
+	.display-none { display: none; }
+
+	.custom-checkbox:checked:before {
+		top: 2px;
+		left: 1px;
+		width: 12px;
+		height: 22px;
+		border-top: 2px solid transparent;
+		border-left: 2px solid transparent;
+		border-right: 2px solid #35ac19;
+		border-bottom: 2px solid #35ac19;
+		-webkit-transform: rotate(40deg);
+		-moz-transform: rotate(40deg);
+		-ms-transform: rotate(40deg);
+		-o-transform: rotate(40deg);
+		transform: rotate(40deg);
+		-webkit-transform-origin: 100% 100%;
+		-moz-transform-origin: 100% 100%;
+		-ms-transform-origin: 100% 100%;
+		-o-transform-origin: 100% 100%;
+		transform-origin: 100% 100%;
+	}
+	.custom-checkbox:before {
+		content: '';
+		position: absolute;
+		top: 3px;
+		left: 3px;
+		width: 18px;
+		height: 18px;
+		z-index: 0;
+		border: 2px solid #A9ABAE;
+		border-radius: 1px;
+		margin-top: 2px;
+		-webkit-transition: .1s;
+		-moz-transition: .1s;
+		-o-transition: .1s;
+		-ms-transition: .1s;
+		transition: .1s;
+        background: transparent;
+	}
+	.custom-checkbox { position: absolute; left: 12px; width: 0; }
+    .noTableData { text-align: center !important; }
+    .vl { border-left: 3px solid skyblue; height: 250px; }
+    .label-success { background-color: #7ace4c !important; }
+    .label-danger { background-color: #f33155 !important; }
+    .label-rouded, .label-rounded { border-radius: 60px; padding: 4px 12px 3px; font-weight: 500;}
+    .noTableData { text-align: center !important; }
+	.panel-info { border-color: #41b3f9; }
+    .panel { border-radius:0; margin-bottom:30px; border:0; box-shadow:none }
+    .panel .panel-heading { border-radius: 0; font-weight: 500; font-size: 16px; padding: 10px 25px; }
+    .panel-blue .panel-heading, .panel-info .panel-heading { border-color: #41b3f9; color: #fff; background-color: #41b3f9; }
+    .collapse.in { display: block; }
+    .panel .panel-body { padding: 25px; background-color: white; }
+    .panel-custom { background-color: #F1F1F1; box-shadow: 0 1px 1px rgba(0, 0, 0, 0.05); padding: 10px 15px; }
+    .panel .panel-body:first-child h3 { margin-top: 0; font-weight: 500; font-family: Rubik,sans-serif; font-size: 14px; text-transform: uppercase; }
+    .box { border: 3px solid #F1F1F1; }
+    .panel-default { border-color: rgba(120,130,140,.13); }
+    .panel-default .panel-heading { color: #263238; background-color: #fff; border-bottom: 1px solid rgba(120,130,140,.13); }
+    .panel-default .panel-body { color: #263238; }
+    .details { font-size: 13px; color: #98a6ad; }
+    .panel .panel-footer { background: #fff; border-radius: 0; padding: 20px 25px; }
+    .panel-info .panel-footer { background: #fff; color: #263238; border-top: 2px solid #41b3f9; }
+    .panel-default .panel-footer { background: #fff; color: #263238; border-top: 2px solid rgba(120,130,140,.13); }
+    .label-rouded, .label-rounded { border-radius: 60px; padding: 4px 12px 3px; font-weight: 500;}
+    .desc-textarea { height: 100px; resize: none; }
+</style>
+
+<div class="row page-titles no-print">
+    <div class="col-md-6 col-8 align-self-center">
+        <h3 class="text-themecolor m-b-0 m-t-0">Create New Invoice</h3>
+    </div>
+</div>
+
+<div class="row" ng-show="views.form">
+    <div class="col-12">
+        <form class="form-horizontal" name="allocateForm" role="form" novalidate>
+            <div class="row mb-2"> <div class="col-12"> <label> Allocate Fee For </label> </div> </div>
+            <div class="row mb-3">
+                <div class="col-4">
+                    <div class="form-group" ng-class="{'has-error': allocateForm.type.$invalid}">
+                        <label>Fee Group Type <span class="text-danger">*</span></label>
+                        <select class="form-control selectpicker" data-live-search="true" data-actions-box="true" ng-model="importForm.type" multiple required >
+                            <option ng-repeat="type in types" value="{{type.id}}"> {{type.name}} </option>
+                        </select>
+                    </div>
+                </div>
+                <div class="col-4">
+                    <div class="form-group" ng-class="{'has-error': allocateForm.class.$invalid}">
+                        <label>Classes <span class="text-danger">*</span></label>
+                        <select class="form-control selectpicker" data-live-search="true" data-actions-box="true" ng-model="importForm.classes" ng-change="changeClasses()" multiple required >
+                            <option ng-repeat="class in classes" value="{{class.id}}"> {{class.name}} </option>
+                        </select>
+                    </div>
+                </div>
+                <div class="col-4">
+                    <div class="form-group">
+                        <label>Sections <span class="text-danger">*</span></label>
+                        <select class="form-control selectpicker" data-live-search="true" data-actions-box="true" ng-model="importForm.sections" multiple>
+                            <option ng-repeat="section in sections" value="{{section.id}}"> {{section.name}} </option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-6 pr-4">
+                    <div class="form-group">
+                        <label class="control-label">Create Manually</label>
+                    </div>
+                    <div class="row">
+                        <div class="col-6">
+                            <div class="form-group row" ng-class="{'has-error': allocateForm.feeTitle.$invalid}">
+                                <label for="feeTitle" class="col-4 pl-4 pr-0 control-label col-form-label">Fee Title<span class="text-danger">*</span></label>
+                                <div class="col-8">
+                                    <input type="text" ng-model="importForm.feeTitle" class="form-control" placeholder="Enter invoice's name" name="feeTitle" id="feeTitle" required />
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-6">
+                            <div class="form-group row">
+                                <label for="fineAmount" class="col-4 pl-0 pr-0 control-label col-form-label">Fine Amount</label>
+                                <div class="col-8">
+                                    <input type="text" pattern="^[0-9\.]*$" ng-model="importForm.fine" class="form-control" placeholder="Late amount" name="fineAmount" id="fineAmount" />
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-6">
+                            <div class="form-group row" ng-class="{'has-error': allocateForm.feeDate.$invalid}">
+                                <label for="feeDate" class="col-4 pl-4 pr-0 control-label col-form-label">Date<span class="text-danger">*</span></label>
+                                <div class="col-8">
+                                    <input ng-model="importForm.feeDate" date-picker type="text" class="form-control" name="feeDate" id="feeDate" placeholder="Enter Fee Date" required />
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-6">
+                            <div class="form-group row" ng-class="{'has-error': allocateForm.dueDate.$invalid}">
+                                <label for="dueDate" class="col-4 pl-0 pr-0 control-label col-form-label">Due Date<span class="text-danger">*</span></label>
+                                <div class="col-8">
+                                    <input ng-model="importForm.dueDate" date-picker type="text" class="form-control" name="dueDate" id="dueDate" placeholder="Enter Fee Due Date" required />
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col 12">
+                            <div class="panel panel-info">
+                                <div class="panel-heading">
+                                    Fee details <a ng-click="addPaymentRow()" class="pull-right" style="cursor: pointer;"> <i class="fa fa-plus-circle"></i> add new row </a>
+                                </div>
+                                <div class="panel-wrapper collapse in" aria-expanded="true">
+                                    <div class="panel-body" style="border: 3px solid #41b3f9; padding-bottom: 0px !important;">
+                                        <div ng-if="importForm.details.length" class="panel-body" style="padding: 10px 25px !important;">
+                                            <div class="table-responsive">
+                                                <table class="table table-bordered table-hover">
+                                                    <tbody>
+                                                        <tr>
+                                                            <th> # </th>
+                                                            <th> Title </th>
+                                                            <th> Amount </th>
+                                                            <th> Remove </th>
+                                                        </tr>
+                                                        <tr ng-repeat="detail in importForm.details track by $index">
+                                                            <td> {{ $index + 1 }} </td>
+                                                            <td> <input type="text" class="form-control" ng-model="detail.title" placeholder="Title for detail" /> </td>
+                                                            <td> <input type="text" class="form-control" ng-model="detail.amount" placeholder="Amount for detail" ng-change="recalcTotalAmount()" pattern="^[0-9\.]*$" /> </td>
+                                                            <td class="text-center"> <i ng-click="removeRow(detail,$index)" style="cursor: pointer;" title="Remove Row" tooltip class="fa fa-times text-danger"></i> </td>
+                                                        </tr>
+                                                    </tbody>
+                                                </table>
+                                            </div>
+                                        </div>
+                                        <div ng-if="importForm.details.length" class="panel-footer">
+                                            <div class="row">
+                                                <div class="col-2"> Total: </div>
+                                                <div class="col-10"> {{ importForm.amount }} </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-12">
+                            <div class="form-group">
+                                <label> Description </label>
+                                <textarea ng-model="importForm.description" class="form-control desc-textarea" ng-model=""></textarea>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-12">
+                            <button
+                                class="btn btn-success mt-3" type="submit" id="publishImportFees"
+                                ng-if="isAllocation == false" ng-click="doCreateInvoice()"
+                                ng-disabled="importForm.classes == null || (importForm.classes.length == 1 && importForm.sections.length == 0) || !importForm.details.length || allocateForm.$invalid">
+                                <i class="fa fa-check-circle"></i> Allocate Fee
+                            </button>
+                            <button ng-if="isAllocation == true" class="btn btn-success mt-3" disabled>
+                                <i class="fa fa-spinner fa-spin fa-fw"></i> Allocating Fee
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-6 pl-4" style="border-left: 3px solid skyblue;">
+                    <div class="form-group">
+                        <label class="control-label"> Upload Excel file </label>
+                        <span class="pull-right">
+                            <a class="text-info" href="/invoices/import/download-sample"> <i class="fa fa-download"></i> Download Sample Format </a>
+                        </span>
+                        <br>
+                        <input type="hidden" name="review_import"
+                            ng-init="importForm.reviewImportStatus=importForm.reviewImportStatus;"
+                            ng-value="importForm.reviewImportStatus">
+                    </div>
+                    <div class="form-group mb-2">
+                        <input type="file" class="form-control" id="excelcsv" name="excelcsv" accept=".csv,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+                            ng-disabled="importForm.classes == null || (importForm.classes.length == 1 && importForm.sections.length == 0)">
+                        <small ng-if="importForm.classes == null || (importForm.classes.length == 1 && importForm.sections.length == 0)" class="text-danger">Select the filter parameters first then upload the excel file</small>
+                        <small class="text-muted" style="display: block;">File must be in excel or csv extension</small>
+                    </div>
+                    <div class="form-group mb-0">
+                        <input type="checkbox" ng-model="importForm.review_import" /> Review File Before importing
+                    </div>
+                    <button
+                        class="btn btn-success mt-1" ng-click="doUploadImportedFees()" id="publishImportFees" ng-if="isUploading == false"
+                        ng-disabled="importForm.type == null || importForm.classes == null || (importForm.classes.length == 1 && importForm.sections.length == 0)">
+                            <i class="fa fa-upload"></i> Upload Now
+                    </button>
+                    <button class="btn btn-success mt-1" ng-if="isUploading == true" disabled>
+                        <i class="fa fa-spinner fa-spin fa-fw"></i> Uploading
+                    </button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+<div class="row" ng-show="views.review_import">
+	<div class="col-12">
+        <div class="card">
+            <div class="card-block">
+                <button ng-click="changeView('form')" class="btn pull-right btn-danger card-block-input-item">{{phrase.Return}}</button>
+                <h4 class="card-title">Review Import</h4>
+                <hr>
+                <div class="table-responsive">
+	                <table class="table table-bordered table-striped">
+	                    <tbody>
+	                        <tr ng-repeat="item in importedItemsPreview">
+	                          <td ng-repeat="element in item track by $index" class="text-center">
+	                          	<span ng-class="{
+	                          		'font-weight-bold': element == 'Total' || element == 'Fee start date' || element == 'Fee due date' || element == 'Late fee fine'
+	                          	}">{{element}}</span>
+	                          </td>
+	                        </tr>
+	                    </tbody>
+	                </table>
+	            </div>
+                <button class="btn btn-success" ng-click="publishImportedFees()">Publish</button>
+            </div>
+        </div>
+  </div>
+</div>

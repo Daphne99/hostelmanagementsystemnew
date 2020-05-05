@@ -1,0 +1,65 @@
+<!-- <div class="row page-titles">
+    <div class="col-md-6 col-8 align-self-center">
+        <h3 class="text-themecolor m-b-0 m-t-0">Enter classes and subjects</h3>
+    </div>
+</div> -->
+
+<div class="row">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-block">
+                <button ng-click="importExcel()"
+                    ng-show="$root.can('classes.addClass') || $root.can('Subjects.addSubject')"
+                    class="btn pull-right btn-success card-block-input-item">Import Excel</button>
+                <a href="subjects/import/download-sample" target="_blank" ng-show="$root.can('classes.addClass') || $root.can('Subjects.addSubject')"
+                    class="btn pull-right btn-success card-block-input-item">Download Sample Format</a>
+                <h4 class="card-title">Bulk insert subjects</h4>
+                <form class="form-horizontal" name="addClassAndSubjects" role="form" ng-submit="saveAdd()" novalidate>
+                    <div class="row">
+                        <!-- <div class="col-12">
+                            <div class="form-group" ng-class="{'has-error': addClassAndSubjects.classNames.$invalid}">
+                                <label class="control-label col-form-label">Class names *</label>
+                                <textarea class="form-control" name="classNames" ng-model="form.classNames"
+                                    placeholder="Enter class names separated by comma" required></textarea>
+                                <small>Class names separated by comma.</small>
+                            </div>
+                        </div> -->
+                        <div class="col-12">
+                            <div class="form-group" ng-class="{'has-error': addClassAndSubjects.subjectNames.$invalid}">
+                                <label class="control-label col-form-label">Subject names *</label>
+                                <textarea class="form-control" name="subjectNames" ng-model="form.subjectNames"
+                                    placeholder="Enter subject names separated by comma" required></textarea>
+                                <small>Enter All Subject Names separated by comma without any space. These Subjects will be shown in recommendation when you create Timetable.</small>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group m-b-0">
+                        <div>
+                            <button type="submit" class="btn btn-info waves-effect waves-light"
+                                ng-disabled="addClassAndSubjects.$invalid">Insert</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<modal visible="ImportModalStatus">
+    <form class="form-horizontal" ng-upload="saveImported(content)" method="post"
+        action="{{'index.php/classes-subjects/import/excel'}}" name="importData" role="form" novalidate>
+        <div class="form-group mb-2" style="border: 2px dashed #EEE; padding: 10px;">
+            <label class="control-label">{{phrase.fileToImport}}</label><br>
+            <input class="mt-2" type="file" name="excelcsv"><br>
+            <small class="mt-2" style="display: block;">File must be in excel or csv extension</small>
+        </div>
+        <div class="mb-2">
+            <!-- <a href="/classes-subjects/import/download-sample" class="text-info mb-2" style="font-weight: 500;">
+                Download a sample
+            </a> -->
+        </div>
+        <button type="submit" class="btn btn-info btn-default" ng-disabled="importData.$invalid || $isUploading">
+            {{phrase.Import}}
+        </button>
+    </form>
+</modal>

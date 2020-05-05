@@ -1,0 +1,201 @@
+<style>
+    .customAppendedSelect { border-top-right-radius: 0px !important; border-bottom-right-radius: 0px !important; }
+    .customAppend { border: 1px solid #ced2d3; border-top-right-radius: .25rem; border-bottom-right-radius: .25rem !important; }
+    #schoolSettings label { font-size: smaller !important; }
+    #mobileApplication label { font-size: smaller !important; }
+    #biometricIntegration label { font-size: smaller !important; }
+</style>
+
+<div class="pt-5 mt-5 row page-titles">
+    <div class="col-md-6 col-8 align-self-center">
+        <h3 class="text-themecolor m-b-0 m-t-0"> {{title}} </h3>
+    </div>
+</div>
+
+<div class="row" ng-show="views.settings">
+    <div class="col-12">
+        <form id="schoolSettings" name="schoolSettings" class="form-horizontal">
+            <div class="row">
+                <div class="col-4">
+                    <div class="form-group">
+                        <label> School Name <span class="text-danger">*</span> </label>
+                        <input type="text" name="siteTitle" class="form-control" ng-model="form.siteTitle" required />
+                    </div>
+                </div>
+                <div class="col-4">
+                    <div class="form-group">
+                        <label> School Moto </label>
+                        <input type="text" name="schoolMoto" class="form-control" ng-model="form.schoolMoto" />
+                    </div>
+                </div>
+                <div class="col-4">
+                    <div class="form-group">
+                        <label> Board </label>
+                        <input type="text" name="board" class="form-control" ng-model="form.board" />
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-4">
+                    <div class="form-group">
+                        <label> Registration No. </label>
+                        <input type="text" name="regisNo" class="form-control" ng-model="form.regisNo" />
+                    </div>
+                </div>
+                <div class="col-4">
+                    <div class="form-group">
+                        <label> Affiliated By </label>
+                        <input type="text" name="affilBy" class="form-control" ng-model="form.affilBy" />
+                    </div>
+                </div>
+                <div class="col-4">
+                    <div class="form-group">
+                        <label> Affiliation No. </label>
+                        <input type="text" name="affilNo" class="form-control" ng-model="form.affilNo" />
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-4">
+                    <div class="form-group">
+                        <label> Date of Establishment <span class="text-danger">*</span> </label>
+                        <input type="text" name="estabDate" class="form-control" ng-model="form.estabDate" required id="estabDate" date-picker />
+                    </div>
+                </div>
+                <div class="col-4">
+                    <div class="form-group">
+                        <label> Software Starting Date </label>
+                        <input type="text" name="startDate" class="form-control" ng-model="form.startDate" date-picker id="startDate" />
+                    </div>
+                </div>
+                <div class="col-4">
+                    <div class="form-group">
+                        <label> Logo </label>
+                        <input type="file" name="siteLogo" class="form-control" ng-model="form.siteLogo" id="siteLogo" accept="image/jpg, image/jpeg, image/png" />
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-4">
+                    <div class="form-group">
+                        <label> Country </label>
+                        <select name="country" class="form-control" ng-model="form.country" ng-change="loadStates()">
+                            <option ng-repeat="country in countries track by $index" value="{{country.iso2}}" ng-selected="form.country == country.iso2"> {{country.name}} </option>
+                        </select>
+                    </div>
+                </div>
+                <div class="col-4">
+                    <div class="form-group">
+                        <label> State </label>
+                        <select name="State" class="form-control" ng-model="form.State" ng-change="loadCities()">
+                            <option ng-repeat="oneState in states track by $index" value="{{oneState.id}}" ng-selected="form.State == oneState.id"> {{oneState.name}} </option>
+                        </select>
+                    </div>
+                </div>
+                <div class="col-4">
+                    <div class="form-group">
+                        <label> City </label>
+                        <select name="City" class="form-control" ng-model="form.City">
+                            <option ng-repeat="oneCity in cities track by $index" value="{{oneCity.id}}" ng-selected="form.City == oneCity.id"> {{oneCity.name}} </option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-4">
+                    <div class="form-group">
+                        <label> District </label>
+                        <input type="text" name="District" class="form-control" ng-model="form.District" />
+                    </div>
+                </div>
+                <div class="col-4">
+                    <div class="form-group">
+                        <label> PIN </label>
+                        <input type="text" name="pin" class="form-control" ng-model="form.pin" />
+                    </div>
+                </div>
+                <div class="col-4">
+                    <div class="form-group">
+                        <label> Email <span class="text-danger">*</span> </label>
+                        <input type="email" name="systemEmail" class="form-control" ng-model="form.systemEmail" required />
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-4">
+                    <div class="form-group">
+                        <label> Mobile <span class="text-danger">*</span> </label>
+                        <input type="text" mobile-number id="mobile1" name="mobile1" ng-model="form.mobile1" class="form-control" required />
+                    </div>
+                </div>
+                <div class="col-4">
+                    <div class="form-group">
+                        <label> Alternative Mobile </label>
+                        <input type="text" mobile-number id="mobile2" name="mobile2" ng-model="form.mobile2" class="form-control" />
+                    </div>
+                </div>
+                <div class="col-4">
+                    <div class="form-group">
+                        <label> Landline </label>
+                        <input type="text" mobile-number id="landLine" name="landLine" ng-model="form.landLine" class="form-control" />
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-4">
+                    <div class="form-group">
+                        <label> Fax </label>
+                        <input type="text" name="faxNo" ng-model="form.faxNo" class="form-control" />
+                    </div>
+                </div>
+                <div class="col-4">
+                    <div class="form-group">
+                        <label> Currency Icon </label>
+                        <div style="width: 89% !important;" class="input-group mb-0">
+                            <select class="custom-select customAppendedSelect" ng-model="form.currency_code" ng-change="changeCurrency()">
+                                <option value="">Choose currency...</option>
+                                <option ng-repeat="oneCurrency in currencies track by $index" value="{{oneCurrency.code}}" ng-selected="form.currency_code == oneCurrency.code">{{oneCurrency.name}}</option>
+                            </select>
+                            <div class="input-group-append p-1 pr-3 pl-3 customAppend"> <span class="input-group-text">{{form.currency_symbol}}</span> </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-4">
+                    <div class="form-group">
+                        <label> Time Zone </label>
+                        <select class="form-control" ng-model="form.timezone">
+                            <option value="">Choose TimeZone...</option>
+                            <option ng-repeat="zone in timezones track by $index" value="{{zone.key}}" ng-selected="form.timezone == zone.key">{{zone.key}} - {{zone.value}}</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-4">
+                    <div class="form-group">
+                        <label> About Us </label>
+                        <textarea name="aboutUs" class="form-control" ng-model="form.aboutUs"></textarea>
+                    </div>
+                </div>
+                <div class="col-4">
+                    <div class="form-group">
+                        <label> Address </label>
+                        <textarea name="address" class="form-control" ng-model="form.address"></textarea>
+                    </div>
+                </div>
+                <div class="col-4">
+                    <div class="form-group">
+                        <label> Footer Copyrights </label>
+                        <textarea name="footer" class="form-control" ng-model="form.footer"></textarea>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-4">
+                    <button ng-if="loadingIcon == false" ng-click="saveSettings()" ng-disabled="schoolSettings.$invalid" class="btn btn-success"> <i class="fa fa-save"> </i> Save Settings </button>
+                    <button ng-if="loadingIcon == true" class="btn btn-success" disabled> <i class="fa fa-spinner fa-spin fa-fw"> </i> Saving Settings </button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>

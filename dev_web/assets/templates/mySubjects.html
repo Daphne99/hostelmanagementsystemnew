@@ -1,0 +1,57 @@
+<style type="text/css">
+	#listTable tr td { padding: 5px; white-space: normal; }
+	#listTable tr th { padding: 8px 5px; }
+	#view-list-block { padding: 15px 10px; }
+	#view-list-block .search-input { margin-bottom: 12px }
+	.page-titles h3 { font-size: 22px; text-align: left; }
+</style>
+
+<div class="row page-titles" style="margin-bottom: -5px;">
+    <div class="col-12 align-self-left">
+        <h3 class="text-themecolor m-b-0 m-t-0"> My Subjects </h3>
+    </div>
+</div>
+
+<div class="row" ng-show="views.list">
+    <div class="col-12">
+        <div class="card" style="margin-bottom: 0">
+            <div class="card-block" id="view-list-block">
+                <div class="card-block-input-group card-block-input-item">
+                    <div class="input-group input-group-sm search-input">
+                        <input type="text" name="table_search" ng-model="searchText" placeholder="{{phrase.Search}}" class="form-control">
+                        <span class="input-group-addon"><i class="fa fa-search"></i></span>
+                    </div>
+                </div>
+                <div class="table-responsive">
+                    <table id="listTable" class="table table-bordered table-hover">
+                        <tbody>
+                            <tr>
+                                <th>Subj. name</th>
+                                <th>
+                                	Associated teachers by timetable
+                                </th>
+                            </tr>
+                            <tr ng-repeat="subject in subjects | filter:searchText">
+                                <td>{{subject.subjectTitle}}</td>
+                                <td>
+                                	<div ng-if="subject.teacherId.length">
+                                    <span ng-repeat="(index, teacher_id) in subject.teacherId" ng-if="userRole != 'parent'">
+                                    	{{index+1}}- {{teachers[teacher_id].fullName}}<br/>
+                                    </span>
+                                    <span ng-repeat="(index, teacher_id) in subject.teacherId" ng-if="userRole == 'parent'">
+                                    	{{teachers[teacher_id].fullName}}<br/>
+                                    </span>
+                                  </div>
+                                  <div ng-if="!subject.teacherId.length">
+                                  	<span class="text-warning">not detected</span>
+                                  </div>
+                                </td>
+                            </tr>
+                            <tr ng-show="!subjects.length"><td class="noTableData" colspan="5">{{phrase.noSubjects}}</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

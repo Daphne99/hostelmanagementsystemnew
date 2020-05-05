@@ -1,0 +1,141 @@
+<link rel="stylesheet" href="assets/plugins/bootstrap-select/bootstrap4.1.1-dropdown.css" type="text/css" />
+<style type="text/css">
+	.edit-bulk-table tr td:first-child {
+		max-width: 115px;
+    overflow-wrap: break-word;
+	}
+	.edit-bulk-table tr:first-child td {
+		max-width: 115px;
+    overflow-wrap: break-word;
+	}
+</style>
+
+<div class="row page-titles no-print">
+    <div class="col-md-12 align-self-center">
+        <h3 class="text-themecolor m-b-0 m-t-0 pull-left">Bulk payment fees</h3>
+        <button
+        	ng-click="changeView('init_import')"
+        	ng-if="views.edit_fees"
+        	class="btn pull-right btn-danger card-block-input-item">{{phrase.Return}}</button>
+    </div>
+</div>
+
+<div class="row" ng-show="views.init_import">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-block">
+                <h4 class="card-title">Filter bulk payment fees</h4>
+                <form class="form-horizontal" name="importData" role="form">
+	            		<div class="row">
+	            			<div class="col-md-4 mb-3">
+	            				<label class="control-label">Fee Group Type</label><br>
+	            				<select class="form-control student_types" ng-model="filterForm.student_type">
+	                        <option value="0" selected>-- All types --</option>
+	                        <option ng-repeat="type in student_types" value="{{type.id}}">{{type.title}}</option>
+	                    </select>
+	            			</div>
+	            			<div class="col-md-4 mb-3">
+	            				<label class="control-label">Classes *</label><br>
+					            <select class="form-control classes selectpicker"
+					            	data-actions-box="true"
+                      	data-live-search="true"
+					            	ng-model="filterForm.classes"
+					            	ng-change="getSelectedSectionByClassId()" required multiple>
+	                      <option ng-repeat="class in classes" value="{{ class.id }}">{{ class.className }}</option>
+	                    </select>
+	            			</div>
+	            			<div class="col-md-4 mb-3">
+	            				<label class="control-label">Sections *</label><br>
+	            				<select class="form-control sections selectpicker"
+	            					data-actions-box="true"
+	                    	ng-disabled="filterForm.classes == null || filterForm.classes.length > 1 || filterForm.classes.length <= 0"
+	                    	ng-model="filterForm.sections"
+	                    	multiple>
+	                        <option ng-repeat="section in sections"
+	                        	ng-selected="$index == 0"
+	                        	value="{{section.id}}">
+	                        	{{section.sectionName}}
+	                        </option>
+	                    </select>
+	                    <small>Select a class first to display his sections.</small>
+	            			</div>
+	            			<div class="col-md-12">
+	            				<button class="btn btn-info"
+	            					ng-click="viewBulkFee()"
+	            					ng-disabled="
+		            					filterForm.classes == null ||
+	            						(filterForm.classes.length == 1 && filterForm.sections.length == 0)
+	            					">View fees</button>
+	            			</div>
+	            		</div>
+	            	</form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row" ng-show="views.edit_fees">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-block">
+            	<button class="btn btn-success pull-right card-block-input-item" ng-click="bulkEditFees()">Update Bulk Fees</button>
+            	<h4 class="card-title">Edit bulk payment fees</h4>
+              <div class="table-responsive mb-2" style="max-height: 420px">
+	              <table class="table table-bordered table-striped table-sm edit-bulk-table">
+	                  <tbody>
+	                		<tr>
+	                			<td></td>
+	                			<td ng-repeat="title in bulk_fees_titles" style="font-weight: 500; font-size: 13px">
+	                				{{ title }}
+	                			</td>
+	                		</tr>
+	                    <tr>
+	                    	<td class="text-primary" style="font-weight: 400; font-size: 13px">Fine amount</td>
+	                      <td ng-repeat="fee in bulk_fees">
+	                      	<input class="form-control form-control-sm" type="text" ng-model="editForm[$index].fine_amount">
+	                      </td>
+	                    </tr>
+	                    <tr>
+	                    	<td class="text-primary" style="font-weight: 400; font-size: 13px">Start date</td>
+	                      <td ng-repeat="fee in bulk_fees">
+	                      	<input type="text"
+	                      		class="form-control form-control-sm datemask"
+	                      		ng-model="editForm[$index].paymentDate"
+	                      		date-picker id="paymentDate_picker">
+	                      </td>
+	                    </tr>
+	                    <tr>
+	                    	<td class="text-primary" style="font-weight: 400; font-size: 13px">Due date</td>
+	                      <td ng-repeat="fee in bulk_fees">
+	                      	<input type="text"
+	                      		class="form-control form-control-sm datemask"
+	                      		ng-model="editForm[$index].dueDate"
+	                      		date-picker id="dueDate_picker">
+	                      </td>
+	                    </tr>
+	                    <tr ng-repeat="row_title in bulk_fees_paymentRows">
+	                    	<td class="text-danger" style="font-weight: 400; font-size: 13px">{{ row_title }}</td>
+	                    	<td ng-repeat="fee in bulk_fees">
+	                      	<div ng-repeat="inner_row in fee.paymentRows" ng-if="inner_row.title.toLowerCase() == row_title">
+                      			<input type="text"
+                      				class="form-control form-control-sm input-danger"
+                      				ng-model="editForm[$parent.$parent.$index].paymentRows[$index].amount">
+	                      	</div>
+	                      	<temp-fee-details-input
+	                      		ng-if="!__checkCurrentPaymentRow(fee.paymentRows, row_title)"
+	                      		current-index="$index" row-title="row_title"></temp-fee-details-input>
+	                      </td>
+	                    </tr>
+	                    <tr>
+	                    	<td class="text-danger" style="font-weight: 400; font-size: 13px">Total amount</td>
+	                      <td ng-repeat="fee in bulk_fees" style="padding: 5px;">
+	                      	<span style="font-size: 13px; font-weight: 500;">{{ editForm[$index].paymentAmount }}</span>
+	                      </td>
+	                    </tr>
+	                  </tbody>
+	              </table>
+	            </div>
+            </div>
+        </div>
+    </div>
+</div>

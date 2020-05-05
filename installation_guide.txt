@@ -1,0 +1,65 @@
+Thanks for choosing CuteBrains (School Managment System)
+
+to run CuteBrains on your machine :
+===================================
+
+1) copy all the folder content into your server local
+2) from dev_api/database run the MySQL in the same order
+    - 01) load_structure.sql
+    - 02) basic_data.sql
+    - 02) basic_data.sql
+    - 03) routines.sql
+    - 04) secondary_data - a.sql
+    - 04) secondary_data - b.sql
+    - 04) secondary_data - c.sql
+
+for better practice use ((on local machine only)) use a virtual host and point it to the directory by following: 
+
+assuming you are using apache server
+
+edit httpd-vhosts.conf using any text-editor  ((usally located on the apache folder ))
+apache\conf\extra\httpd-vhosts.conf
+and add the following lines
+
+<VirtualHost cutebrains.offline:80>
+    ServerName cutebrains.offline
+    ServerAlias www.cutebrains.offline
+    ServerAdmin admin@cutebrains.offline
+    DocumentRoot "/opt/lammp/htdocs/cutebrains/dev_web"
+    DirectoryIndex index.php Index.php index.html Index.html index.htm Index.htm
+    <Directory "/opt/lammp/htdocs/cutebrains/dev_web">
+        AllowOverride all
+    </Directory>
+</VirtualHost>
+
+<VirtualHost m-cutebrains.offline:80>
+    ServerName m-cutebrains.offline
+    ServerAlias www.m-cutebrains.offline
+    ServerAdmin admin@m-cutebrains.offline
+    DocumentRoot "/opt/lammp/htdocs/cutebrains/dev_mob"
+    DirectoryIndex index.php Index.php index.html Index.html index.htm Index.htm
+    <Directory "/opt/lammp/htdocs/cutebrains/dev_mob">
+        AllowOverride all
+    </Directory>
+</VirtualHost>
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~  VERY IMPORTANT NOTE  ~~~
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+- DocumentRoot and Directory are refering to where you installed CuteBrains on your local machine here we used "/opt/lammp/htdocs"
+- cutebrains.offline and m-cutebrains.offline could be any name you want 
+
+
+edit your hosts files using any text-editor
+LINUX /etc/hosts
+Windows C:\Windows\System32\drivers\etc\hosts
+
+add the following line
+
+127.0.0.1 cutebrains.offline
+127.0.0.1 www.cutebrains.offline
+127.0.0.1 m-cutebrains.offline
+127.0.0.1 www.m-cutebrains.offline
+
+restart your apache server and then you can access the web app throw http://cutebrains.offline and the mobile app throw m-cutebrains.offline

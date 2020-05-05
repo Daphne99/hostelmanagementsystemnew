@@ -1,0 +1,225 @@
+<style type="text/css">
+    .custom-table-bordered { border: 1px solid #ced2d3 !important; }
+    .custom-table-bordered thead { border: 1px solid #ced2d3 !important; }
+    .custom-table-bordered thead tr { border: 1px solid #ced2d3 !important; }
+    .custom-table-bordered thead tr th { border: 1px solid #ced2d3 !important; }
+    .custom-table-bordered tbody { border: 1px solid #ced2d3 !important; }
+    .custom-table-bordered tbody tr { border: 1px solid #ced2d3 !important; }
+    .custom-table-bordered tbody tr td { border: 1px solid #ced2d3 !important; }
+    .borderBottomed { border-bottom: 1px solid #ced2d3 !important; }
+</style>
+
+<div class="row page-titles">
+    <div class="col-md-6 col-8 align-self-center">
+        <h3 class="text-themecolor m-b-0 m-t-0">Classes, Sections and Class Teachers</h3>
+    </div>
+</div>
+
+<div class="container-fluid" ng-if="views.list && $root.can('classes.list')">
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-block">
+                    <div class="card-title">
+                        <div class="row">
+                            <div ng-class="{'col-10': $root.can('classes.addClass'), 'col-12': !$root.can('classes.addClass')}">
+                                <div class="input-group input-group-sm">
+                                    <input type="text" name="table_search" ng-model="searchText" placeholder="{{phrase.Search}}" class="form-control">
+                                    <span class="input-group-addon"><i class="fa fa-search"></i></span>
+                                </div>
+                            </div>
+                            <div ng-if="$root.can('classes.addClass')" class="col-2">
+                                <button ng-if="$root.can('classes.addClass')" ng-click="changeView('add')" class="pull-right form-control text-white btn btn-success" ><i class="fa fa-plus"></i> Create new Class</button>
+                            </div>
+                        </div>   
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-1"></div>
+                            <div class="col-10">
+                                <div class="table-responsive">
+                                    <table class="table table-bordered table-hover custom-table-bordered">
+                                        <thead>
+                                            <tr>
+                                                <th class="text-center align-middle"> Classes </th>
+                                                <th class="text-center align-middle"> Sections </th>
+                                                <th style="width: 250px;" class="text-center align-middle"> Class Teacher </th>
+                                                <th style="width: 50px;" class="text-center align-middle"> Operations </th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr ng-repeat="class in classes | filter:searchText track by $index">
+                                                <td class="text-center align-middle"> {{ class.name }} </td>
+                                                <td class="text-center">
+                                                    <div class="row" ng-class="{'borderBottomed' : ( $index + 1 ) != class.sections.length}" ng-repeat="section in class.sections track by $index">
+                                                        <div class="col-12" ng-style="{'line-height': 1.5 * section.count}" > {{ section.name }} </div>
+                                                    </div>
+                                                </td>
+                                                <td>
+                                                    <div class="row" ng-class="{'borderBottomed' : ( $index + 1 ) != class.sections.length}" ng-repeat="section in class.sections track by $index">
+                                                        <div class="col-12" ng-repeat="teacher in section.teachers track by $index"> {{ teacher.name }} </div>
+                                                    </div>
+                                                </td>
+                                                <td class="text-center align-middle">
+                                                    <button ng-if="$root.can('classes.editClass')" ng-click="editClass(class.id, $index)" class="btn btn-info btn-xs" title="Edit" tooltip> <i class="fa fa-pencil"></i> </button>
+                                                    <button ng-if="$root.can('classes.delClass')" ng-click="removeClass(class.id, $index)" class="btn btn-danger btn-xs" title="Remove" tooltip> <i class="fa fa-times"></i> </button>
+                                                </td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                            <div class="col-1"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="container-fluid" ng-if="views.add && $root.can('classes.addClass')">
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-block">
+                    <div class="card-title">
+                        <div class="row">
+                            <div class="col-10"> Add Class </div>
+                            <div ng-if="$root.can('classes.list')" class="col-2">
+                                <button ng-click="changeView('list')" class="btn btn-danger btn-flat pull-right card-block-input-item">Cancel</button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-12">
+                                <form name="addClass" class="form-horizontal">
+                                    <div class="form-group row" ng-class="{'has-error': addClass.className.$invalid}">
+                                        <label class="col-sm-2 text-right control-label col-form-label">Class Name* </label>
+                                        <div class="col-sm-10">
+                                            <input type="text" class="form-control" name="className" ng-model="form.classesName" required />
+                                        </div>
+                                    </div>
+                                    <div class="form-group row">
+                                        <label class="col-sm-2 text-right control-label col-form-label">Sections* </label>
+                                        <div class="col-sm-10">
+                                            <div class="row">
+                                                <div class="col-11"></div>
+                                                <div class="col-1"> <a ng-if="$root.can('sections.addSection')" ng-click="plusSection()" title="add section" class="btn btn-success text-white" tooltip><i class="fa fa-plus-circle"></i></a> </div>
+                                            </div>
+                                            <div class="row">
+                                                <div class="col-3"> Name </div>
+                                                <div class="col-9"> Class Teacher </div>
+                                            </div>
+                                            <div class="row mt-2 mb-4" ng-repeat="section in form.sections track by $index" ng-init="sectionRow = $index">
+                                                <div class="col-3"> <input type="text" class="form-control" ng-model="section.name" required /> </div>
+                                                <div class="col-9">
+                                                    <div class="row mb-2">
+                                                        <div ng-if="$root.can('teachers.addTeacher')" class="col-4">
+                                                            <input ng-if="$root.can('teachers.addTeacher')" type="text" name="typeahead[{{$index}}]" ng-model="section.typeahead" class="form-control teacherName-{{$index}}" />
+                                                        </div>
+                                                        <div ng-if="$root.can('teachers.addTeacher') || $root.can('teachers.delTeacher')" class="col-4">
+                                                            <div class="row">
+                                                                <div class="col-12 mt-1 mb-1" ng-repeat="oneTeacher in section.visibleTeachers track by $index" ng-init="teacherRow = $index">
+                                                                    <label class="mr-2 ml-2 label label-sm label-info"> <i ng-if="$root.can('teachers.delTeacher')" class="fa fa-times" ng-click="removeTeacher(sectionRow, teacherRow)"></i> {{ oneTeacher.name }} </label>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                        <div ng-if="$root.can('sections.delSection')" class="col-4">
+                                                            <button ng-if="$root.can('sections.delSection')" class="btn btn-danger" ng-click="removeSection(sectionRow)"> <i style="cursor: pointer;" class="fa fa-times"></i> Remove Section </button>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="form-group row">
+                                        <label class="col-sm-2 text-right control-label col-form-label"></label>
+                                        <div class="col-sm-10">
+                                            <button ng-click="createClass()" ng-if="isLoading == false" class="btn btn-success waves-effect waves-light" ng-disabled="addClass.$invalid || !form.sections.length"> <i class="fa fa-plus-circle"></i> Create Class </button>
+                                            <button ng-if="isLoading == true" class="btn btn-success waves-effect waves-light" disabled> <i class="fa fa-spinner fa-spin fa-fw"></i> Creating Class </button>
+                                        </div>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="container-fluid" ng-if="views.edit && $root.can('classes.editClass')">
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-block">
+                    <div class="card-title">
+                        <div class="row">
+                            <div class="col-10"> Edit Class </div>
+                            <div ng-if="$root.can('classes.list')" class="col-2">
+                                <button ng-click="changeView('list')" class="btn btn-danger btn-flat pull-right card-block-input-item">Cancel</button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-12">
+                                <form name="modifyClass" class="form-horizontal">
+                                    <div class="form-group row" ng-class="{'has-error': modifyClass.className.$invalid}">
+                                        <label class="col-sm-2 text-right control-label col-form-label">Class Name* </label>
+                                        <div class="col-sm-10">
+                                            <input type="text" class="form-control" name="className" ng-model="form.classesName" required />
+                                        </div>
+                                    </div>
+                                    <div class="form-group row">
+                                        <label class="col-sm-2 text-right control-label col-form-label">Sections* </label>
+                                        <div class="col-sm-10">
+                                            <div class="row">
+                                                <div class="col-11"></div>
+                                                <div class="col-1"> <a ng-if="$root.can('sections.addSection')" ng-click="plusSection()" title="add section" class="btn btn-success text-white" tooltip><i class="fa fa-plus-circle"></i></a> </div>
+                                            </div>
+                                            <div class="row">
+                                                <div class="col-3"> Name </div>
+                                                <div class="col-9"> Class Teacher </div>
+                                            </div>
+                                            <div class="row mt-2 mb-4" ng-repeat="section in form.sections track by $index" ng-init="sectionRow = $index">
+                                                <div class="col-3"> <input type="text" class="form-control" ng-model="section.name" required /> </div>
+                                                <div class="col-9">
+                                                    <div class="row mb-2">
+                                                        <div ng-if="$root.can('teachers.EditTeacher')" class="col-4">
+                                                            <input ng-if="$root.can('teachers.EditTeacher')" type="text" name="typeahead[{{$index}}]" ng-model="section.typeahead" class="form-control teacherName-{{$index}}" />
+                                                        </div>
+                                                        <div ng-if="$root.can('teachers.EditTeacher') || $root.can('teachers.delTeacher')" class="col-4">
+                                                            <div class="row">
+                                                                <div class="col-12 mt-1 mb-1" ng-repeat="oneTeacher in section.visibleTeachers track by $index" ng-init="teacherRow = $index">
+                                                                    <label class="mr-2 ml-2 label label-sm label-info"> <i ng-if="$root.can('teachers.delTeacher')" class="fa fa-times" ng-click="removeTeacher(sectionRow, teacherRow)"></i> {{ oneTeacher.name }} </label>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                        <div ng-if="$root.can('sections.delSection')" class="col-4">
+                                                            <button ng-if="$root.can('sections.delSection')" class="btn btn-danger" ng-click="removeSection(sectionRow)"> <i style="cursor: pointer;" class="fa fa-times"></i> Remove Section </button>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="form-group row">
+                                        <label class="col-sm-2 text-right control-label col-form-label"></label>
+                                        <div class="col-sm-10">
+                                            <button ng-click="saveClass()" ng-if="isLoading == false" class="btn btn-info waves-effect waves-light" ng-disabled="modifyClass.$invalid || !form.sections.length"> <i class="fa fa-plus-circle"></i> Update Class </button>
+                                            <button ng-if="isLoading == true" class="btn btn-info waves-effect waves-light" disabled> <i class="fa fa-spinner fa-spin fa-fw"></i> Updating Class </button>
+                                        </div>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,204 @@
+<style>
+    .custom-btn-success, .custom-btn-success.disabled { background: #7ace4c; border: 1px solid #7ace4c; color: white !important; }
+    .custom-btn-success:hover { background: #7ace4c; opacity: .8; border: 1px solid #7ace4c; }
+    .label-success { background-color: #7ace4c !important; }
+    .iframer-container { width: 112% !important; height: 160% !important; border: none; margin-left: -17px; }
+    .marksTable { border: 1px solid #ccc3d8; }
+    .marksTable thead { border: 1px solid #ccc3d8; }
+    .marksTable thead tr { border: 1px solid #ccc3d8; }
+    .marksTable thead th { border: 1px solid #ccc3d8; }
+    .marksTable tbody { border: 1px solid #ccc3d8; }
+    .marksTable tbody tr { border: 1px solid #ccc3d8; }
+    .marksTable tbody td { border: 1px solid #ccc3d8; }
+    .faildCell { font-weight: bold; background: #f62d51 !important; color: white !important; }
+</style>
+<div class="row page-titles">
+    <div class="col-sm-6 col-8 align-self-center">
+        <h3 class="text-themecolor m-b-0 m-t-0">My Mark Sheet</h3>
+    </div>
+</div>
+
+<div class="row" ng-if="views.list">
+    <div class="col-sm-12">
+        <div class="card">
+            <div class="card-block">
+                <div class="card-title mb-2">
+                    <h4 class="card-title text-themecolor"> Sheets </h4>
+                </div>
+                <div class="card-body mb-2">
+                    <div class="row">
+                        <div class="col-sm-12">
+                            <div class="table-responsive">
+                                <table class="table table-bordered table-hover">
+                                    <tbody>
+                                        <tr>
+                                            <th> # </th>
+                                            <th> Sheet Name </th>
+                                            <th class="text-center"> Operations </th>
+                                        </tr>
+                                    </tbody>
+                                    <tbody>
+                                        <tr ng-repeat="sheet in sheets track by $index">
+                                            <td> {{ $index + 1 }} </td>
+                                            <td> {{ sheet.name }} </td>
+                                            <td class="text-center">
+                                                <a ng-click="openSheetMember(sheet.id)" class="btn btn-xs custom-btn-success" title="Show students" tooltip><i class="fa fa-users"></i> </a>
+                                                <a ng-if="$root.can('genMarksheet.delete')" ng-click="deleteEntireSheet(sheet.id, $index)" class="btn btn-xs btn-danger text-white" title="Delete Full Sheet" tooltip><i class="fa fa-trash"></i></a>
+                                            </td>
+                                        </tr>
+                                        <tr ng-if="!sheets.length">
+                                            <td class="text-center" colspan="3"> No sheet are avilable </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row" ng-if="views.marks">
+    <div class="col-sm-12">
+        <div class="card">
+            <div class="card-block">
+                <div class="card-title row mb-2 p-3">
+                    <div class="col-sm-9"> <h4 class="card-title text-themecolor"> My Sheets </h4> </div>
+                    <div ng-if="userRole != 'parent'" class="col-sm-3"> <a style="color: white !important;" ng-click="changeView('list')" class="btn btn-xs btn-danger pull-right"> Back </a> </div>
+                </div>
+                <div class="card-body mb-2">
+                    <div class="row">
+                        <div class="col-sm-12">
+                            <div class="table-responsive">
+                                <table class="table table-bordered table-hover">
+                                    <tbody>
+                                        <tr>
+                                            <th> # </th>
+                                            <th ng-if="userRole != 'admin'"> Sheet Name </th>
+                                            <th ng-if="userRole == 'admin'"> Student </th>
+                                            <th class="text-center"> Operations </th>
+                                        </tr>
+                                    </tbody>
+                                    <tbody>
+                                        <tr ng-repeat="sheet in students track by $index">
+                                            <td> {{ $index + 1 }} </td>
+                                            <td ng-if="userRole != 'admin'"> {{ sheet.name }} </td>
+                                            <td ng-if="userRole == 'admin'"> {{ sheet.studentName }} </td>
+                                            <td class="text-center">
+                                                <a ng-click="proccessSheet(sheet.id)" class="btn btn-xs custom-btn-success" title="Open Student sheet" tooltip> <i class="fa fa-eye"></i> </a>
+                                                <a ng-if="$root.can('genMarksheet.delete')" ng-click="deleteStudentSheet(sheet.id, $index)" class="btn btn-xs btn-danger text-white" title="Delete Student Sheet" tooltip><i class="fa fa-trash"></i></a>
+                                            </td>
+                                        </tr>
+                                        <tr ng-if="!students.length">
+                                            <td class="text-center" colspan="3"> No sheet are avilable </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row" ng-show="views.frame">
+    <div class="col-sm-12">
+        <div class="card" style="background-color: transparent !important;">
+            <div class="card-title row mb-2 p-3" style="background-color: transparent !important;">
+                <div class="col-sm-9"></div>
+                <div class="col-sm-3"> <a style="color: white !important;" ng-click="changeView('marks')" class="btn btn-xs btn-danger pull-right"> Back </a> </div>
+            </div>
+            <div class="p-0 card-block">
+                <div ng-if="1 != 1" class="row">
+                    <div class="col-6">
+                        <div class="row" ng-if="sheetdata.left.name != ''">
+                            <div class="col-4 pr-0">Name </div>
+                            <div class="col-8 pl-0"> {{ sheetdata.left.name }} </div>
+                        </div>
+                        <div class="row" ng-if="sheetdata.left.class != ''">
+                            <div class="col-4 pr-0">Class & Section </div>
+                            <div class="col-8 pl-0"> {{ sheetdata.left.class }} </div>
+                        </div>
+                        <div class="row" ng-if="sheetdata.left.dob != ''">
+                            <div class="col-4 pr-0">Date of Birth </div>
+                            <div class="col-8 pl-0"> {{ sheetdata.left.dob }} </div>
+                        </div>
+                        <div class="row" ng-if="sheetdata.left.father != ''">
+                            <div class="col-4 pr-0">Father's Name </div>
+                            <div class="col-8 pl-0"> {{ sheetdata.left.father }} </div>
+                        </div>
+                        <div class="row" ng-if="sheetdata.left.mother != ''">
+                            <div class="col-4 pr-0">Mother's Name </div>
+                            <div class="col-8 pl-0"> {{ sheetdata.left.mother }} </div>
+                        </div>
+                        <div class="row" ng-if="sheetdata.left.address != ''">
+                            <div class="col-4 pr-0">Residential Address </div>
+                            <div class="col-8 pl-0"> {{ sheetdata.left.address }} </div>
+                        </div>
+                        <div class="row" ng-if="sheetdata.left.roll != ''">
+                            <div class="col-4 pr-0">Roll No. </div>
+                            <div class="col-8 pl-0"> {{ sheetdata.left.roll }} </div>
+                        </div>
+                        <div class="row" ng-if="sheetdata.left.addmission != ''">
+                            <div class="col-4 pr-0">Addmission No. </div>
+                            <div class="col-8 pl-0"> {{ sheetdata.left.addmission }} </div>
+                        </div>
+                        <div class="row" ng-if="sheetdata.left.contact != ''">
+                            <div class="col-4 pr-0">Contact No. </div>
+                            <div class="col-8 pl-0"> {{ sheetdata.left.contact }} </div>
+                        </div>
+                    </div>
+                    <div class="col-6">
+                        <div class="row" ng-if="sheetdata.right.school != ''">
+                            <div class="col-sm-12">{{sheetdata.right.school}}</div>
+                        </div>
+                        <div class="row" ng-if="sheetdata.right.title != ''">
+                            <div class="col-sm-12">{{sheetdata.right.title}}</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-sm-12">
+                        <div class="table-responsive p-3">
+                            <table class="table table-bordered table-hover marksTable">
+                                <thead>
+                                    <tr ng-repeat="head in sheetdata.header track by $index">
+                                        <th ng-repeat="th in head.payload track by $index" class="text-center align-middle" colspan="{{th.colspan}}" rowspan="{{th.rowspan}}">
+                                            {{ th.name }}
+                                        </th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr ng-repeat="body in sheetdata.body track by $index">
+                                        <td> {{body.subjectName}} </td>
+                                        <td class="text-center" ng-repeat="cell in body.cells track by $index" ng-class="{'faildCell': cell.pass != true}">
+                                            <span ng-if="cell.value != '0' && cell.value != ''">
+                                                {{cell.value}} 
+                                            </span>
+                                        </td>
+                                    </tr>
+                                    <tr ng-repeat="footer in sheetdata.footer track by $index">
+                                        <td> {{footer.title}} </td>
+                                        <td class="text-center" ng-repeat="cell in footer.cells track by $index" ng-if="cell.type == 'total'" colspan="{{cell.colspan}}" rowspan="{{cell.rowspan}}" ng-class="{'faildCell': cell.pass != true}"> {{cell.value}} </td>
+                                        <td class="text-center" ng-repeat="cell in footer.cells track by $index" ng-if="cell.type == 'percent'" colspan="{{cell.colspan}}" rowspan="{{cell.rowspan}}" ng-class="{'faildCell': cell.pass != true}">
+                                            <span ng-if="cell.value != 0">
+                                                {{cell.value}} %
+                                            </span>
+                                            <span ng-if="cell.value == 0"> - </span>
+                                        </td>
+                                        <td class="text-center" ng-repeat="cell in footer.cells track by $index" ng-if="cell.type == 'rank'" colspan="{{cell.colspan}}" rowspan="{{cell.rowspan}}"> {{cell.val}} {{cell.value}} </td>
+                                        <td class="text-center" ng-repeat="cell in footer.cells track by $index" ng-if="cell.type == 'editable'" colspan="{{cell.colspan}}" rowspan="{{cell.rowspan}}"> {{cell.value}} </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

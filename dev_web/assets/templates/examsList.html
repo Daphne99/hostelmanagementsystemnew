@@ -1,0 +1,657 @@
+<link rel="stylesheet" href="assets/plugins/bootstrap-select/bootstrap4.1.1-dropdown.css" type="text/css" />
+<style>
+    .bootstrap-timepicker { width: 100% !important; }
+    .timepicker, .time-picker { width: 100% !important; border: 1px solid #c9cbcb; border-top-left-radius: 0px; border-bottom-left-radius: 0px; }
+    .noTableData { text-align: center !important; }
+</style>
+<div class="row page-titles">
+    <div class="col-md-6 col-8 align-self-center">
+        <h3 class="text-themecolor m-b-0 m-t-0">{{phrase.examsList}}</h3>
+    </div>
+</div>
+
+<div class="row" ng-show="views.list">
+    <div class="col-12">
+        <form class="form-horizontal" name="filterExams" role="form" novalidate>
+            <div class="row">
+                <div class="col-2">
+                    <select class="form-control search-class-form" ng-model="searchForm.class" ng-change="changeClassForSearch()">
+                        <option value="" selected disabled> --- Class --- </option>
+                        <option
+                            ng-repeat="class in searchClasses track by $index"
+                            ng-init="classIndex = $index"
+                            value="{{class.id}}"
+                            data-idnex="{{ classIndex }}"
+                            > {{ class.name }} 
+                        </option>
+                    </select>
+                </div>
+                <div class="col-2">
+                    <select class="form-control" ng-model="searchForm.section" required>
+                        <option value="" selected disabled> --- Section --- </option>
+                        <option ng-repeat="section in searchSections" value="{{section.id}}" > {{ section.name }} </option>
+                    </select>
+                </div>
+                <div class="col-2">
+                    <select class="form-control search-term-form" ng-model="searchForm.term" ng-change="changeTermForSearch()">
+                        <option value="" selected disabled> --- School Term --- </option>
+                        <option
+                            ng-repeat="term in searchTerms track by $index"
+                            ng-init="termIndex = $index"
+                            value="{{term.id}}"
+                            data-idnex="{{ termIndex }}"
+                        > {{ term.name }}
+                        </option>
+                    </select>
+                </div>
+                <div class="col-2">
+                    <select class="form-control search-exam-form" ng-model="searchForm.exam" ng-change="changeExamForSearch()">
+                        <option value="" selected> --- Exam name --- </option>
+                        <option
+                            ng-repeat="exam in searchExams track by $index"
+                            ng-init="examIndex = $index"
+                            value="{{exam.id}}"
+                            data-idnex="{{ examIndex }}"
+                            > {{ exam.name }}
+                        </option>
+                    </select>
+                </div>
+                <div class="col-2">
+                    <select class="form-control" ng-model="searchForm.subject">
+                        <option value="" selected> --- Subject --- </option>
+                        <option ng-repeat="subject in searchSubjects" value="{{subject.id}}" > {{ subject.name }} </option>
+                    </select>
+                </div>
+                <div class="col-2">
+                    <button ng-click="doFilterExams()" class="pull-right btn btn-info" ng-disabled="filterExams.$invalid"> <i class="fa fa-search"></i> Filter </button>
+                </div>
+            </div>
+        </form>
+        <hr />
+    </div>
+    <div class="col-12">
+        <div class="card">
+            <div class="card-block">
+                <button ng-show="$root.can('examsList.addExam')" ng-click="changeView('add')" class="btn pull-right btn-success card-block-input-item">{{phrase.addExam}}</button>
+                <div class="pull-right card-block-input-group card-block-input-item">
+                    <div class="input-group input-group-sm">
+                        <input type="text" name="table_search" ng-model="searchText" placeholder="{{phrase.Search}}" class="form-control input-sm">
+                        <span class="input-group-addon"><i class="fa fa-search"></i></span>
+                    </div>
+                </div>
+                <h4 class="card-title">{{phrase.listExams}}</h4>
+                <div class="table-responsive">
+                    <table class="table table-bordered table-hover">
+                        <tbody>
+                            <tr>
+                                <th>School term</th>
+                                <th>{{phrase.examName}}</th>
+                                <!-- <th width="250px">{{phrase.examDesc}}</th> -->
+                                <th> Subject </th>
+                                <th>{{phrase.Date}}</th>
+                                <th ng-show="$root.can('examsList.showMarks') || $root.can('examsList.controlMarksExam') || $root.can('examsList.examDetailsNot') || $root.can('examsList.editExam') || $root.can('examsList.delExam')">{{phrase.Operations}}</th>
+                            </tr>
+                            <tr ng-repeat="exam in examsList | filter:searchText">
+                            	<td ng-if="getSchoolTerm(exam.school_term_id) == null">-</td>
+                            	<td ng-if="getSchoolTerm(exam.school_term_id) != null">{{ getSchoolTerm(exam.school_term_id).title }}</td>
+                                <td>
+                                    <a ng-show="$root.can('examsList.View')" class="ahref" ng-click="examDetails(exam.id)">{{exam.examTitle}}</a>
+                                    <span ng-show="!$root.can('examsList.View')">{{exam.examTitle}}</span>
+                                </td>
+                                <!-- <td>{{exam.examDescription}}</td> -->
+                                <td>
+                                    <div class="row" ng-repeat="schedule in exam.examSchedule">
+                                        <div class="col-12">
+                                            <button ng-click="newmarks(exam.id, schedule.subject)" class="btn btn-xs btn-success" ng-disabled="schedule.allowance == false" title="Exam Marks" tooltip > <i class="fa fa-check-square-o"></i> </button>
+                                            {{ schedule.name }}
+                                        </div>
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="row" ng-repeat="schedule in exam.examSchedule">
+                                        <div class="col-12"> {{ schedule.date }} </div>
+                                    </div>
+                                </td>
+                                <!-- <td>{{exam.examDate}} -> {{exam.examEndDate}}</td> -->
+                                <td ng-show="$root.can('examsList.showMarks') || $root.can('examsList.controlMarksExam') || $root.can('examsList.examDetailsNot') || $root.can('examsList.editExam') || $root.can('examsList.delExam')">
+                                    <div ng-if="userRole == 'teacher'" class="row" ng-repeat="schedule in exam.examSchedule">
+                                        <div class="col-12"> <button ng-click="newmarks(exam.id, schedule.subject)" class="btn btn-xs btn-success" ng-disabled="schedule.allowance == false" title="Exam Marks" tooltip > <i class="fa fa-check-square-o"></i> </button> </div>
+                                    </div>
+                                    <div ng-if="userRole == 'admin'" class="row">
+                                        <div class="col-12">
+                                            <div class="btn-group no-print">
+                                                <button type="button" class="btn btn-success btn-flat">Select Action</button>
+                                                <button type="button" class="btn btn-success btn-flat dropdown-toggle" data-toggle="dropdown">
+                                                    <span class="caret"></span>
+                                                    <span class="sr-only">{{phrase.toggleDropdown}}</span>
+                                                </button>
+                                                <div class="dropdown-menu" role="menu">
+                                                    <!-- <a class="dropdown-item" ng-show="$root.can('examsList.showMarks') || $root.can('examsList.controlMarksExam')" ng-click="newmarks(exam)" title="{{phrase.showMarks}}" tooltip> <i class="fa fa-check-square-o"></i> {{phrase.showMarks}} </a> -->
+                                                    <a class="dropdown-item" ng-show="$root.can('examsList.examDetailsNot')" ng-click="notify(exam.id)" title="{{phrase.sendExamMarks}}" tooltip> <i class="fa fa-warning"></i> {{phrase.sendExamMarks}}</a>
+                                                    <a class="dropdown-item" ng-show="$root.can('examsList.editExam')" ng-click="edit(exam.id)" title="{{phrase.Edit}}" tooltip> <i class="fa fa-pencil"></i> {{phrase.Edit}}</a>
+                                                    <a class="dropdown-item" ng-show="$root.can('examsList.delExam')" ng-click="remove(exam,$index)" title="{{phrase.Remove}}" tooltip> <i class="fa fa-trash-o"></i> {{phrase.Remove}}</a>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr ng-show="!examsList.length"><td class="noTableData" colspan="5">{{phrase.noExams}}</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row" ng-show="views.add">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-block">
+                <button ng-click="changeView('list')" class="btn btn-danger btn-flat pull-right card-block-input-item">{{phrase.cancelAdd}}</button>
+                <h4 class="card-title">{{phrase.addExam}}</h4>
+                <div class="form">
+                    <form class="form-horizontal" name="addExam" role="form" ng-submit="saveAdd()" novalidate>
+                        <div class="row">
+                            <div class="col-6">
+                                <div class="form-group row" ng-class="{'has-error': addExam.term_id.$invalid}">
+                                    <label class="col-3 text-right control-label col-form-label">School term <span class="text-danger">*</span></label>
+                                    <div class="col-9">
+                                        <select class="form-control" ng-model="form.term_id" name="term_id" required>
+                                            <option ng-repeat="term in school_terms" value="{{ term.id }}">{{ term.title }}</option>
+                                        </select>
+                                      </div>
+                                </div>
+                            </div>
+                            <div class="col-6">
+                                <div class="form-group row" ng-class="{'has-error': addExam.examTitle.$invalid}">
+                                    <label class="col-3 text-right control-label col-form-label">Exam Title <span class="text-danger">*</span> </label>
+                                    <div class="col-9">
+                                        <input type="text" name="examTitle" ng-model="form.examTitle" class="form-control" required placeholder="{{phrase.examName}}">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-6">
+                                <div class="form-group row">
+                                    <label class="col-3 text-right control-label col-form-label">{{phrase.Date}}</label>
+                                    <div class="col-9">
+                                        <input type="text" date-picker name="examDate" ng-model="form.examDate" class="form-control datemask" id="datemask" />
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-6">
+                                <div class="form-group row">
+                                    <label class="col-3 text-right control-label col-form-label">{{phrase.endDate}}</label>
+                                    <div class="col-9">
+                                        <input type="text" date-picker name="examEndDate" ng-model="form.examEndDate" class="form-control datemask" id="datemaskEnd" />
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-6">
+                                <div class="form-group row" ng-class="{'has-error': addExam.examClasses.$invalid}">
+                                    <label class="col-3 text-right control-label col-form-label">{{phrase.classes}}<span class="text-danger">*</span></label>
+                                    <div class="col-9">
+                                        <select class="form-control selectpicker" name="examClasses"
+                                            data-actions-box="true"
+                                            data-live-search="true"
+                                            ng-model="form.examClasses" multiple required>
+                                            <option ng-repeat="class in classes" value="{{class.id}}">{{class.className}}</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-6">
+                                <div class="form-group row">
+                                    <label class="col-3 text-right control-label col-form-label" style="font-size: 0.9rem;">{{phrase.examDesc}}</label>
+                                    <div class="col-9">
+                                        <textarea name="examDescription" class="form-control" ng-model="form.examDescription" placeholder="{{phrase.examDesc}}"></textarea>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- <div class="form-group row">
+                          <label class="col-sm-2 text-right control-label col-form-label">Pass marks</label>
+                          <div class="col-sm-4">
+                              <input type="number" name="main_pass_marks" class="form-control" ng-model="form.main_pass_marks" placeholder="Exam pass marks">
+                          </div>
+                          <label class="col-sm-2 text-right control-label col-form-label">Maximum marks</label>
+                          <div class="col-sm-4">
+                              <input type="number" name="main_max_marks" class="form-control" ng-model="form.main_max_marks" placeholder="Exam maximum marks">
+                          </div>
+                        </div> -->
+                        <!-- <div class="form-group row">
+                            <label class="col-sm-2 text-right control-label col-form-label">{{phrase.markShFields}} <span class="text-danger">*</span></label>
+                            <div class="col-sm-10">
+                                <div class="row">
+                                    <div class="col-md-2">
+                                        <button type="button" class="btn btn-info btn-default" ng-click="addMSCol()">{{phrase.addColumn}}</button>
+                                    </div>
+                                    <div class="col-md-10">
+                                        <ul>
+                                            <li ng-repeat="col in form.examMarksheetColumns">{{col.title}} - <a ng-click="removeMSCol(col,$index)">{{phrase.Remove}}</a></li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+                        </div> -->
+                        <div class="card card-outline-info" style="border: 1px solid #009efb;" ng-class="{'has-error': addGrade.feeSchDetails.$invalid}">
+                            <div class="card-header">
+                                <h4 class="m-b-0 text-white">{{phrase.examSchedule}}</h4>
+                            </div>
+                            <div class="card-block row">
+
+                                <label class="col-sm-2 text-right control-label col-form-label">{{phrase.examSchedule}} </label>
+                                <div class="col-sm-10">
+                                    <button type="button" ng-click="addScheduleRow()" class="btn pull-right btn-danger card-block-input-item">Add new schedule</button>
+                                    <table class="table table-hover table-bordered schedule-table">
+                                        <thead>
+                                            <tr>
+                                                <th width="250px">{{phrase.Subject}} & Custom marks</th>
+                                                <th width="250px">{{phrase.Date}}</th>
+                                                <th>Time</th>
+                                                <th>{{phrase.Remove}}</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr ng-repeat="(key,row) in form.examSchedule track by $index" ng-init="scheduleIndex = $index">
+                                                <td>
+                                                    <label>Subject & Sub subjects</label>
+                                                    <select ng-change="changeSubject(scheduleIndex, 'add')" class="form-control mb-1 addSubject-{{scheduleIndex}}" ng-model="row.subject" required name="subject">
+                                                        <option
+                                                            ng-repeat="subject in subject_with_subsubject_lists track by $index"
+                                                            ng-init="subjectIndex = $index"
+                                                            value="{{ subject.id }}"
+                                                            data-idnex="{{ subjectIndex }}"
+                                                            ng-selected="subject.id == row.subject">{{subject.subjectTitle}}
+                                                        </option>
+                                                    </select>
+                                                    <label>Pass/Max marks</label>
+                                                    <input type="number" name="pass_marks" class="form-control mb-1" ng-model="row.pass_marks" placeholder="Custom pass marks"><br>
+                                                    <input type="number" name="max_marks" class="form-control mb-1" ng-model="row.max_marks" placeholder="Custom max marks">
+                                                </td>
+                                                <td>
+                                                    <label>Exam Date</label>
+                                                    <input type="text" name="stDate" ng-model="row.stDate" class="form-control datemask" date-picker />
+                                                    <!-- <label>Teacher Assign</label>
+                                                    <select class="form-control selectpicker" name="assignTeacher"
+                                                        data-actions-box="true"
+                                                        data-live-search="true"
+                                                        ng-model="row.teachers" multiple>
+                                                        <option ng-repeat="teacher in teachers" value="{{teacher.id}}">{{teacher.name}}</option>
+                                                    </select> -->
+                                                </td>
+                                                <td>
+                                                    <label>Start Time</label>
+                                                    <div class="bootstrap-timepicker">
+                                                        <input type="text" name="start_time" ng-model="row.start_time" class="form-control timepicker startTimePicker mb-1">
+                                                    </div>
+                                                    <label>End Time</label>
+                                                    <div class="bootstrap-timepicker">
+                                                        <input type="text" name="end_time" ng-model="row.end_time" class="form-control timepicker endTimePicker mb-1">
+                                                    </div>
+                                                </td>
+                                                <td>
+                                                    <button ng-click="removeRow(row,$index)" type="button" class="btn btn-danger btn-circle" title="{{phrase.Remove}}" tooltip><i class="fa fa-trash-o"></i></button>
+                                                </td>
+                                            </tr>
+                                            <tr ng-show="!form.examSchedule.length"><td class="noTableData" colspan="7">{{phrase.noDataAvailable}}</td></tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                        <div lass="form-group row">
+                            <div class="col-sm-offset-2 col-sm-10" style="padding: 5px">
+                                <button type="submit" class="btn btn-info btn-default" ng-disabled="addExam.$invalid || isLoading == true">{{phrase.addExam}}</button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row" ng-show="views.edit">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-block">
+                <button ng-click="changeView('list')" class="btn pull-right btn-danger card-block-input-item">{{phrase.cancelEdit}}</button>
+                <h4 class="card-title">{{phrase.editExam}}</h4>
+                <div class="form">
+                    <form class="form-horizontal" name="editExam" role="form" ng-submit="saveEdit()" novalidate>
+                        <div class="row">
+                            <div class="col-6">
+                                <div class="form-group row" ng-class="{'has-error': editExam.term_id.$invalid}">
+                                    <label class="col-3 text-right control-label col-form-label">School term <span class="text-danger">*</span></label>
+                                    <div class="col-9">
+                                        <select class="form-control" ng-model="form.term_id" name="term_id" required placeholder="School term">
+                                            <option ng-repeat="term in school_terms" value="{{ term.id }}">{{ term.title }}</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-6">
+                                <div class="form-group row" ng-class="{'has-error': editExam.examTitle.$invalid}">
+                                    <label class="col-3 text-right control-label col-form-label">{{phrase.examName}} <span class="text-danger">*</span></label>
+                                    <div class="col-9">
+                                        <input type="text" name="examTitle" ng-model="form.examTitle" class="form-control" required placeholder="{{phrase.examName}}">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-6">
+                                <div class="form-group row">
+                                    <label class="col-3 text-right control-label col-form-label">{{phrase.Date}}</label>
+                                    <div class="col-9">
+                                        <input type="text" date-picker name="examDate" ng-model="form.examDate" class="form-control datemask" id="datemaskEdit"  placeholder="Exam date" />
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-6">
+                                <div class="form-group row">
+                                    <label class="col-3 text-right control-label col-form-label">{{phrase.endDate}}</label>
+                                    <div class="col-9">
+                                        <input type="text" date-picker name="examEndDate" ng-model="form.examEndDate" class="form-control datemask"  placeholder="Exam end date" id="datemaskEndEdit" />
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-6">
+                                <div class="form-group row" ng-class="{'has-error': editExam.examClasses.$invalid}">
+                                    <label class="col-3 text-right control-label col-form-label">{{phrase.classes}}</label>
+                                    <div class="col-9">
+                                        <select class="form-control selectpicker" name="examClasses"
+                                            data-actions-box="true"
+                                            data-live-search="true"
+                                            ng-model="form.examClasses" multiple required>
+                                            <option ng-repeat="class in classes" value="{{class.id}}">{{class.className}}</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-6">
+                                <div class="form-group row">
+                                    <label class="col-3 text-right control-label col-form-label">{{phrase.examDesc}}</label>
+                                    <div class="col-9">
+                                        <textarea name="examDescription" class="form-control" ng-model="form.examDescription" placeholder="{{phrase.examDesc}}"></textarea>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- <div class="form-group row">
+                            <label class="col-sm-2 text-right control-label col-form-label">Pass marks</label>
+                            <div class="col-sm-4">
+                                <input type="text" name="main_pass_marks" class="form-control" ng-model="form.main_pass_marks" placeholder="Exam pass marks">
+                            </div>
+                            <label class="col-sm-2 text-right control-label col-form-label">Maximum marks</label>
+                            <div class="col-sm-4">
+                                <input type="text" name="main_max_marks" class="form-control" ng-model="form.main_max_marks" placeholder="Exam maximum marks">
+                            </div>
+                        </div> -->
+                        <div class="card card-outline-info" style="border: 1px solid #009efb;" ng-class="{'has-error': addGrade.feeSchDetails.$invalid}">
+                            <div class="card-header">
+                                <h4 class="m-b-0 text-white">{{phrase.examSchedule}}</h4>
+                            </div>
+                            <div class="card-block row">
+                                <label class="col-sm-2 text-right control-label col-form-label" style="border-radius: 5px 5px 0 0;">{{phrase.examSchedule}} </label>
+                                <div class="col-sm-10">
+                                    <button type="button" ng-click="addScheduleRow()" class="btn pull-right btn-danger card-block-input-item">Add new schedule</button>
+                                    <table class="table table-hover table-bordered edit-schedule-table">
+                                        <thead>
+                                            <tr>
+                                                <th width="250px">{{phrase.Subject}}</th>
+                                                <th width="250px">{{phrase.Date}}</th>
+                                                <th>Time</th>
+                                                <th>{{phrase.Remove}}</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr ng-repeat="(key,row) in form.examSchedule" ng-init="editScheduleIndex = $index">
+                                                <td>
+                                                    <label>Subject & Sub subjects</label>
+                                                    <select ng-change="changeSubject(key, 'edit')" class="form-control mb-1 editSubject-{{editScheduleIndex}}" ng-model="row.subject" required name="subject">
+                                                        <option
+                                                        	ng-repeat="subject in subject_with_subsubject_lists track by $index"
+                                                            ng-init="editSubjectIndex = $index"
+                                                            value="{{ subject.id }}"
+                                                            data-idnex="{{ editSubjectIndex }}"
+                                                        	ng-selected="subject.id == row.subject">{{subject.subjectTitle}}</option>
+                                                    </select>
+                                                    <label>Pass/Max marks</label>
+                                                    <input type="number" name="pass_marks" class="form-control mb-1" ng-model="row.pass_marks" placeholder="Custom pass marks"><br>
+                                                    <input type="number" name="max_marks" class="form-control mb-1" ng-model="row.max_marks" placeholder="Custom max marks">
+                                                </td>
+                                                <td>
+                                                    <label>Exam Date</label>
+                                                    <input type="text" name="stDate" ng-model="row.stDate" class="form-control datemask" date-picker />
+                                                    <!-- <label>Teacher Assign</label>
+                                                    <select class="form-control selectpicker teacherPicker" name="assignTeacher"
+                                                        data-actions-box="true"
+                                                        data-live-search="true"
+                                                        ng-model="row.teachers" multiple>
+                                                        <option ng-repeat="teacher in teachers" value="{{teacher.id}}">{{teacher.name}}</option>
+                                                    </select> -->
+                                                </td>
+                                                <td>
+                                                    <label>Start Time</label>
+                                                    <div class="bootstrap-timepicker">
+                                                        <input type="text" name="start_time" ng-model="row.start_time" class="form-control timepicker startTimePicker mb-1 startTimePicker">
+                                                    </div>
+                                                    <label>End Time</label>
+                                                    <div class="bootstrap-timepicker">
+                                                        <input type="text" name="end_time" ng-model="row.end_time" class="form-control timepicker endTimePicker mb-1 endTimePicker">
+                                                    </div>
+                                                </td>
+                                                <td>
+                                                    <button ng-click="removeRow(row,$index)" type="button" class="btn btn-danger btn-circle" title="{{phrase.Remove}}" tooltip><i class="fa fa-trash-o"></i></button>
+                                                </td>
+                                            </tr>
+                                            <tr ng-show="!form.examSchedule.length"><td class="noTableData" colspan="7">{{phrase.noDataAvailable}}</td></tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                        <div lass="form-group row">
+                            <div class="col-sm-offset-2 col-sm-10" style="padding: 5px">
+                                <button type="submit" class="btn btn-info btn-default" ng-disabled="editExam.$invalid || $isUploading">{{phrase.editExam}}</button>
+                            </div>
+                        </div>
+                    </form>
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row" ng-show="views.premarks">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-block">
+                <button ng-click="changeView('list')" class="btn pull-right btn-danger card-block-input-item">{{phrase.Return}}</button>
+                <h4 class="card-title">{{phrase.selClassSubExam}}</h4>
+                <div class="form">
+                    <form class="form-horizontal" name="selectcs" role="form" ng-submit="startAddMarks()" novalidate>
+                        <div class="form-group row" ng-class="{'has-error': selectcs.classId.$invalid}">
+                            <label class="col-sm-2 text-right control-label col-form-label">{{phrase.class}}</label>
+                            <div class="col-sm-10">
+                                <select class="form-control" ng-model="form.classId" required name="classId" ng-change="subjectList()">
+                                    <option ng-repeat="class in markClasses" value="{{class.id}}">{{class.className}}</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="form-group row" ng-class="{'has-error': selectcs.sectionId.$invalid}" ng-show="$root.dashboardData.enableSections == '1'">
+                            <label class="col-sm-2 text-right control-label col-form-label">{{phrase.section}} <span class="text-danger">*</span></label>
+                            <div class="col-sm-10">
+                                <select class="form-control" ng-model="form.sectionId" ng-required="$root.dashboardData.enableSections == '1'" name="sectionId">
+                                    <option ng-repeat="section in sections" value="{{section.id}}">{{section.sectionName}}</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="form-group row" ng-class="{'has-error': selectcs.subjectId.$invalid}">
+                            <label class="col-sm-2 text-right control-label col-form-label">{{phrase.Subject}}</label>
+                            <div class="col-sm-10">
+                                <select class="form-control" ng-model="form.subjectId" required name="subjectId">
+                                    <option ng-repeat="subject in subjects" value="{{subject.id}}">{{subject.subjectTitle}}</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <div class="col-sm-offset-2 col-sm-10">
+                                <button type="submit" class="btn btn-info btn-default" ng-disabled="selectcs.$invalid">{{phrase.addMarks}}</button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row" ng-show="views.marks">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-block">
+                <button ng-click="changeView('list')" class="btn pull-right btn-danger card-block-input-item">{{phrase.Return}}</button>
+                <a href="javascript:window.print()"><button class="btn pull-right btn-success card-block-input-item">{{phrase.Print}}</button></a>
+               	<table class="table table-sm table-bordered" style="width: 50%">
+               		<tr>
+               			<td><span style="font-weight: 500">Term:</span> {{ form.respExam.school_term_name }}</td>
+               			<td><span style="font-weight: 500">Exam:</span> {{ form.respExam.examTitle }}</td>
+               			<td><span style="font-weight: 500">Pass marks:</span> {{ form.respExam.main_pass_marks }}</td>
+               		</tr>
+               		<tr>
+               			<td><span style="font-weight: 500">{{phrase.class}}:</span> {{form.respClass.className}}</td>
+               			<td><span style="font-weight: 500">{{phrase.Subject}}:</span> {{form.respSubject.subjectTitle}}</td>
+               			<td><span style="font-weight: 500">Max marks:</span> {{ form.respExam.main_max_marks }}</td>
+               		</tr>
+               	</table>
+                <form class="form-horizontal" ng-submit="saveNewMarks()" name="form" novalidate>
+                    <table class="table table-bordered table-sm">
+                        <tbody>
+                            <tr>
+                                <th>Roll ID</th>
+                                <th>{{phrase.studentName}}</th>
+                                <th ng-repeat="examSheetColumn in form.respExam.examMarksheetColumns">{{examSheetColumn.title}}</th>
+                                <th>{{phrase.Total}}</th>
+                                <th>{{phrase.Comments}}</th>
+                            </tr>
+                            <tr ng-repeat="mark in form.respStudents | object2Array | orderBy:'studentRollId'">
+                                <td>{{mark.studentRollId}}</td>
+                                <td><a href="" ng-click="studentProfile( mark.id )">{{mark.name}}</a></td>
+                                <td ng-repeat="examSheetColumn in form.respExam.examMarksheetColumns">
+                                	<input type="text" class="form-control" ng-model="mark.examMark[examSheetColumn.id]">
+                                </td>
+                                <td> <input type="text" class="form-control form-control-sm" ng-model="mark.totalMarks"> </td>
+                                <td> <input type="text" class="form-control form-control-sm" ng-model="mark.markComments"> </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    <br/>
+                    <div class="form-group row">
+                        <div class="col-sm-offset-2 col-sm-10">
+                            <button type="submit" class="btn btn-primary">{{phrase.addUpdateMarks}}</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row" ng-show="views.examDetails">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-block">
+                <button ng-click="changeView('list')" class="btn pull-right btn-danger card-block-input-item">{{phrase.Return}}</button>
+                <h4 class="card-title">{{phrase.examName}}</h4>
+                <div class="form">
+                    <div class="form-group row">
+                        <label class="col-sm-2 text-right control-label col-form-label">{{phrase.examName}}</label>
+                        <div class="col-sm-10">
+                            {{form.examTitle}}
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        <label class="col-sm-2 text-right control-label col-form-label">{{phrase.examDesc}}</label>
+                        <div class="col-sm-10">
+                            {{form.examDescription}}
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        <label class="col-sm-2 text-right control-label col-form-label">{{phrase.classes}}</label>
+                        <div class="col-sm-10">
+                            <span ng-repeat="class in form.examClassesNames">{{class.className}}<br/></span>
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        <label class="col-sm-2 text-right control-label col-form-label">{{phrase.Date}}</label>
+                        <div class="col-sm-10">
+                            {{form.examDate}}
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        <label class="col-sm-2 text-right control-label col-form-label">{{phrase.endDate}}</label>
+                        <div class="col-sm-10">
+                            {{form.examEndDate}}
+                        </div>
+                    </div>
+                    <div class="card card-outline-info" style="border: 1px solid #009efb;">
+                        <div class="card-header">
+                            <h4 class="m-b-0 text-white">{{phrase.examSchedule}}</h4>
+                        </div>
+                        <div class="card-block row">
+
+                            <label class="col-sm-2 text-right control-label col-form-label">{{phrase.examSchedule}}</label>
+                            <div class="col-sm-10">
+
+                                <table class="table table-hover table-bordered">
+                                    <thead>
+                                        <tr>
+                                            <th width="170px">{{phrase.Subject}}</th>
+                                            <th width="170px">{{phrase.Date}}</th>
+                                            <th>Time</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr ng-repeat="row in form.examSchedule">
+                                            <td>
+                                                {{subjectsList[row.subject]}}
+                                            </td>
+                                            <td>
+                                                {{row.stDate}}
+                                            </td>
+                                            <td>
+                                          		<label>Start Time: </label>
+                                          		<span ng-if="row.start_time != ''">{{row.start_time}}</span>
+                                          		<span ng-if="row.start_time == null" class="text-warning">no detected</span>
+                                          		<br>
+                                              <label>End Time: </label>
+                                              <span ng-if="row.end_time != ''">{{row.end_time}}</span>
+                                          		<span ng-if="row.end_time == null" class="text-warning">no detected</span>
+                                            </td>
+                                        </tr>
+                                        <tr ng-show="!form.examSchedule.length"><td class="noTableData" colspan="7">{{phrase.noDataAvailable}}</td></tr>
+                                    </tbody>
+                                </table>
+
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<modal visible="showModal"><div ng-bind-html="modalContent"></div></modal>

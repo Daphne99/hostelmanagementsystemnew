@@ -1,0 +1,129 @@
+<div class="row page-titles">
+    <div class="col-md-6 col-8 align-self-center">
+        <h3 class="text-themecolor m-b-0 m-t-0">{{phrase.students}}</h3>
+    </div>
+</div>
+
+<div class="row" ng-show="views.list">
+    <div ng-if="currentUserRole != 'parent'" class="col-12 mb-3">
+        <form class="form-horizontal" name="searchForm" ng-submit="searchDB(1)" role="form" novalidate>
+            <div class="row">
+                <div class="col-2">
+                    <div class="form-group">
+                        <label>Search</label>
+                        <input type="text" class="form-control" ng-model="searchInput.text">
+                    </div>
+                </div>
+                <div class="col-2">
+                    <div class="form-group">
+                        <label>Vehicle</label>
+                        <select class="form-control" ng-model="searchInput.vehicle">
+                        	<option value=""></option>
+                        	<option ng-repeat="vehicle in vehicles track by $index" value="{{vehicle.id}}"> {{vehicle.name}} </option>
+                        	<!-- vehicles -->
+                        </select>
+                    </div>
+                </div>
+                <div class="col-2">
+                    <div class="form-group">
+                        <label>Class</label>
+                        <select class="form-control selectpicker input-sm" name="searchClass" multiple data-actions-box="true" data-live-search="true" ng-model="searchInput.class" ng-change="searchSubjectList()">
+                            <option ng-repeat="class in classes" value="{{class.id}}">{{class.className}}</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="col-2" ng-show="$root.dashboardData.enableSections == '1'">
+                    <div class="form-group">
+                        <label>Section</label>
+                        <select class="form-control selectpicker" ng-model="searchInput.section" multiple data-actions-box="true" data-live-search="true" ng-required="$root.dashboardData.enableSections == '1'" name="studentSection">
+                            <option ng-repeat="section in sections" value="{{section.id}}">{{section.sectionName}}</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="col-2">
+                    <button type="submit" class="mt-4 btn btn-info waves-effect waves-light">Filter</button>
+                </div>
+            </div>
+        </form>
+    </div>
+    <div class="col-12 listContent">
+        <div class="card">
+            <div class="card-block">
+                <h4 class="card-title">{{phrase.listStudents}}</h4>
+                <div class="table-responsive" style="min-height: 300px;">
+                    <table class="table table-bordered table-hover">
+                        <tbody>
+                            <tr>
+                                <th>
+                                    Roll No.
+                                    <i ng-show="$root.dashboardData.sort.students != '' && $root.dashboardData.sort.students != 'studentRollId + 0 ASC' && $root.dashboardData.sort.students != 'studentRollId + 0 DESC'" ng-click="sortItems('studentRollId + 0 DESC')" class="ahref mdi mdi-sort"></i>
+                                    <i ng-show="$root.dashboardData.sort.students == '' || $root.dashboardData.sort.students == 'studentRollId + 0 ASC'" ng-click="sortItems('studentRollId + 0 DESC')" class="ahref mdi mdi-arrow-down-bold"></i>
+                                    <i ng-show="$root.dashboardData.sort.students == 'studentRollId + 0 DESC'" ng-click="sortItems('studentRollId + 0 ASC')" class="ahref mdi mdi-arrow-up-bold"></i>
+                                </th>
+                                <th>
+                                    {{phrase.FullName}}
+                                    <i ng-show="$root.dashboardData.sort.students != 'fullName ASC' && $root.dashboardData.sort.students != 'fullName DESC'" ng-click="sortItems('fullName DESC')" class="ahref mdi mdi-sort"></i>
+                                    <i ng-show="$root.dashboardData.sort.students == 'fullName ASC'" ng-click="sortItems('fullName DESC')" class="ahref mdi mdi-arrow-down-bold"></i>
+                                    <i ng-show="$root.dashboardData.sort.students == 'fullName DESC'" ng-click="sortItems('fullName ASC')" class="ahref mdi mdi-arrow-up-bold"></i>
+                                </th>
+                                <th>
+                                   	Admission No.
+                                    <i ng-show="$root.dashboardData.sort.students != 'admission_number ASC' && $root.dashboardData.sort.students != 'admission_number DESC'" ng-click="sortItems('admission_number DESC')" class="ahref mdi mdi-sort"></i>
+                                    <i ng-show="$root.dashboardData.sort.students == 'admission_number ASC'" ng-click="sortItems('admission_number DESC')" class="ahref mdi mdi-arrow-down-bold"></i>
+                                    <i ng-show="$root.dashboardData.sort.students == 'admission_number DESC'" ng-click="sortItems('admission_number ASC')" class="ahref mdi mdi-arrow-up-bold"></i>
+                                </th>
+                                <th>Phone No.</th>
+                                <th>{{phrase.class}} / {{phrase.sections}}</th>
+                                <th class='no-print' ng-show="$root.can('students.Attendance') || $root.can('students.Marksheet') || $root.can('students.stdLeaderBoard') || $root.can('students.medHistory') || $root.can('students.editStudent') || $root.can('students.delStudent')">Act.</th>
+                            </tr>
+                            <tr dir-paginate="student in students | itemsPerPage:20" total-items="totalItems">
+                                <td>{{student.studentRollId}}</td>
+                                <td>
+                                    <img alt="{{student.fullName}}" class="user-image img-circle" style="width:35px; height:35px;" ng-src="{{'index.php/dashboard/profileImage/'+student.id}}">
+                                    <a href="" ng-click="studentProfile( student.id )">{{student.fullName}}</a>
+                                    <i ng-show="$root.can('students.editStudent')" ng-class="{'color_red':student.account_active==0,'color_green':student.account_active==1}" class="fa fa-lightbulb-o"></i>
+                                    <span ng-if="$root.can('students.stdLeaderBoard') && student.isLeaderBoard != '' && student.isLeaderBoard != null"><br/><i class="fa fa-trophy"></i> {{phrase.leaderboard}} <a ng-show="userRole == 'admin'" ng-click="removeLeaderBoard(student.id,$index)"><i class="fa fa-trash-o"></i></a></span>
+                                </td>
+                                <td>{{student.admission_number}}</td>
+                                <td>{{student.phoneNo}}</td>
+                                <td>{{student.studentClass}} <br/> {{student.studentSection}}</td>
+                                <td class='no-print' ng-show="$root.can('students.TrackBus')">
+                                    
+                                    <button ng-show="$root.can('students.TrackBus')" class="btn btn-info btn-xs" ng-click="trackBus(student.id)" title="Track Bus" tooltip>
+                                        <i class="fa fa-bus"></i>
+                                    </button>
+                                </td>
+                            </tr>
+                            <tr ng-show="!students.length"><td class="noTableData" colspan="6">{{phrase.noStudents}}</td></tr>
+                        </tbody>
+                    </table>
+                    <dir-pagination-controls class="pull-right" on-page-change="getResultsPage(newPageNumber)" template-url="assets/templates/dirPagination.html" ></dir-pagination-controls>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<div class="row" ng-if="views.bus_track">
+	<div class="col-12">
+      <div class="card">
+          <div class="card-block">
+              <button ng-click="changeView('list')" class="btn pull-right btn-danger card-block-input-item">
+	              {{phrase.Return}}
+	            </button>
+              <h4 class="card-title">Track student's bus</h4>
+              <hr>
+              <div>
+                  <iframe
+                  	ng-if="busTrackInfo.transport_vehicle != null"
+                  	ng-src="{{ trustSrc(gps_iframe_link) }}"
+                  	style="width: 100%; height: 400px; border: 3px solid #AAA;">
+                  </iframe>
+              </div>
+          </div>
+      </div>
+  </div>
+</div>
+
+<modal visible="showModal"><div ng-bind-html="modalContent"></div></modal>

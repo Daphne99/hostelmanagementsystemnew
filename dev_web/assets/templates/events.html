@@ -1,0 +1,217 @@
+<link rel="stylesheet" href="assets/plugins/bootstrap-select/bootstrap4.1.1-dropdown.css" type="text/css" />
+<style type="text/css">
+	.selected-data-list .remove-all, .selected-data-list .remove-item { cursor: pointer; }
+	ul.list-group > li.list-group-item { padding: 7px !important; }
+	ul.list-group > li.list-group-item small { width: 80%; }
+    .upper-navs .nav-link { cursor: pointer; }
+    .upper-navs .nav-link:hover { background-color: #fff; border-color: #ddd #ddd #fff; }
+    .chatIcon { width: 40px; height: 40px; border-radius: 8px !important; }
+    .unread { background-color: #e8e8e8 !important; }
+</style>
+
+<div class="row page-titles">
+    <div class="col-md-6 col-8 align-self-center">
+        <h3 class="text-themecolor m-b-0 m-t-0">Events</h3>
+    </div>
+</div>
+
+<div ng-if="userRole != 'parent'" class="row">
+    <div class="col-12">
+        <ul class="nav nav-tabs upper-navs" style="border-bottom-width: 2px;">
+            <li class="upper-nav-tabs nav-item"> <a ng-click="changeView('events')" ng-class="{'active': views.events }" class="nav-link"> All Events </a> </li>
+            <li class="upper-nav-tabs nav-item"> <a ng-click="changeView('myEvents')" ng-class="{'active': views.myEvents }" class="nav-link"> My Events </a> </li>
+        </ul>
+    </div>
+</div>
+
+<div class="container-fluid" ng-if="views.events || views.myEvents">
+    <div ng-if="userRole != 'parent'" class="row mt-3">
+        <div class="col-12">
+            <form class="form-horizontal row" name="filterEvents" role="form" novalidate>
+                <div class="col-2">
+                    <div class="form-group mb-0" ng-class="{'has-error': filterEvents.typeOne.$invalid}">
+                        <label class="control-label"> Type<span class="text-danger">*</span> </label>
+                        <select class="form-control" ng-change="enableDisableClass()" ng-model="filterForm.type1" required>
+                            <option value="" disabled selected> Pick Type </option>
+                            <option ng-repeat="type in options track by $index" value="{{type.id}}"> {{type.name}} </option>
+                        </select>
+                    </div>
+                </div>
+                <div class="col-2">
+                    <div class="form-group mb-0" ng-class="{'has-error': filterEvents.typeTwo.$invalid}">
+                        <label class="control-label"> Role<span class="text-danger">*</span> </label>
+                        <select class="form-control" ng-change="enableDisableClass()" ng-model="filterForm.type2" required>
+                            <option value="" disabled selected> Pick Role </option>
+                            <option ng-if="filterForm.type1 == 'acad'" ng-repeat="role in academic track by $index" value="{{role.id}}"> {{role.name}} </option>
+                            <option ng-if="filterForm.type1 == 'non'" ng-repeat="role in roles track by $index" value="{{role.id}}"> {{role.name}} </option>
+                        </select>
+                    </div>
+                </div>
+                <div class="col-2">
+                    <div class="form-group mb-0" ng-class="{'has-error': filterEvents.classes.$invalid}">
+                        <label class="control-label"> class<span class="text-danger">*</span> </label>
+                        <select ng-disabled="filterForm.type1 != 'acad'" ng-required="filterForm.type1 == 'acad'" class="form-control selectpicker" data-live-search="true" data-actions-box="true" ng-model="filterForm.class" name="class_id" ng-change="changeClass()" multiple  >
+                            <option ng-repeat="class in classes" value="{{class.id}}">{{class.name}}</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="col-2">
+                    <div class="form-group mb-0" ng-class="{'has-error': filterEvents.sections.$invalid}" ng-if="$root.dashboardData.enableSections == '1'">
+                        <label class="control-label">Sections<span class="text-danger">*</span></label>
+                        <select ng-disabled="filterForm.type1 == '' || filterForm.type1 == 'non' || ( filterForm.type1 == 'acad' && filterForm.type2 != 'non' )" ng-required="filterForm.type1 == 'acad' && filterForm.type2 == 'non'" class="form-control selectpicker" data-live-search="true" data-actions-box="true" ng-model="filterForm.section" name="sectionId" multiple >
+                            <option ng-repeat="section in sections" value="{{section.id}}">{{section.name}}</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="col-1">
+                    <div class="form-group mb-0" ng-class="{'has-error': filterEvents.startDate.$invalid}">
+                        <label for="filterStartDate" class="control-label"> From<span class="text-danger">*</span> </label>
+                        <input type="text" date-picker name="filterStartDate" id="filterStartDate" class="form-control" ng-model="filterForm.startDate" required />
+                    </div>
+                </div>
+                <div class="col-1">
+                    <div class="form-group mb-0" ng-class="{'has-error': filterEvents.endDate.$invalid}">
+                        <label for="filterEndDate" class="control-label"> To<span class="text-danger">*</span> </label>
+                        <input type="text" date-picker name="filterEndDate" id="filterEndDate" class="form-control" ng-model="filterForm.endDate" required />
+                    </div>
+                </div>
+                <div class="col-2 pl-0 pr-0 pt-4">
+                    <button ng-click="doFilterEvents()" ng-disabled="filterEvents.$invalid" class="btn btn-info mr-1 pr-2 pl-2"> <i class="fa fa-search"></i> Filter </button>
+                    <button ng-if="isEventsFiltered == true" ng-click="cancelEventsFilter()" class="btn btn-danger ml-1 pr-2 pl-2"> <i class="fa fa-times"></i> Cancel Filter </button>
+                </div>
+            </form>
+        </div>
+    </div>
+    <div class="row mt-3">
+        <div class="col-1 pr-0 pl-0">
+            <div class="btn-group m-b-10 m-r-10" role="group" aria-label="Button group with nested dropdown">
+                <button ng-click="checkAll()" type="button" class="btn btn-sm btn-secondary font-18 text-dark"><i class="mdi mdi-check"></i></button>
+            </div>
+            <div class="btn-group m-b-10 m-r-10" role="group" aria-label="Button group with nested dropdown">
+                <button type="button" tooltip title="{{phrase.Remove}}" ng-click="markDelete('sent')" class="btn btn-sm btn-secondary font-18 text-dark"><i class="mdi mdi-delete"></i></button>
+            </div>
+        </div>
+        <div class="col-3">
+            <div class="card-block-input-group card-block-input-item">
+                <div class="input-group input-group-sm">
+                    <input type="text" name="table_search" ng-model="searchText" placeholder="{{phrase.Search}}" class="form-control">
+                    <span class="input-group-addon"><i class="fa fa-search"></i></span>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-4">
+            <div class="card-block pr-0 pl-0 pt-0">
+                <div class="sent-data inbox-center b-all table-responsive" style="overflow-x: hidden; overflow-y: scroll !important; height: 550px !important;">
+                    <table class="table table-hover no-wrap table-bordered" style="margin-bottom:0px !important;">
+                        <tr dir-paginate="event in events | filter:searchText | itemsPerPage:20 track by $index" total-items="totalItems">
+                            <td ng-class="{'unread': event.isRead == false}" class="text-center" style="width:40px">
+                                <div class="checkbox">
+                                    <input type="checkbox" name="checked[]" id="checkbox{{event.id}}" ng-model="event.selected">
+                                    <label for="checkbox{{event.id}}"></label>
+                                </div>
+                            </td>
+                            <td style="cursor: pointer;" ng-class="{'unread': event.isRead == false}" ng-click="openEvent(event.id, $index)">
+                                <div class="row">
+                                    <div class="col-2 pr-2 pl-2" style="max-width: 50px !important;">
+                                        <img class="chatIcon" ng-src="{{'index.php/eventous/eventImage/' + event.eventImage}}">
+                                    </div>
+                                    <div class="col-10">
+                                        <div class="row">
+                                            <div class="col-12">
+                                                <span ng-if="event.isRead == true" class="text-primary"> {{ event.name }} </span>
+                                                <span ng-if="event.isRead == false" class="text-primary">
+                                                    <strong> <i class="font-small fa fa-circle" style="font-size: xx-small;"></i> {{ event.name }} </strong>
+                                                </span>
+                                            </div>
+                                            <div class="col-7"> <span>  </span> </div>
+                                            <div class="pt-2 col-5" style="font-size: xx-small !important;"> {{ event.creation }} </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr ng-show="!events.length"><td class="noTableData" colspan="4"> No Events are available </td></tr>
+                    </table>
+                </div>
+            </div>
+        </div>
+        <div class="col-8">
+            <div class="container-fluid pt-0" ng-if="isFirstLoaded == true">
+                <div class="row" ng-if="isLoading == true"> <div class="col-12 text-center"> <i class="fa fa-spinner fa-spin fa-fw"></i> Reading Event Data </div> </div>
+                <div class="row" ng-if="isLoading == false">
+                    <div class="col-12">
+                        <div class="card-block">
+                            <h4 class="card-title">
+                                <i class="fa fa-calendar-check-o"></i> {{ eventDet.eventTitle }}
+                                <span class="pull-right">
+                                    <div ng-if="eventDet.status != true" class="btn-group m-b-10 m-r-10" role="group">
+                                        <button type="button" title="Going" tooltip ng-click="markGoing(eventDet.id)" class="btn btn-sm btn-success font-18 text-white"><i class="fa fa-check"></i></button>
+                                        <button type="button" title="Maybe" tooltip ng-click="markMaybe(eventDet.id)" class="btn btn-sm btn-warning font-18 text-white"><i class="fa fa-exclamation-triangle"></i></button>
+                                        <button type="button" title="Decline" tooltip ng-click="markDecline(eventDet.id)" class="btn btn-sm btn-danger font-18 text-white"><i class="fa fa-times"></i></button>
+                                    </div>
+                                    <div ng-if="eventDet.status == true" class="btn-group m-b-10 m-r-10" role="group">
+                                        <button type="button" title="Edit Event" tooltip ng-click="markGoing(eventDet.id)" class="btn btn-sm btn-info font-18 text-white"><i class="fa fa-pencil"></i></button>
+                                        <button type="button" title="Delete Event" tooltip ng-click="removeNotice(eventDet.id)" class="btn btn-sm btn-danger font-18 text-white"><i class="fa fa-trash"></i></button>
+                                    </div>
+                                </span>
+                            </h4> <br />
+                            <div class="card-body">
+                                <div class="row mt-3 mb-3">
+                                    <div class="col-3 text-right"> <b>Event Creator</b> </div>
+                                    <div class="col-9"> {{ eventDet.creator }} <span class="pull-right"> <small class="text-muted" title="Created On : {{ eventDet.creation_date }}" tooltip> <i class="fa fa-clock-o"></i> {{ eventDet.creation }} </small> </span> </div>
+                                </div>
+                                <div class="row mt-3 mb-3">
+                                    <div class="col-3 text-right"> <b>Event Duration</b> </div>
+                                    <div ng-if="eventDet.eventDate == eventDet.eventEndDate" class="col-9"> {{ eventDet.eventDate }} <span class="pull-right"> <small class="text-muted" title="Event Date" tooltip> <i class="fa fa-info-circle"></i> {{ eventDet.until }} </small> </span> </div>
+                                    <div ng-if="eventDet.eventDate != eventDet.eventEndDate" class="col-9"> {{ eventDet.eventDate }} - {{ eventDet.eventEndDate }} <span class="pull-right"> <small class="text-muted" title="Event Date" tooltip> <i class="fa fa-info-circle"></i> {{ eventDet.until }} </small> </span> </div>
+                                </div>
+                                <div class="row mt-3 mb-3">
+                                    <div class="col-3 text-right"> <b>Event Details</b> </div>
+                                    <div class="col-9"> {{ eventDet.eventDescription }} </div>
+                                </div>
+                                <div class="row mt-3 mb-3">
+                                    <div class="col-3 text-right"> <b>Guest list</b> </div>
+                                    <div class="col-9"> <button ng-click="openGuests()" class="btn btn-sm btn-info"> See invited guests </button> </div>
+                                </div>
+                                <div class="row mt-3 mb-3">
+                                    <div class="col-3 text-right"> <b>Event Image</b> </div>
+                                    <div class="col-9"> <img style="width: 100% !important;" ng-src="{{'index.php/eventous/eventImage/' + eventDet.eventImage}}" /> </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-12">
+            <dir-pagination-controls class="pull-right" on-page-change="pageChanged(newPageNumber)" template-url="assets/templates/dirPagination.html" ></dir-pagination-controls>
+        </div>
+    </div>
+</div>
+
+<modal visible="guestsModal">
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-12">
+                <div class="table-responsive" style="overflow-x: hidden;">
+                    <table class="table table-hover no-wrap table-bordered">
+                        <tbody>
+                            <tr>
+                                <th> # </th>
+                                <th> Name </th>
+                            </tr>
+                            <tr ng-repeat="guest in eventDet.members track by $index">
+                                <td> {{ $index + 1 }} </td>
+                                <td> <i ng-if="guest.details.isSeen == true" title="seen at {{ guest.details.seenDate }}" tooltip class="fa fa-check-circle text-success"></i> {{ guest.name }} </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</modal>

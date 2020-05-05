@@ -1,0 +1,296 @@
+<style>
+    .custom-btn-success, .custom-btn-success.disabled { background: #7ace4c; border: 1px solid #7ace4c; color: white !important; }
+    .custom-btn-success:hover { background: #7ace4c; opacity: .8; border: 1px solid #7ace4c; }
+    .label-success { background-color: #7ace4c !important; }
+    .label-danger { background-color: #f33155 !important; }
+    .label-rouded, .label-rounded { border-radius: 60px; padding: 4px 12px 3px; font-weight: 500;}
+    .noTableData { text-align: center !important; }
+    .payroll-navs .nav-link { cursor: pointer; }
+    .payroll-navs .nav-link:hover { background-color: #fff; border-color: #ddd #ddd #fff; }
+    .custom-textarea { height: 100px; resize: none; }
+    .img-circle { width: 50px; }
+    .list-group-item { font-size: 0.75rem; }
+    .list-group-item.active, .list-group .list-group-item.active:hover { background: #009efb; border-color: #009efb; color: white !important; font-weight: bold; }
+    .list-group a:hover { background: #009efb !important; border-color: #009efb !important; color: white !important; cursor: pointer; }
+    .chkAll { color: white !important; }
+    .bootstrap-timepicker { width: 100% !important; }
+    .timepicker, .time-picker { width: 100% !important; border: 1px solid #c9cbcb; border-top-left-radius: 0px; border-bottom-left-radius: 0px; }
+    .hourMinutePicker { border: 1px solid #c9cbcb; border-top-left-radius: 0px; border-bottom-left-radius: 0px; } 
+    #approvedDate { border: 1px solid #c9cbcb; border-top-left-radius: 0px; border-bottom-left-radius: 0px; }
+    .present { color: #7ace4c; font-weight: 700; cursor: pointer; }
+	.absence { color: #f33155; font-weight: 700; cursor: pointer; }
+	.leave { color: #41b3f9; font-weight: 700; cursor: pointer; }
+	.bolt { font-weight: 700; }
+    .summaryTable th { font-size: 14px; border: 1px solid #eceeef; }
+    .summaryTable tr { border: 1px solid #eceeef; }
+    .summaryTable td { border: 1px solid #eceeef; }
+    .unappend { border: 1px solid #c9cbcb; border-top-left-radius: 0px; border-bottom-left-radius: 0px; } 
+</style>
+<div class="row page-titles">
+    <div class="col-12 align-self-center">
+        <h3 class="text-themecolor m-b-0 m-t-0"> Attendance Management </h3>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-12">
+        <ul class="nav nav-tabs payroll-navs" style="border-bottom-width: 2px;">
+            <li ng-if="$root.can('workshifts.list')" class="upper-nav-tabs nav-item"> <a ng-click="jumpTo('shifts')" ng-class="{'active': views.workShiftsList || views.workShiftsAdd || views.workShiftsEdit }" class="nav-link"> Manage Work Shifts </a> </li>
+            <li ng-if="$root.can('attendances.list')" class="upper-nav-tabs nav-item"> <a ng-click="jumpTo('attendances')" ng-class="{'active': views.attendancesList }" class="nav-link"> Manual Attendance </a> </li>
+        </ul>
+    </div>
+</div>
+
+<div class="row" ng-show="views.workShiftsList">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-block">
+                <div class="card-title">
+                    <button ng-show="$root.can('workshifts.add')" ng-click="changeView('workShiftsAdd')" class="mb-3 btn pull-right btn-success card-block-input-item" style="font-weight: bold;"> <i class="fa fa-plus-circle"></i> Add Work Shift </button>
+                    <div class="pull-right card-block-input-group card-block-input-item">
+                        <div class="input-group input-group-sm">
+                            <input type="text" name="table_search" ng-model="searchText" placeholder="{{phrase.Search}}" class="form-control input-sm">
+                            <span class="input-group-addon"><i class="fa fa-search"></i></span>
+                        </div>
+                    </div>
+                    <h4>Work Shift List</h4>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-bordered table-hover">
+                            <tbody>
+                                <tr>
+                                    <th> # </th>
+                                    <th> Work Shift Name </th>
+                                    <th> Start Time </th>
+                                    <th> End Time </th>
+                                    <th> Late Count Time </th>
+                                    <th ng-show="$root.can('workshifts.edit') || $root.can('workshifts.delete')" style='width:160px;'> Actions </th>
+                                </tr>
+                                <tr dir-paginate="shift in workshifts | filter:searchText | itemsPerPage:20 track by $index" total-items="totalWorkshifts">
+                                    <td> {{ $index + 1 }} </td>
+                                    <td> {{ shift.name }} </td>
+                                    <td> {{ shift.start }} </td>
+                                    <td> {{ shift.end }} </td>
+                                    <td> {{ shift.late }} </td>
+                                    <td ng-show="$root.can('workshifts.edit') || $root.can('workshifts.delete')">
+                                        <button ng-show="$root.can('workshifts.edit')" ng-click="editWorkShift(shift.id)" type="button" class="btn custom-btn-success btn btn-xs" title="Edit" tooltip><i class="fa fa-pencil-square-o"></i></button>
+                                        <button ng-show="$root.can('workshifts.delete')" ng-click="removeWorkShift(shift,$index)" type="button" class="btn btn-danger btn-xs" title="Remove" tooltip><i class="fa fa-trash-o"></i></button>
+                                    </td>
+                                </tr>
+                                <tr ng-show="!workshifts.length"><td class="noTableData" colspan="6"> No Work Shifts are available at the moment </td></tr>
+                            </tbody>
+                        </table>
+                        <dir-pagination-controls
+                            on-page-change="pageChanged(newPageNumber)"
+                            template-url="assets/templates/dirPagination.html">
+                        </dir-pagination-controls>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row" ng-show="views.workShiftsAdd">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-block">
+                <button ng-show="$root.can('workshifts.list')" ng-click="changeView('workShiftsList')" class="mb-3 btn pull-right btn-danger card-block-input-item"> Cancel Add </button>
+                <div class="card-title"> <h4>Add Work Shift</h4> </div> <br />
+                <div class="card-body">
+                    <form class="form-horizontal" name="addWorkShift">
+                        <div class="form-group row" ng-class="{'has-error': addWorkShift.name.$invalid}">
+                            <label class="col-3 pb-2 pl-3 control-label col-form-label">Shift Name<span class="text-danger">*</span></label>
+                            <div class="col-9">
+                                <input type="text" ng-model="workshiftForm.name" class="form-control" placeholder="Enter shift name" required />
+                            </div>
+                        </div>
+                        <div class="form-group row" ng-class="{'has-error': addWorkShift.start.$invalid}">
+                            <label class="col-3 pb-2 pl-3 control-label col-form-label">Start Time<span class="text-danger">*</span></label>
+                            <div class="col-9">
+                                <div class="input-group">
+                                    <span class="input-group-addon"><i class="fa fa-clock-o"></i></span>
+                                    <div class="bootstrap-timepicker">
+                                        <input type="text" ng-model="workshiftForm.start" class="form-control timepicker" placeholder="Enter start time" required />
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-group row" ng-class="{'has-error': addWorkShift.start.$invalid}">
+                            <label class="col-3 pb-2 pl-3 control-label col-form-label">End Time<span class="text-danger">*</span></label>
+                            <div class="col-9">
+                                <div class="input-group">
+                                    <span class="input-group-addon"><i class="fa fa-clock-o"></i></span>
+                                    <div class="bootstrap-timepicker">
+                                        <input type="text" ng-model="workshiftForm.end" class="form-control timepicker" placeholder="Enter end time" required />
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-group row" ng-class="{'has-error': addWorkShift.start.$invalid}">
+                            <label class="col-3 pb-2 pl-3 control-label col-form-label">Late Count Time<span class="text-danger">*</span></label>
+                            <div class="col-9">
+                                <div class="input-group">
+                                    <span class="input-group-addon"><i class="fa fa-clock-o"></i></span>
+                                    <div class="bootstrap-timepicker">
+                                        <input type="text" ng-model="workshiftForm.late" class="form-control timepicker" placeholder="Enter late count time" required />
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <div class="col-12">
+                                <button ng-if="loadingIcon == false" ng-click="createWorkShift()" class="btn btn-success waves-effect waves-light" ng-disabled="addWorkShift.$invalid"> <i class="fa fa-plus"></i> Create Work Shift </button>
+                                <button ng-if="loadingIcon == true" class="btn btn-success waves-effect waves-light" disabled> <i class="fa fa-spinner fa-spin fa-fw"></i> Creating Work Shift </button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row" ng-show="views.workShiftsEdit">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-block">
+                <button ng-show="$root.can('workshifts.list')" ng-click="changeView('workShiftsList')" class="mb-3 btn pull-right btn-danger card-block-input-item"> Cancel Edit </button>
+                <div class="card-title"> <h4>Edit Work Shift</h4> </div> <br />
+                <div class="card-body">
+                    <form class="form-horizontal" name="modifyWorkShift">
+                        <div class="form-group row" ng-class="{'has-error': modifyWorkShift.name.$invalid}">
+                            <label class="col-3 pb-2 pl-3 control-label col-form-label">Shift Name<span class="text-danger">*</span></label>
+                            <div class="col-9">
+                                <input type="text" ng-model="workshiftForm.name" class="form-control" placeholder="Enter shift name" required />
+                            </div>
+                        </div>
+                        <div class="form-group row" ng-class="{'has-error': modifyWorkShift.start.$invalid}">
+                            <label for="shiftStartTime" class="col-3 pb-2 pl-3 control-label col-form-label">Start Time<span class="text-danger">*</span></label>
+                            <div class="col-9">
+                                <div class="input-group">
+                                    <span class="input-group-addon"><i class="fa fa-clock-o"></i></span>
+                                    <div class="bootstrap-timepicker">
+                                        <input type="text" ng-model="workshiftForm.start" class="form-control time-picker" id="shiftStartTime" name="shiftStartTime" placeholder="Enter start time" required />
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-group row" ng-class="{'has-error': modifyWorkShift.start.$invalid}">
+                            <label for="shiftEndTime" class="col-3 pb-2 pl-3 control-label col-form-label">End Time<span class="text-danger">*</span></label>
+                            <div class="col-9">
+                                <div class="input-group">
+                                    <span class="input-group-addon"><i class="fa fa-clock-o"></i></span>
+                                    <div class="bootstrap-timepicker">
+                                        <input type="text" ng-model="workshiftForm.end" class="form-control time-picker" id="shiftEndTime" name="shiftEndTime" placeholder="Enter end time" required />
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-group row" ng-class="{'has-error': modifyWorkShift.start.$invalid}">
+                            <label for="shiftLateTime" class="col-3 pb-2 pl-3 control-label col-form-label">Late Count Time<span class="text-danger">*</span></label>
+                            <div class="col-9">
+                                <div class="input-group">
+                                    <span class="input-group-addon"><i class="fa fa-clock-o"></i></span>
+                                    <div class="bootstrap-timepicker">
+                                        <input type="text" ng-model="workshiftForm.late" class="form-control time-picker" id="shiftLateTime" name="shiftLateTime" placeholder="Enter late count time" required />
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <div class="col-12">
+                                <button ng-if="loadingIcon == false" ng-click="saveWorkShift()" class="btn btn-info waves-effect waves-light" ng-disabled="modifyWorkShift.$invalid"> <i class="fa fa-save"></i> Save Work Shift </button>
+                                <button ng-if="loadingIcon == true" class="btn btn-info waves-effect waves-light" disabled> <i class="fa fa-spinner fa-spin fa-fw"></i> Saving Work Shift </button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row" ng-show="views.attendancesList">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-block">
+                <div class="card-title"> <h4>Employee Attendance</h4> </div>
+                <div class="card-body">
+                    <form class="form-horizontal" name="attendenceFilter">
+                        <div class="row">
+                            <div class="col-5">
+                                <div class="form-group" ng-class="{'has-error': payments.month.$invalid}">
+                                    <label for="attendenceDepartment">Department<span class="text-danger">*</span></label>
+                                    <select ng-model="attendenceForm.department" class="form-control" name="attendenceDepartment" id="attendenceDepartment" required>
+                                        <option value="" disabled selected> --- Please Select --- </option>
+                                        <option ng-repeat="department in departments track by $index" value="{{department.id}}"> {{ department.name }} </option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-5">
+                                <div class="form-group" ng-class="{'has-error': attendenceFilter.date.$invalid}">
+                                    <label for="attendenceDate">Date<span class="text-danger">*</span></label>
+                                    <div class="input-group">
+                                        <span class="input-group-addon"><i class="fa fa-calendar"></i></span>
+                                        <input ng-model="attendenceForm.date" type="text" name="attendenceDate" id="attendenceDate" class="form-control unappend" date-picker required readonly placeholder="Enter Date" />
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-2 pt-4">
+                                <button ng-if="loadingIcon == false" ng-click="filterAttendance()" class="btn btn-info waves-effect waves-light" ng-disabled="attendenceFilter.$invalid"> <i class="fa fa-search"></i> Filter </button>
+                                <button ng-if="loadingIcon == true" class="btn btn-info waves-effect waves-light" disabled> <i class="fa fa-spinner fa-spin fa-fw"></i> Filtering </button>
+                            </div>
+                        </div>
+                    </form>
+                    <div class="row">
+                        <div class="col-12">
+                            <div class="table-responsive">
+                                <table class="table table-bordered table-hover attendence-table">
+                                    <tbody>
+                                        <tr>
+                                            <th> # </th>
+                                            <th> Fingerprint No. </th>
+                                            <th> Employee Name </th>
+                                            <th> In Time </th>
+                                            <th> Out Time </th>
+                                        </tr>
+                                        <tr ng-repeat="employee in attendences track by $index">
+                                            <td> {{ $index + 1 }} </td>
+                                            <td> {{ employee.finger_id }} </td>
+                                            <td> {{ employee.fullName }} </td>
+                                            <td>
+                                                <div class="input-group">
+                                                    <span class="input-group-addon"><i class="fa fa-clock-o"></i></span>
+                                                    <div class="bootstrap-timepicker">
+                                                        <input type="text" ng-model="employee.inTime" class="form-control timepicker inTimePicker" placeholder="In Time" />
+                                                    </div>
+                                                </div>
+                                            </td>
+                                            <td>
+                                                <div class="input-group">
+                                                    <span class="input-group-addon"><i class="fa fa-clock-o"></i></span>
+                                                    <div class="bootstrap-timepicker">
+                                                        <input type="text" ng-model="employee.outTime" class="form-control timepicker outTimePicker" placeholder="Out Time" />
+                                                    </div>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                        <tr ng-show="!attendences.length"><td class="noTableData" colspan="5"> No data available </td></tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row" ng-if="isFiltered && $root.can('attendances.take')">
+                        <div class="col-12">
+                            <button ng-if="speicalLoadingIcon == false" ng-click="takeAttendance()" class="btn btn-info waves-effect waves-light" ng-disabled="attendenceFilter.$invalid"> <i class="fa fa-check"></i> Save </button>
+                            <button ng-if="speicalLoadingIcon == true" class="btn btn-info waves-effect waves-light" disabled> <i class="fa fa-spinner fa-spin fa-fw"></i> Saving </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

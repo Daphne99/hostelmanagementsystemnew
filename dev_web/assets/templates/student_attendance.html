@@ -1,0 +1,453 @@
+<link rel="stylesheet" href="assets/plugins/bootstrap-select/bootstrap4.1.1-dropdown.css" type="text/css" />
+<style>
+    .panel-info { border-color: #41b3f9; }
+    .panel { border-radius:0; margin-bottom:30px; border:0; box-shadow:none }
+    .panel .panel-heading { border-radius: 0; font-weight: 500; font-size: 16px; padding: 10px 25px; }
+    .panel-blue .panel-heading, .panel-info .panel-heading { border-color: #41b3f9; color: #fff; background-color: #41b3f9; }
+    .collapse.in { display: block; }
+    .panel .panel-body { padding: 25px; background-color: white; }
+    .panel-custom { background-color: #F1F1F1; box-shadow: 0 1px 1px rgba(0, 0, 0, 0.05); padding: 10px 15px; }
+    .panel .panel-body:first-child h3 { margin-top: 0; font-weight: 500; font-family: Rubik,sans-serif; font-size: 14px; text-transform: uppercase; }
+    .box { border: 3px solid #F1F1F1; }
+    .noTableData { text-align: center !important; }
+    .custom-desc-textarea { height: 250px; resize: none; }
+    .desc-textarea { height: 75px; resize: none; }
+    .panel-default { border-color: rgba(120,130,140,.13); }
+    .panel-default .panel-heading { color: #263238; background-color: #fff; border-bottom: 1px solid rgba(120,130,140,.13); }
+    .panel-default .panel-body { color: #263238; }
+    .details { font-size: 13px; color: #98a6ad; }
+    .panel .panel-footer { background: #fff; border-radius: 0; padding: 20px 25px; }
+    .panel-info .panel-footer { background: #fff; color: #263238; border-top: 2px solid #41b3f9; }
+    .panel-default .panel-footer { background: #fff; color: #263238; border-top: 2px solid rgba(120,130,140,.13); }
+    .label-rouded, .label-rounded { border-radius: 8px; padding: 6px 8px 5px; font-weight: 500; width: 65px !important; }
+    .attendanceHeader { font-size: 35px !important; }
+    .monthName { color: black !important; border: 1px solid #41b3f9; background-color: white; border-radius: 10px; padding: 5px 190px; margin: 0px 25px; }
+    .arrowNavs { color: white !important; cursor: pointer; }
+    .tooltip-inner { white-space:pre-wrap; }
+    .disabled-header { background-color: lavender !important; color: #f62d51 !important; cursor: help !important; }
+    .disabled-cell { background-color: lavender !important; color: #f62d51 !important; cursor: not-allowed; }
+    .particularCell:hover { background-color: lavender !important; }
+    .inlineHr { border-top: 2px solid white !important; }
+    .upBolder { font-weight: bold !important; }
+    .normal-cell { cursor: pointer; }
+    .img-circle { width: 50px; }
+    .btn-dark { color: #fff !important; background-color: #343a40 !important; border-color: #343a40 !important; }
+    .btn-dark:hover { color: #fff !important; background-color: #23272b !important; border-color: #1d2124 !important; }
+    .btn-dark:not(:disabled):not(.disabled).active, .btn-dark:not(:disabled):not(.disabled):active, .show > .btn-dark.dropdown-toggle { color: #fff !important; background-color: #1d2124 !important; border-color: #171a1d !important; }
+    .btn-dark.focus, .btn-dark:focus { box-shadow: 0 0 0 .2rem rgba(52,58,64,.5) !important; }
+    .firstAppend { border: 1px solid #ced2d3;border-top-left-radius: 10px;border-bottom-left-radius: 10px; }
+    .lastAppend { border-top-right-radius: 10px;border-bottom-right-radius: 10px; }
+    .doFilterReport { color: white !important; }
+    .customAppend { background-color: #e6e6e6 !important; }
+    .custom-cell-sm { font-size: x-small !important; font-weight: bold !important; }
+    .student-cell { min-width: 310px !important; vertical-align: middle !important; }
+    .holidayColor{ color: black !important; }
+    .absentsColor{ color: #f62d51 !important; }
+    .presentColor{ color: #3c763d !important; }
+    .lateingColor{ color: #ffbc34 !important; }
+    .halfDayColor{ color: #009efb !important; }
+    .selected-day{ background-color: #ffbc34 !important; color: white !important; font-weight: bold !important; }
+    td.selected-day a.tooltipTriggerer b.lateingColor { color: white !important; }
+    .highlight-prepend { border: 1px solid #ddd; border-top-left-radius: 8px; border-bottom-left-radius: 8px; background-color: #e6e6e6; }
+    .highlight-append { padding-bottom: .75rem !important; border-top-right-radius: 8px !important; border-bottom-right-radius: 8px; border-top-left-radius: 0px; border-bottom-left-radius: 0px; }
+</style>
+<div class="row page-titles">
+    <div class="col-md-6 col-8 align-self-center">
+        <h3 class="text-themecolor m-b-0 m-t-0"> {{attendanceParseTitle}}</h3>
+    </div>
+</div>
+
+<div ng-if="userRole != 'parent'" class="row" ng-show="views.take">
+    <div class="col-12">
+        <form class="form-horizontal" name="takeAttendance" role="form" novalidate>
+            <div class="row">
+                <div class="col-3">
+                    <div class="form-group row" ng-class="{'has-error': takeAttendance.classId.$invalid}">
+                        <label class="col-3 text-right control-label col-form-label">Class<span class="text-danger">*</span></label>
+                        <div class="col-9">
+                            <select class="form-control" ng-model="form.class_id" ng-change="changeClasses()" name="class_id" required>
+                                <option value="" disabled selected> --- Select Class --- </option>
+                                <option ng-repeat="class in classes" value="{{ class.id }}">{{ class.name }}</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-3">
+                    <div class="form-group row" ng-class="{'has-error': takeAttendance.sectionId.$invalid}">
+                        <label class="col-3 text-right control-label col-form-label">Section<span class="text-danger">*</span></label>
+                        <div class="col-9">
+                            <select class="form-control" ng-model="form.section_id" name="section_id" required>
+                                <option value="" disabled selected> --- Select Section --- </option>
+                                <option ng-repeat="section in sections" value="{{ section.id }}">{{ section.name }}</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-3">
+                    <div class="form-group row" ng-class="{'has-error': takeAttendance.month.$invalid}">
+                        <label for="takeMonth" class="col-3 text-right control-label col-form-label">Month<span class="text-danger">*</span></label>
+                        <div class="col-9">
+                            <input ng-model="form.month" type="text" name="takeMonth" id="takeMonth" class="form-control" required readonly />
+                        </div>
+                    </div>
+                </div>
+                <div class="col-3">
+                    <button ng-if="loadingIcon == false" class="btn btn-info" ng-click="filterTakeAttendance()" ng-disabled="takeAttendance.$invalid" > <i class="fa fa-search"></i> Get Attendance </button>
+                    <button ng-if="loadingIcon == true" class="btn btn-info" disabled > <i class="fa fa-spinner fa-spin fa-fw"></i> Getting Attendance </button>
+                </div>
+            </div>
+        </form>
+    </div>
+    <div class="col-12" ng-if="attendance.length">
+        <div class="card">
+            <div class="panel panel-info">
+                <div class="panel-heading text-center attendanceHeader">
+                    <a class="arrowNavs" ng-click="moveMonth('backward')" title="Previous month" tooltip> <i class="fa fa-play-circle fa-rotate-180"></i> </a> 
+                    <span class="monthName"> {{ monthName }} </span>
+                    <a class="arrowNavs" ng-click="moveMonth('forward')" title="Next month" tooltip> <i class="fa fa-play-circle"></i> </a> 
+                </div>
+                <div class="panel-wrapper collapse in" style="border: 3px solid #41b3f9;">
+                    <div class="panel-body">
+                        <div class="container-fluid pt-2 pb-2">
+                            <div class="row">
+                                <div class="col-7 pr-1 pl-1">
+                                    <form class="form-horizontal" role="form" novalidate>
+                                        <div class="form-group mb-0">
+                                            <div class="input-group">
+                                                <div class="input-group-prepend pt-2 pb-1 pl-3 pr-3 highlight-prepend">
+                                                    <label class="input-group-text" for="highLighter">Highlight days</label>
+                                                </div>
+                                                <select class="form-control selectpicker" name="highLighter" id="highLighter"
+                                                        data-actions-box="true"
+                                                        data-live-search="true"
+                                                        ng-model="temp.selectedDays" multiple>
+                                                    <option ng-repeat="day in highlighDays" value="{{day.date}}">{{day.highlight}}</option>
+                                                </select>
+                                                <div class="input-group-append">
+                                                    <button ng-click="highlight()" class="btn btn-info pt-2 highlight-append" type="button"> Highlight </button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </form>
+                                </div>
+                                <div class="col-5 pt-1 pr-1 pl-1">
+                                    <span class="mr-2 ml-2">Present: <b class="upBolder presentColor">P</b> </span> 
+                                    <span class="mr-2 ml-2">Absent: <b class="upBolder absentsColor">A</b> </span> 
+                                    <span class="mr-2 ml-2">Late: <b class="upBolder lateingColor">L</b> </span> 
+                                    <span class="mr-2 ml-2">Half Day: <b class="upBolder halfDayColor">F</b> </span> 
+                                    <span class="mr-2 ml-2">Holiday: <b class="upBolder holidayColor">H</b> </span> 
+                                </div>
+                            </div>
+                        </div>
+                        <div class="container-fluid pt-2 pb-2" ng-if="fetchingData == false">
+                            <div class="row">
+                                <div class="col-12">
+                                    <div class="input-group input-group-sm">
+                                        <input type="text" name="table_search" ng-model="searchText" placeholder="{{phrase.Search}}" class="form-control input-sm">
+                                        <span class="input-group-addon"><i class="fa fa-search"></i></span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="container-fluid">
+                            <div class="row">
+                                <div class="col-12" ng-if="fetchingData == false" >
+                                    <div class="table-responsive">
+                                        <table class="table table-bordered table-hover">
+                                            <thead>
+                                                <tr>
+                                                    <th class="text-center student-cell"> Student </th>
+                                                    <th ng-repeat="header in tableHeaders" class="text-center custom-cell-sm" ng-class="{'disabled-header': header.isAllowed == true}" >
+                                                        <a ng-if="header.isAllowed == true && header.allowanceData.type == 'Holiday'" class="tooltipTriggerer" data-toggle="tooltip" title="Holiday: {{ header.allowanceData.name }} <hr class='mb-0 mt-1 inlineHr' /> {{ header.allowanceData.comment }}" > {{ header.day }} {{ header.dayOfMonth }} </a>
+                                                        <a ng-if="header.isAllowed == true && header.allowanceData.type == 'Weekly'" title="Weekly Holiday" tooltip> {{ header.day }} {{ header.dayOfMonth }} </a>
+                                                        <a ng-if="header.isAllowed == false"> {{ header.day }} {{ header.dayOfMonth }} </a>
+                                                    </th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <tr ng-repeat="data in attendance | filter:searchText track by $index" ng-init="attendRow = $index" >
+                                                    <td class="custom-cell-sm"> {{ data.name }} ( {{ data.num }} ) </td>
+                                                    <td ng-repeat="attendanceData in data.attendance track by $index" ng-init="attendDate = $index" ng-click="openAttendance(attendRow, attendanceData.date)" class="text-center particularCell" ng-class="{'disabled-cell': attendanceData.isAllowed == true, 'selected-day': in_array(attendanceData.date, temp.pressedSelectedDays) && attendanceData.isAllowed == false, 'normal-cell': attendanceData.isAllowed == false}" >
+                                                        <a ng-if="attendanceData.isAllowed == true" title="Holiday" tooltip> <b class="upBolder holidayColor">H</b> </a>
+                                                        <a ng-if="attendanceData.status == '0' && attendanceData.isAllowed != true" class="tooltipTriggerer" data-toggle="tooltip" title="( Absent ) <hr class='mb-0 mt-1 inlineHr' /> {{ data.name }} <br /> {{ data.num }} <hr class='mb-0 mt-1 inlineHr' /> {{ attendanceData.day }} - {{ attendanceData.date }} "> <b class="upBolder absentsColor">A</b> </a>
+                                                        <a ng-if="attendanceData.status == '1' && attendanceData.isAllowed != true" class="tooltipTriggerer" data-toggle="tooltip" title="( Present ) <hr class='mb-0 mt-1 inlineHr' /> {{ data.name }} <br /> {{ data.num }} <hr class='mb-0 mt-1 inlineHr' /> {{ attendanceData.day }} - {{ attendanceData.date }} "> <b class="upBolder presentColor">P</b> </a>
+                                                        <a ng-if="attendanceData.status == '2' && attendanceData.isAllowed != true" class="tooltipTriggerer" data-toggle="tooltip" title="( Late ) <hr class='mb-0 mt-1 inlineHr' /> {{ data.name }} <br /> {{ data.num }} <hr class='mb-0 mt-1 inlineHr' /> {{ attendanceData.day }} - {{ attendanceData.date }} "> <b class="upBolder lateingColor">L</b> </a>
+                                                        <a ng-if="attendanceData.status == '3' && attendanceData.isAllowed != true" class="tooltipTriggerer" data-toggle="tooltip" title="( Half Day ) <hr class='mb-0 mt-1 inlineHr' /> {{ data.name }} <br /> {{ data.num }} <hr class='mb-0 mt-1 inlineHr' /> {{ attendanceData.day }} - {{ attendanceData.date }} "> <b class="upBolder halfDayColor">F</b> </a>
+                                                        <a ng-if="attendanceData.status != '0' && attendanceData.status != '1' && attendanceData.status != '2' && attendanceData.status != '3' && attendanceData.isAllowed != true" class="tooltipTriggerer" data-toggle="tooltip" title="{{ data.name }} <br /> {{ data.num }} <hr class='mb-0 mt-1 inlineHr' /> {{ attendanceData.day }} - {{ attendanceData.date }} "> <b class="upBolder"> - </b> </a>
+                                                    </td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                                <div class="col-12 text-center" ng-if="fetchingData == true" >
+                                    <i class="fa fa-spinner fa-spin fa-fw"></i> Getting Attendance data
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row" ng-show="views.report">
+    <div class="col-12">
+        <form class="form-horizontal" name="reportAttendance" role="form" novalidate>
+            <div class="row">
+                <div ng-if="userRole != 'parent'" class="col-3">
+                    <div class="form-group row" ng-class="{'has-error': takeAttendance.classId.$invalid}">
+                        <label class="col-3 text-right control-label col-form-label">Class<span class="text-danger">*</span></label>
+                        <div class="col-9">
+                            <select class="form-control" ng-model="form.class_id" ng-change="changeClasses()" name="class_id" required>
+                                <option value="" disabled selected> --- Select Class --- </option>
+                                <option ng-repeat="class in classes" value="{{ class.id }}">{{ class.name }}</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                <div ng-if="userRole != 'parent'" class="col-3">
+                    <div class="form-group row" ng-class="{'has-error': takeAttendance.sectionId.$invalid}">
+                        <label class="col-3 text-right control-label col-form-label">Section<span class="text-danger">*</span></label>
+                        <div class="col-9">
+                            <select class="form-control" ng-model="form.section_id" name="section_id" required>
+                                <option value="" disabled selected> --- Select Section --- </option>
+                                <option ng-repeat="section in sections" value="{{ section.id }}">{{ section.name }}</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                <div ng-class="{'col-10': userRole == 'parent', 'col-4': userRole != 'parent'}">
+                    <div class="input-group">
+                        <div class="input-group-prepend customAppend pt-2 pb-2 pr-2 pl-2 firstAppend">
+                            <span class="input-group-text" id="startingDate"> Start Date </span>
+                        </div>
+                        <input type="text" date-picker ng-model="form.startDate" class="form-control" aria-describedby="startingDate" name="starting" id="starting" required />
+                        <div class="input-group-prepend customAppend pt-2 pb-2 pr-2 pl-2" style="border: 1px solid #ced2d3;">
+                            <span class="input-group-text" id="endingDate"> End Date </span>
+                        </div>
+                        <input type="text" date-picker ng-model="form.endDate" class="form-control lastAppend" aria-describedby="endingDate" name="ending" id="ending" required />
+                    </div>
+                </div>
+                <div class="col-2">
+                    <button ng-if="loadingIcon == false" class="btn btn-info form-control doFilterReport" ng-click="filterAttendanceReport()" ng-disabled="reportAttendance.$invalid" > <i class="fa fa-search"></i> Get Report </button>
+                    <button ng-if="loadingIcon == true" class="btn btn-info form-control doFilterReport" disabled > <i class="fa fa-spinner fa-spin fa-fw"></i> Getting Report </button>
+                </div>
+            </div>
+        </form>
+    </div>
+    <div class="col-12" ng-if="attendance.length">
+        <div class="card">
+            <div class="panel panel-info">
+                <div class="panel-heading text-center attendanceHeader">
+                    <span class="monthName"> <b> {{ fromDate }} </b> <i class="fa fa-arrow-right"></i> <b> {{ toDate }} </b> </span>
+                </div>
+                <div class="panel-wrapper collapse in" style="border: 3px solid #41b3f9;">
+                    <div class="panel-body">
+                        <div class="container-fluid pt-2 pb-2">
+                            <div class="row">
+                                <div class="col-7 pr-1 pl-1">
+                                    <form class="form-horizontal" role="form" novalidate>
+                                        <div class="form-group mb-0">
+                                            <div class="input-group">
+                                                <div class="input-group-prepend pt-2 pb-1 pl-3 pr-3 highlight-prepend">
+                                                    <label class="input-group-text" for="highLighter">Highlight days</label>
+                                                </div>
+                                                <select class="form-control selectpicker" name="highLighter" id="highLighter"
+                                                        data-actions-box="true"
+                                                        data-live-search="true"
+                                                        ng-model="temp.selectedDays" multiple>
+                                                    <option ng-repeat="day in highlighDays" value="{{day.date}}">{{day.highlight}}</option>
+                                                </select>
+                                                <div class="input-group-append">
+                                                    <button ng-click="highlight()" class="btn btn-info pt-2 highlight-append" type="button"> Highlight </button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </form>
+                                </div>
+                                <div class="col-5 pt-1 pr-1 pl-1">
+                                    <span class="mr-2 ml-2">Present: <b class="upBolder presentColor">P</b> </span> 
+                                    <span class="mr-2 ml-2">Absent: <b class="upBolder absentsColor">A</b> </span> 
+                                    <span class="mr-2 ml-2">Late: <b class="upBolder lateingColor">L</b> </span> 
+                                    <span class="mr-2 ml-2">Half Day: <b class="upBolder halfDayColor">F</b> </span> 
+                                    <span class="mr-2 ml-2">Holiday: <b class="upBolder holidayColor">H</b> </span> 
+                                </div>
+                            </div>
+                        </div>
+                        <div class="container-fluid pt-2 pb-2" ng-if="fetchingData == false">
+                            <div class="row">
+                                <div class="col-12">
+                                    <div class="input-group input-group-sm">
+                                        <input type="text" name="report_table_search" ng-model="searchReportText" placeholder="{{phrase.Search}}" class="form-control input-sm">
+                                        <span class="input-group-addon"><i class="fa fa-search"></i></span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="container-fluid">
+                            <div class="row">
+                                <div class="col-12" ng-if="fetchingData == false" >
+                                    <div class="table-responsive">
+                                        <table class="table table-bordered table-hover">
+                                            <thead>
+                                                <tr>
+                                                    <th class="text-center student-cell"> Student </th>
+                                                    <th class="text-center" title="Gross Present Percentage (%)" tooltip> % </th>
+                                                    <th class="text-center upBolder presentColor" title="Total Present" tooltip> P </th>
+                                                    <th class="text-center upBolder lateingColor" title="Total Late" tooltip> L </th>
+                                                    <th class="text-center upBolder absentsColor" title="Total Absents" tooltip> A </th>
+                                                    <th class="text-center upBolder holidayColor" title="Total Holidays" tooltip> H </th>
+                                                    <th class="text-center upBolder halfDayColor" title="Total Half Days" tooltip> F </th>
+                                                    <th ng-repeat="header in tableHeaders" class="text-center custom-cell-sm" ng-class="{'disabled-header': header.isAllowed == true}" >
+                                                        <a ng-if="header.isAllowed == true && header.allowanceData.type == 'Holiday'" class="tooltipTriggerer" data-toggle="tooltip" title="Holiday: {{ header.allowanceData.name }} <hr class='mb-0 mt-1 inlineHr' /> {{ header.allowanceData.comment }}" > {{ header.day }} {{ header.dayOfMonth }} </a>
+                                                        <a ng-if="header.isAllowed == true && header.allowanceData.type == 'Weekly'" title="Weekly Holiday" tooltip> {{ header.day }} {{ header.dayOfMonth }} </a>
+                                                        <a ng-if="header.isAllowed == false"> {{ header.day }} {{ header.dayOfMonth }} </a>
+                                                    </th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <tr ng-repeat="data in attendance | filter:searchReportText track by $index">
+                                                    <td class="custom-cell-sm"> {{ data.name }} ( {{ data.num }} ) </td>
+                                                    <td class="text-center">
+                                                        <label
+                                                            class="label label-rouded mb-0"
+                                                            ng-class="{
+                                                                'label-success': data.reports.percentage == 100,
+                                                                'label-warning': data.reports.percentage < 100 && data.reports.percentage > 50,
+                                                                'label-danger': data.reports.percentage <= 50
+                                                            }">
+                                                            {{ data.reports.percentage }} % 
+                                                        </label>
+                                                    </td>
+                                                    <td class="text-center"> {{ data.reports.Present }} </td>
+                                                    <td class="text-center"> {{ data.reports.Lateing }} </td>
+                                                    <td class="text-center"> {{ data.reports.Absents }} </td>
+                                                    <td class="text-center"> {{ data.reports.Holiday }} </td>
+                                                    <td class="text-center"> {{ data.reports.HalfDay }} </td>
+                                                    <td ng-repeat="attendanceData in data.attendance track by $index" ng-init="attendDate = $index" class="text-center particularCell" ng-class="{'disabled-cell': attendanceData.isAllowed == true, 'selected-day': in_array(attendanceData.date, temp.pressedSelectedDays) && attendanceData.isAllowed == false, 'normal-cell': attendanceData.isAllowed == false}" >
+                                                        <a ng-if="attendanceData.isAllowed == true" tooltip> <b class="upBolder holidayColor">H</b> </a>
+                                                        <a ng-if="attendanceData.status == '0' && attendanceData.isAllowed != true" class="tooltipTriggerer" data-toggle="tooltip" title="( Absent ) <hr class='mb-0 mt-1 inlineHr' /> {{ data.name }} <br /> {{ data.num }} <hr class='mb-0 mt-1 inlineHr' /> {{ attendanceData.day }} - {{ attendanceData.date }} "> <b class="upBolder absentsColor">A</b> </a>
+                                                        <a ng-if="attendanceData.status == '1' && attendanceData.isAllowed != true" class="tooltipTriggerer" data-toggle="tooltip" title="( Present ) <hr class='mb-0 mt-1 inlineHr' /> {{ data.name }} <br /> {{ data.num }} <hr class='mb-0 mt-1 inlineHr' /> {{ attendanceData.day }} - {{ attendanceData.date }} "> <b class="upBolder presentColor">P</b> </a>
+                                                        <a ng-if="attendanceData.status == '2' && attendanceData.isAllowed != true" class="tooltipTriggerer" data-toggle="tooltip" title="( Late ) <hr class='mb-0 mt-1 inlineHr' /> {{ data.name }} <br /> {{ data.num }} <hr class='mb-0 mt-1 inlineHr' /> {{ attendanceData.day }} - {{ attendanceData.date }} "> <b class="upBolder lateingColor">L</b> </a>
+                                                        <a ng-if="attendanceData.status == '3' && attendanceData.isAllowed != true" class="tooltipTriggerer" data-toggle="tooltip" title="( Half Day ) <hr class='mb-0 mt-1 inlineHr' /> {{ data.name }} <br /> {{ data.num }} <hr class='mb-0 mt-1 inlineHr' /> {{ attendanceData.day }} - {{ attendanceData.date }} "> <b class="upBolder halfDayColor">F</b> </a>
+                                                        <a ng-if="attendanceData.status != '0' && attendanceData.status != '1' && attendanceData.status != '2' && attendanceData.status != '3' && attendanceData.isAllowed != true" class="tooltipTriggerer" data-toggle="tooltip" title="{{ data.name }} <br /> {{ data.num }} <hr class='mb-0 mt-1 inlineHr' /> {{ attendanceData.day }} - {{ attendanceData.date }} "> <b class="upBolder"> - </b> </a>
+                                                    </td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<modal visible="viewModal">
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-12">
+                <div class="form-group row mb-0">
+                    <div class="col-3"> <img src="/dashboard/profileImage/{{attendanceForm.studentId}}" style="width: 70px;"> </div>
+                    <div class="col-9">
+                        <div class="form-group row">
+                            <div class="col-4 pl-0 pr-0" style="font-size: smaller; font-weight: bold;">Name</div>
+                            <div class="col-8"> <b> {{attendanceForm.studentName}} </b> </div>
+                        </div>
+                        <div class="form-group row">
+                            <div class="col-4 pl-0 pr-0" style="font-size: smaller; font-weight: bold;">Admission No.</div>
+                            <div class="col-8"> <b> {{attendanceForm.studentAdmision}} </b> </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <hr class="mt-0 mb-2" />
+        <form class="form-horizontal" ng-if="attendanceForm.isAllowed == false" name="attendanceAction" role="form" novalidate>
+            <div class="row">
+                <div class="col-12">
+                    <div class="form-group row" ng-class="{'has-error': attendanceAction.status.$invalid || attendanceForm.status == ''}">
+                        <label class="col-2 text-right control-label col-form-label">Status</label>
+                        <div class="col-10">
+                            <div class="row mb-0 mt-0">
+                                <div class="col-6">
+                                    <input type="radio" name="attendanceStatus" value="0" ng-model="attendanceForm.status" required> Absent
+                                </div>
+                                <div class="col-6">
+                                    <input type="radio" name="attendanceStatus" value="1" ng-model="attendanceForm.status" required> Present
+                                </div>
+                            </div>
+                            <div class="row mb-0 mt-0">
+                                <div class="col-6">
+                                    <input type="radio" name="attendanceStatus" value="2" ng-model="attendanceForm.status" required> Late
+                                </div>
+                                <div class="col-6">
+                                    <input type="radio" name="attendanceStatus" value="3" ng-model="attendanceForm.status" required> Half Day
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-12">
+                    <div class="form-group row">
+                        <label class="col-2 text-right control-label col-form-label">Notes</label>
+                        <div class="col-10">
+                            <textarea ng-model="attendanceForm.notes" class="form-control desc-textarea"></textarea>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <hr class="mt-0 mb-2" />
+            <div class="row">
+                <div class="col-12">
+                    <div class="form-group row mb-0">
+                        <div class="col-12">
+                            <button ng-if="specialLoading == false" class="btn btn-info" ng-click="registerAttendance()" ng-disabled="attendanceAction.$invalid"> <i class="fa fa-check-circle"></i> Register attendance </button>
+                            <button ng-if="specialLoading == true" class="btn btn-info" disabled > <i class="fa fa-spinner fa-spin fa-fw"></i> Registering attendance </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </form>
+        <div class="row" ng-if="attendanceForm.isAllowed == true">
+            <div class="col-12" ng-class="{'text-center': attendanceForm.allowanceData.type == 'Weekly'}">
+                <b style="font-weight: bold; font-size: xxx-large;" class="text-success" ng-if="attendanceForm.allowanceData.type == 'Weekly'"> Weekly Holiday </b>
+                <div class="row" ng-if="attendanceForm.allowanceData.type == 'Holiday'" >
+                    <div class="col-12 text-center">
+                        <b style="font-weight: bold; font-size: xxx-large;" class="text-success"> Public Holiday </b>
+                    </div>
+                </div>
+                <hr class="mt-0 mb-2" ng-if="attendanceForm.allowanceData.type == 'Holiday'" />
+                <div class="row" ng-if="attendanceForm.allowanceData.type == 'Holiday'" >
+                    <div class="col-12">
+                        <div class="form-group row mb-0">
+                            <div class="col-2 text-right" style="font-size: smaller; font-weight: bold;">Name</div>
+                            <div class="col-10"> {{ attendanceForm.allowanceData.name }} </div>
+                        </div>
+                        <div class="form-group row mb-0">
+                            <div class="col-2 text-right" style="font-size: smaller; font-weight: bold;">Details</div>
+                            <div class="col-10"> {{ attendanceForm.allowanceData.comment }} </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <hr class="mt-0 mb-2" ng-if="attendanceForm.isAllowed == true" />
+        <div class="row" ng-if="attendanceForm.isAllowed == true">
+            <div class="col-12">
+                <div class="form-group row mb-0">
+                    <div class="col-12">
+                        <button class="btn btn-dark" ng-click="closeModal()"> Close </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</modal>

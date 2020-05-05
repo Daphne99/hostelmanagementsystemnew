@@ -1,0 +1,1152 @@
+<link rel="stylesheet" href="assets/plugins/bootstrap-select/bootstrap4.1.1-dropdown.css" type="text/css" />
+<style>
+    .hr-divider { border-color: #f62d51; }
+    .btn-dark { color: #fff; background-color: #343a40; border-color: #343a40; }
+    .input-group { position: relative !important; display: flex !important; flex-wrap: wrap !important; -webkit-box-align: stretch !important; align-items: stretch !important; width: 100% !important; }
+    .input-group > .custom-file { display: flex !important; -webkit-box-align: center !important; align-items: center !important; }
+    .input-group > .custom-file, .input-group > .custom-select, .input-group > .form-control { position: relative !important; -webkit-box-flex: 1 !important; flex: 1 1 auto !important; width: 1% !important; margin-bottom: 0 !important; }
+    .custom-file { height: calc(2.25rem + 2px) !important; }
+    .custom-file-input { position: relative !important; z-index: 2 !important; width: 100% !important; height: calc(2.25rem + 2px) !important; margin: 0 !important; opacity: 0 !important; }
+    .custom-file-label { position: absolute !important; top: 0 !important; right: 0 !important; left: 0 !important; z-index: 1 !important; height: calc(2.25rem + 2px) !important; padding: .375rem .75rem !important; line-height: 1.5 !important; color: #495057 !important; background-color: #fff !important; border: 1px solid #ced4da !important; border-radius: .25rem !important; }
+    .add-row-btn { color: white !important; }
+    .search-Sibling-btn { color: white !important; }
+    .setAsGuardian { color: white !important; }
+    .resetGuardian { color: white !important; }
+    .upper-nav-tabs { cursor: pointer; }
+    .formFontModifiy { font-size: smaller; }
+    .togglePassVisibilty { cursor: pointer; }
+    .jumpToUploadExcel { cursor: pointer; }
+    .input-group-append { margin-left: -1px; display: flex; }
+    .input-group > .input-group-append { border-top-left-radius: 0; border-bottom-left-radius: 0; }
+    .input-group > .input-group-append:last-child > .input-group-text:not(:last-child) { border-top-right-radius: 0; border-bottom-right-radius: 0; }
+    .input-group-text { display: -webkit-box; display: -ms-flexbox; display: flex; -webkit-box-align: center; -ms-flex-align: center; align-items: center; padding: .375rem .75rem; margin-bottom: 0; font-size: 1rem; font-weight: 400; line-height: 1.5; color: #495057; text-align: center; white-space: nowrap; background-color: #e9ecef; border: 1px solid #ced4da; border-radius: .25rem; }
+</style>
+<div class="row page-titles">
+    <div class="col-8 align-self-center" style="padding-left: 5rem;">
+        <h3 class="text-themecolor m-b-0 m-t-0"> <i class="fa fa-plus-circle"></i> Create Student </h3>
+    </div>
+    <div class="col-4">
+        <div class="btn-group no-print pull-right">
+            <button type="button" class="btn btn-success btn-flat"> Import </button>
+            <button type="button" class="btn btn-success btn-flat dropdown-toggle" data-toggle="dropdown">
+                <span class="caret"></span>
+                <span class="sr-only"> {{phrase.toggleDropdown}} </span>
+            </button>
+            <div class="dropdown-menu" role="menu">
+                <a class="jumpToUploadExcel dropdown-item" ng-click="changeView('import')"> Import Excel </a>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="row" ng-if="views.import == false || views.reviewImport == false">
+    <div class="col-12" style="padding-left: 5rem;">
+        <ul class="nav nav-tabs" style="border-bottom-width: 2px; width: 93%;">
+            <li class="upper-nav-tabs nav-item"> <a ng-click="proceedToFirstStep()" ng-class="{'active': views.details}" class="nav-link"> Student Details </a> </li>
+            <li class="upper-nav-tabs nav-item"> <a ng-click="proceedToSecondStep()" ng-class="{'active': views.siblings}" class="nav-link"> Guardian & Sibling Details </a> </li>
+            <li class="upper-nav-tabs nav-item"> <a ng-click="proceedToFinalStep()" ng-class="{'active': views.previous}" class="nav-link"> Previous Details </a> </li>
+        </ul>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-12 pr-5 pl-5">
+        <form class="pr-5 pl-5 formFontModifiy" method="post" action="" name="addStudent" role="form" >
+            <div class="row" ng-show="views.details">
+                <div class="col-12">
+                    <div class="row mt-4">
+                        <div class="col-6">
+                            <div class="form-group row" ng-class="{'has-error': addStudent.admissionNo.$invalid}">
+                                <label class="col-3 pb-2 pl-3 control-label col-form-label">Admission No.<span class="text-danger">*</span></label>
+                                <div class="col-9">
+                                    <input type="text" ng-model="student.details.personal.admissionNo" class="form-control" required />
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-6">
+                            <div class="form-group row">
+                                <label class="col-3 pb-2 pl-3 control-label col-form-label">Admission Date</label>
+                                <div class="col-9">
+                                    <input type="text" class="form-control" ng-model="student.details.personal.admissionDate" placeholder="Select date" date-picker id="admissionDate" />
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row mt-2">
+                        <div class="col-12">
+                            <h3>Personal Details</h3>
+                            <hr class='mt-0 mb-5 hr-divider' />
+                        </div>
+                        <div class="col-12">
+                            <div class="row">
+                                <div class="col-4">
+                                    <div class="form-group row" ng-class="{'has-error': addStudent.firstName.$invalid}">
+                                        <label class="col-4 pb-2 pl-3 control-label col-form-label">First Name<span class="text-danger">*</span></label>
+                                        <div class="col-8">
+                                            <input type="text" class="form-control" ng-model="student.details.personal.firstName" required />
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-4">
+                                    <div class="form-group row">
+                                        <label class="col-4 pb-2 pl-3 control-label col-form-label">Middle Name</label>
+                                        <div class="col-8">
+                                            <input type="text" class="form-control" ng-model="student.details.personal.middleName" />
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-4">
+                                    <div class="form-group row">
+                                        <label class="col-4 pb-2 pl-3 control-label col-form-label">Last Name</label>
+                                        <div class="col-8">
+                                            <input type="text" class="form-control" ng-model="student.details.personal.lastName" />
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-4">
+                                    <div class="form-group row" ng-class="{'has-error': addStudent.dateOfBirth.$invalid}">
+                                        <label class="col-4 pb-2 pl-3 control-label col-form-label">Date of Birth<span class="text-danger">*</span></label>
+                                        <div class="col-8">
+                                            <input type="text" class="form-control" ng-model="student.details.personal.dateOfBirth" placeholder="Select date" date-picker id="dateOfBirth" required />
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-4">
+                                    <div class="form-group row" ng-class="{'has-error': addStudent.studentGender.$invalid}">
+                                        <label class="col-4 pb-2 pl-3 control-label col-form-label"> Gender </label>
+                                        <div class="col-8 pt-2">
+                                            Male <input type="radio" name="gender" ng-model="student.details.personal.gender" value="male" checked />
+                                            Female <input type="radio" name="gender" ng-model="student.details.personal.gender" value="female" />
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-4">
+                                    <div class="form-group row">
+                                        <label class="col-4 pb-2 pl-3 control-label col-form-label">Blood Group</label>
+                                        <div class="col-8">
+                                            <select ng-model="student.details.personal.bloodType" select2 class="form-control select2">
+                                                <option value=""> </option>
+                                                <option value="O+">O+</option>
+                                                <option value="A+">A+</option>
+                                                <option value="B+">B+</option>
+                                                <option value="AB+">AB+</option>
+                                                <option value="O-">O-</option>
+                                                <option value="A-">A-</option>
+                                                <option value="B-">B-</option>
+                                                <option value="AB-">AB-</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-4">
+                                    <div class="form-group row">
+                                        <label class="col-4 pb-2 pl-3 control-label col-form-label">Birth Place</label>
+                                        <div class="col-8">
+                                            <input type="text" class="form-control" ng-model="student.details.personal.birthPlace" />
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-4">
+                                    <div class="form-group row">
+                                        <label class="col-4 pb-2 pl-3 control-label col-form-label">Nationality</label>
+                                        <div class="col-8">
+                                            <input type="text" class="form-control" ng-model="student.details.personal.nationality" />
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-4">
+                                    <div class="form-group row">
+                                        <label class="col-4 pb-2 pl-3 control-label col-form-label">Religion</label>
+                                        <div class="col-8">
+                                            <input type="text" class="form-control" ng-model="student.details.personal.religion" />
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-4">
+                                    <div class="form-group row">
+                                        <label class="col-5 pb-2 pl-3 control-label col-form-label">Student Category</label>
+                                        <div class="col-7">
+                                            <select ng-model="student.details.personal.studentCategory" class="form-control">
+                                                <option value="">  </option>
+                                                <option ng-repeat="category in studentCategory" value="{{ category.id }}"> {{ category.name }} </option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-8">
+                                    <div class="form-group row">
+                                        <label class="col-3 pb-2 pl-3 control-label col-form-label">Upload User's Photo</label>
+                                        <div class="col-9">
+                                            <input ng-model="student.details.personal.userPhoto" type="file" id="userPhoto" class="form-control" accept="image/jpg, image/jpeg, image/png" />
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-4">
+                                    <div class="form-group row">
+                                        <label class="col-4 pb-2 pl-2 control-label col-form-label">Fee Group Type</label>
+                                        <div class="col-8">
+                                            <select ng-model="student.details.personal.studentType" class="form-control">
+                                                <option value="">  </option>
+                                                <option ng-repeat="type in studentType" value="{{ type.id }}"> {{ type.name }} </option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row mt-2">
+                        <div class="col-12">
+                            <h3>Address Details</h3>
+                            <hr class='mt-0 hr-divider' />
+                        </div>
+                        <div class="col-12">
+                            <div class="row mb-2">
+                                <div class="col-12">
+                                    <label class="text-themecolor"> <u>Correspondences Address</u> </label>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-6">
+                                    <div class="form-group row">
+                                        <label class="col-3 pb-2 pl-3 control-label col-form-label">Address Line1</label>
+                                        <div class="col-9">
+                                            <input ng-change="checkSameAs()" type="text" class="form-control" ng-model="student.details.address.corres.line" />
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-3">
+                                    <div class="form-group row">
+                                        <label class="col-2 pb-2 pl-3 control-label col-form-label">City</label>
+                                        <div class="col-10">
+                                            <input ng-change="checkSameAs()" type="text" class="form-control" ng-model="student.details.address.corres.city" />
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-3">
+                                    <div class="form-group row">
+                                        <label class="col-2 pb-2 pl-3 control-label col-form-label">State</label>
+                                        <div class="col-10">
+                                            <input ng-change="checkSameAs()" type="text" class="form-control" ng-model="student.details.address.corres.state" />
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-3">
+                                    <div class="form-group row">
+                                        <label class="col-6 pb-2 pl-3 control-label col-form-label">PIN Code</label>
+                                        <div class="col-6">
+                                            <input ng-change="checkSameAs()" type="text" class="form-control" ng-model="student.details.address.corres.pin" />
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-3">
+                                    <div class="form-group row">
+                                        <label class="col-3 pb-2 pl-3 control-label col-form-label">Country</label>
+                                        <div class="col-9">
+                                            <input ng-change="checkSameAs()" type="text" class="form-control" ng-model="student.details.address.corres.country" />
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-3">
+                                    <div class="form-group row">
+                                        <label class="col-2 pb-2 pl-3 control-label col-form-label">Phone</label>
+                                        <div class="col-10">
+                                            <input ng-change="checkSameAs()" type="text" class="form-control" ng-model="student.details.address.corres.phone" />
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-3">
+                                    <div class="form-group row">
+                                        <label class="col-2 pb-2 pl-3 control-label col-form-label">Mobile</label>
+                                        <div class="col-10">
+                                            <input ng-change="checkSameAs()" type="text" class="form-control" ng-model="student.details.address.corres.Mobile" />
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-3">
+                                    <div class="form-group row">
+                                        <label class="col-6 pb-2 pl-3 control-label col-form-label">Same As</label>
+                                        <div class="col-6 pt-2">
+                                            <input type="checkbox" ng-model="student.details.address.corres.sameAs" ng-change="cloneAddresses()" />
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-12">
+                            <div class="row mb-2">
+                                <div class="col-12">
+                                    <label class="text-themecolor"> <u>Permanent Address</u> </label>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-6">
+                                    <div class="form-group row">
+                                        <label class="col-3 pb-2 pl-3 control-label col-form-label">Address Line1</label>
+                                        <div class="col-9">
+                                            <input type="text" class="form-control" ng-model="student.details.address.perma.line" />
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-3">
+                                    <div class="form-group row">
+                                        <label class="col-2 pb-2 pl-3 control-label col-form-label">City</label>
+                                        <div class="col-10">
+                                            <input type="text" class="form-control" ng-model="student.details.address.perma.city" />
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-3">
+                                    <div class="form-group row">
+                                        <label class="col-2 pb-2 pl-3 control-label col-form-label">State</label>
+                                        <div class="col-10">
+                                            <input type="text" class="form-control" ng-model="student.details.address.perma.state" />
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-3">
+                                    <div class="form-group row">
+                                        <label class="col-6 pb-2 pl-3 control-label col-form-label">PIN Code</label>
+                                        <div class="col-6">
+                                            <input type="text" class="form-control" ng-model="student.details.address.perma.pin" />
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-3">
+                                    <div class="form-group row">
+                                        <label class="col-3 pb-2 pl-3 control-label col-form-label">Country</label>
+                                        <div class="col-9">
+                                            <input type="text" class="form-control" ng-model="student.details.address.perma.country" />
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-3">
+                                    <div class="form-group row">
+                                        <label class="col-2 pb-2 pl-3 control-label col-form-label">Phone</label>
+                                        <div class="col-10">
+                                            <input type="text" class="form-control" ng-model="student.details.address.perma.phone" />
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-3">
+                                    <div class="form-group row">
+                                        <label class="col-2 pb-2 pl-3 control-label col-form-label">Mobile</label>
+                                        <div class="col-10">
+                                            <input type="text" class="form-control" ng-model="student.details.address.perma.Mobile" />
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row mt-2">
+                        <div class="col-12">
+                            <h3>Class & Section Details</h3>
+                            <hr class='mt-0 hr-divider' />
+                        </div>
+                        <div class="col-12">
+                            <div class="row">
+                                <div class="col-3">
+                                    <div class="form-group row" ng-class="{'has-error': addStudent.class.$invalid || !student.details.academic.class}">
+                                        <label class="col-3 pb-2 pl-3 control-label col-form-label">Class<span class="text-danger">*</span></label>
+                                        <div class="col-9">
+                                            <select ng-model="student.details.academic.class" ng-change="loadSections()" class="form-control" required >
+                                                <option  value="" disabled>  </option >
+                                                <option ng-repeat="class in classes" value="{{ class.id }}"> {{ class.name }} </option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-3">
+                                    <div class="form-group row" ng-class="{'has-error': addStudent.section.$invalid || !student.details.academic.section}">
+                                        <label class="col-3 pb-2 pl-3 control-label col-form-label">Section<span class="text-danger">*</span></label>
+                                        <div class="col-9">
+                                            <select ng-model="student.details.academic.section" class="form-control" required>
+                                                <option value="" disabled></option>
+                                                <option ng-repeat="section in sections" value="{{ section.id }}"> {{ section.name }} </option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-3">
+                                    <div class="form-group row">
+                                        <label class="col-5 pb-2 pl-3 control-label col-form-label">Roll Number</label>
+                                        <div class="col-7">
+                                            <input type="text" class="form-control" ng-model="student.details.academic.rollNo" />
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-3">
+                                    <div class="form-group row">
+                                        <label class="col-5 pb-2 pl-3 control-label col-form-label">Biometric ID</label>
+                                        <div class="col-7">
+                                            <input type="text" class="form-control" ng-model="student.details.academic.bioId" />
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row mt-2">
+                        <div class="col-12">
+                            <h3> Transportaions Assign </h3>
+                            <hr class='mt-0 hr-divider' />
+                        </div>
+                        <div class="col-12">
+                            <div class="row">
+                                <div class="col-6">
+                                    <div class="form-group row">
+                                        <label class="col-4 pb-2 pl-3 control-label col-form-label">Transport vehicle</label>
+                                        <div class="col-8">
+                                            <select ng-model="student.details.vehicles.transport" ng-change="loadStoppages()" class="form-control">
+                                                <option value="" disabled></option>
+                                                <option ng-repeat="vehicle in vehicles" value="{{ vehicle.id }}"> {{ vehicle.plate }} ({{ vehicle.name }}) </option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-6">
+                                    <div class="form-group row">
+                                        <label class="col-4 pb-2 pl-3 control-label col-form-label">Stoppage</label>
+                                        <div class="col-8">
+                                            <select ng-model="student.details.vehicles.stoppage" class="form-control">
+                                                <option value="" disabled></option>
+                                                <option ng-repeat="stoppage in stoppages track by $index" value="{{ stoppage.id }}"> {{ stoppage.name }} </option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-4">
+                                    <div class="form-group row">
+                                        <label class="col-4 pb-2 pl-3 control-label col-form-label">Hostel</label>
+                                        <div class="col-8">
+                                            <select ng-model="student.details.vehicles.hostel" ng-change="loadRooms()" class="form-control">
+                                                <option value="">  </option>
+                                                <option ng-repeat="hostel in hostels" value="{{ hostel.id }}"> {{ hostel.name }} </option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-4">
+                                    <div class="form-group row">
+                                        <label class="col-4 pb-2 pl-3 control-label col-form-label">Room</label>
+                                        <div class="col-8">
+                                            <select ng-model="student.details.vehicles.room" class="form-control">
+                                                <option value="">  </option>
+                                                <option ng-repeat="room in rooms" value="{{ room.id }}"> {{ room.name }} </option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-4">
+                                    <div class="form-group row" ng-class="{'has-error': addStudent.studentGender.$invalid}">
+                                        <label class="col-4 pb-2 pl-3 control-label col-form-label"> Communication </label>
+                                        <div class="col-8 pt-2" style="display: inline-flex;">
+                                            <div class="form-group mb-0 mr-3"> <input type="checkbox" name="comms" ng-model="student.details.vehicles.comms.mail" class="mr-1"> Mail </div>
+                                            <div class="form-group mb-0 mr-3"> <input type="checkbox" name="comms" ng-model="student.details.vehicles.comms.sms" class="mr-1"> SMS  </div>
+                                            <div class="form-group mb-0 mr-3"> <input type="checkbox" name="comms" ng-model="student.details.vehicles.comms.phone" class="mr-1"> Phone </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row mt-2">
+                        <div class="col-12">
+                            <h3> Medical History </h3>
+                            <hr class='mt-0 hr-divider' />
+                        </div>
+                        <div class="col-12">
+                            <div class="row">
+                                <div class="col-6">
+                                    <div class="form-group row">
+                                        <label class="col-4 pb-2 pl-3 control-label col-form-label">Insurance Policy</label>
+                                        <div class="col-8">
+                                            <input type="text" ng-model="student.details.medical.inspol" class="form-control" />
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-6">
+                                    <div class="form-group row">
+                                        <label class="col-4 pb-2 pl-3 control-label col-form-label">Blood Group</label>
+                                        <div class="col-8">
+                                            <select ng-model="student.details.personal.bloodType" class="form-control">
+                                                <option value=""> </option>
+                                                <option value="O+">O+</option>
+                                                <option value="A+">A+</option>
+                                                <option value="B+">B+</option>
+                                                <option value="AB+">AB+</option>
+                                                <option value="O-">O-</option>
+                                                <option value="A-">A-</option>
+                                                <option value="B-">B-</option>
+                                                <option value="AB-">AB-</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-6">
+                                    <div class="form-group row">
+                                        <label class="col-4 pb-2 pl-3 control-label col-form-label">Weight</label>
+                                        <div class="col-8">
+                                            <input type="number" ng-model="student.details.medical.weight" class="form-control" />
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-6">
+                                    <div class="form-group row">
+                                        <label class="col-4 pb-2 pl-3 control-label col-form-label">Height</label>
+                                        <div class="col-8">
+                                            <input type="number" ng-model="student.details.medical.height" class="form-control" />
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-6">
+                                    <div class="form-group row">
+                                        <label class="col-4 pb-2 pl-3 control-label col-form-label">Disability Type</label>
+                                        <div class="col-8">
+                                            <input type="text" ng-model="student.details.medical.disab" class="form-control" />
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-6">
+                                    <div class="form-group row">
+                                        <label class="col-4 pb-2 pl-3 control-label col-form-label">Contact Information</label>
+                                        <div class="col-8">
+                                            <input type="text" ng-model="student.details.medical.contact" class="form-control" />
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row mt-2">
+                        <div class="col-12">
+                            <div class="row">
+                                <div class="col-10">
+                                    <h3> Documents </h3>
+                                </div>
+                                <div class="col-2">
+                                    <a ng-click="addRowDoc()" class="add-row-btn pull-right btn btn-info btn-sm"> <i class="fa fa-plus-circle"></i> Add Row </a>
+                                </div>
+                            </div>
+                            <hr class='mt-0 hr-divider' />
+                        </div>
+                        <div class="col-12">
+                            <table class="table table-bordered table-hover">
+                                <tbody class="table_clone">
+                                    <tr>
+                                        <th> Title </th>
+                                        <th> File </th>
+                                        <th> Notes </th>
+                                        <th> Actions </th>
+                                    </tr>
+                                    <tr ng-repeat="doc in student.details.docs track by $index">
+                                        <td>
+                                            <input type="text" name="docs_title[]" ng-model="doc.title" class="form-control" />
+                                        </td>
+                                        <td>
+                                            <input type="file" name="docs_files[]" ng-model="doc.file" id="userDoc_{{$index}}" />
+                                        </td>
+                                        <td>
+                                            <textarea name="docs_notes[]" ng-model="doc.notes" class="form-control"></textarea>
+                                        </td>
+                                        <td>
+                                            <a ng-click="removeDoc($index)"> <i class="fa fa-times text-danger"></i> </a>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                    <div class="row mt-2">
+                        <div class="col-12 text-center">
+                            <button role="button" type="button"
+                                ng-disabled="!student.details.personal.admissionNo ||
+                                !student.details.personal.firstName ||
+                                !student.details.personal.dateOfBirth ||
+                                !student.details.academic.class ||
+                                !student.details.academic.section"
+                                ng-click="proceedToSecondStep()"
+                                class="btn btn-dark btn-lg"
+                            > Proceed <i class="fa fa-arrow-right"></i> </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row" ng-show="views.siblings">
+                <div class="col-12">
+                    <div class="row mt-4">
+                        <div class="col-12">
+                            <div class="form-group row">
+                                <label class="col-1 pb-2 pl-3 control-label col-form-label">Sibling</label>
+                                <div class="col-2 pt-2">
+                                    <a ng-click="searchSibling()" class="search-Sibling-btn btn btn-success btn-sm"> <i class="fa fa-search"></i> Search User </a>
+                                </div>
+                                <div class="col-9 pt-2">
+                                    <label ng-if="!student.siblings.is_defined" class="badge badge-danger badge-sm"> Not selected </label>
+                                    <label ng-if="student.siblings.is_defined" class="badge badge-info badge-sm"> {{ selectedSibling.studentName }} ({{ selectedSibling.studentAdmission }}) </label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row mt-2">
+                        <div class="col-12">
+                            <h3>Parent Details</h3>
+                            <hr class='mt-0 mb-5 hr-divider' />
+                        </div>
+                        <div class="col-12">
+                            <div class="row">
+                                <div class="col-12">
+                                    <div class="row">
+                                        <div class="col-6">
+                                            <div class="form-group row">
+                                                <label class="col-4 pb-2 pl-3 control-label col-form-label">Father's Name</label>
+                                                <div class="col-8">
+                                                    <input type="text" ng-model="student.siblings.parents.father.name" class="form-control" />
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-6">
+                                            <div class="form-group row">
+                                                <label class="col-4 pb-2 pl-3 control-label col-form-label">Mother's Name</label>
+                                                <div class="col-8">
+                                                    <input type="text" ng-model="student.siblings.parents.mother.name" class="form-control" />
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-6">
+                                            <div class="form-group row">
+                                                <label class="col-4 pb-2 pl-3 control-label col-form-label">Father's Mobile</label>
+                                                <div class="col-8">
+                                                    <input type="text" ng-model="student.siblings.parents.father.phone" class="form-control" />
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-6">
+                                            <div class="form-group row">
+                                                <label class="col-4 pb-2 pl-3 control-label col-form-label">Mother's Mobile</label>
+                                                <div class="col-8">
+                                                    <input type="text" ng-model="student.siblings.parents.mother.phone" class="form-control" />
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-6">
+                                            <div class="form-group row">
+                                                <label class="col-4 pb-2 pl-3 control-label col-form-label">Father's Job</label>
+                                                <div class="col-8">
+                                                    <input type="text" ng-model="student.siblings.parents.father.job" class="form-control" />
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-6">
+                                            <div class="form-group row">
+                                                <label class="col-4 pb-2 pl-3 control-label col-form-label">Mother's Job</label>
+                                                <div class="col-8">
+                                                    <input type="text" ng-model="student.siblings.parents.mother.job" class="form-control" />
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-6">
+                                            <div class="form-group row">
+                                                <label class="col-4 pb-2 pl-3 control-label col-form-label">Father's Qualification</label>
+                                                <div class="col-8">
+                                                    <input type="text" ng-model="student.siblings.parents.father.qualification" class="form-control" />
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-6">
+                                            <div class="form-group row">
+                                                <label class="col-4 pb-2 pl-3 control-label col-form-label">Mother's Qualification</label>
+                                                <div class="col-8">
+                                                    <input type="text" ng-model="student.siblings.parents.mother.qualification" class="form-control" />
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-6">
+                                            <div class="form-group row">
+                                                <label class="col-4 pb-2 pl-3 control-label col-form-label">Email address</label>
+                                                <div class="col-8">
+                                                    <input type="email" ng-model="student.siblings.parents.father.email" class="form-control" />
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-6">
+                                            <div class="form-group row">
+                                                <label class="col-4 pb-2 pl-3 control-label col-form-label">Email address</label>
+                                                <div class="col-8">
+                                                    <input type="email" ng-model="student.siblings.parents.mother.email" class="form-control" />
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-6">
+                                            <div class="form-group row">
+                                                <label class="col-4 pb-2 pl-3 control-label col-form-label">Photo</label>
+                                                <div class="col-8">
+                                                    <input ng-model="student.siblings.parents.father.photo" id="fatherPhoto"  type="file" class="form-control" accept="image/jpg, image/jpeg, image/png" />
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-6">
+                                            <div class="form-group row">
+                                                <label class="col-4 pb-2 pl-3 control-label col-form-label">Photo</label>
+                                                <div class="col-8">
+                                                    <input ng-model="student.siblings.parents.mother.photo" id="motherPhoto"  type="file" class="form-control" accept="image/jpg, image/jpeg, image/png" />
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-6">
+                                            <div class="form-group row">
+                                                <label class="col-4 pb-2 pl-3 control-label col-form-label">Address</label>
+                                                <div class="col-8">
+                                                    <input type="text" ng-model="student.siblings.parents.father.address" class="form-control" />
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-6">
+                                            <div class="form-group row">
+                                                <label class="col-4 pb-2 pl-3 control-label col-form-label">Address</label>
+                                                <div class="col-8">
+                                                    <input type="text" ng-model="student.siblings.parents.mother.address" class="form-control" />
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row mt-2">
+                        <div class="col-9">
+                            <h3> Guardian Details </h3>
+                        </div>
+                        <div class="col-3">
+                            <div class="pull-right">
+                                Father <input type="radio" ng-change="changeGuardianType('father')" value="father" ng-model="student.siblings.guardian.type" />
+                                Mother <input type="radio" ng-change="changeGuardianType('mother')" value="mother" ng-model="student.siblings.guardian.type" />
+                                Other <input type="radio" ng-change="changeGuardianType('others')" value="others" ng-model="student.siblings.guardian.type" />
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row mt-0 mb-0"> <div class="col-12"> <hr class='mt-0 hr-divider' /> </div> </div>
+                    <div class="row mt-2">
+                        <div class="col-12">
+                            <div class="row">
+                                <div class="col-4">
+                                    <div class="form-group row" ng-class="{'has-error': addStudent.guardianName.$invalid}">
+                                        <label class="col-4 pb-2 pl-3 control-label col-form-label">Name</label>
+                                        <div class="col-8">
+                                            <input type="text" ng-model="student.siblings.guardian.name" class="form-control" required />
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-4">
+                                    <div class="form-group row" ng-class="{'has-error': addStudent.guardianRelation.$invalid}">
+                                        <label class="col-4 pb-2 pl-3 control-label col-form-label">Relation</label>
+                                        <div class="col-8">
+                                            <input type="text" ng-model="student.siblings.guardian.relation" class="form-control" required />
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-4">
+                                    <div class="form-group row" ng-class="{'has-error': addStudent.guardianMobileNo.$invalid}">
+                                        <label class="col-4 pb-2 pl-3 control-label col-form-label">Mobile No.</label>
+                                        <div class="col-8">
+                                            <input type="text" ng-model="student.siblings.guardian.phone" ng-change="updateUsernameByMobile()" class="form-control" required />
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-4">
+                                    <div class="form-group row" ng-class="{'has-error': addStudent.guardianEmail.$invalid}">
+                                        <label class="col-4 pb-2 pl-3 control-label col-form-label">E-mail</label>
+                                        <div class="col-8">
+                                            <input type="email" ng-model="student.siblings.guardian.mail" class="form-control" />
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-4">
+                                    <div class="form-group row" ng-class="{'has-error': addStudent.guardianUsername.$invalid}">
+                                        <label class="col-4 pb-2 pl-3 control-label col-form-label">Username</label>
+                                        <div class="col-8">
+                                            <input type="text" ng-model="student.siblings.guardian.username" ng-change="updatePasswordByUsername()" class="form-control" required />
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-4">
+                                    <div class="form-group row" ng-class="{'has-error': addStudent.guardianPassword.$invalid}">
+                                        <label class="col-4 pb-2 pl-3 control-label col-form-label">Password</label>
+                                        <div class="col-8">
+                                            <div class="input-group">
+                                                <input ng-if="!isPassShown" ng-disabled="student.siblings.is_defined" type="password" ng-model="student.siblings.guardian.password" class="form-control" required />
+                                                <input ng-if="isPassShown" ng-disabled="student.siblings.is_defined" type="text" ng-model="student.siblings.guardian.password" class="form-control" required />
+                                                <div class="input-group-append">
+                                                    <span class="input-group-text">
+                                                        <i ng-if="!isPassShown" ng-click="togglePassVisibilty()" class="togglePassVisibilty fa fa-eye"></i>
+                                                        <i ng-if="isPassShown" ng-click="togglePassVisibilty()" class="togglePassVisibilty fa fa-eye-slash"></i>
+                                                    </span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-4">
+                                    <div class="form-group row" ng-class="{'has-error': addStudent.guardianJob.$invalid}">
+                                        <label class="col-4 pb-2 pl-3 control-label col-form-label">Job</label>
+                                        <div class="col-8">
+                                            <input type="text" ng-model="student.siblings.guardian.job" class="form-control" required />
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-8">
+                                    <div class="form-group row" ng-class="{'has-error': addStudent.guardianAddress.$invalid}">
+                                        <label class="col-2 pb-2 pl-3 control-label col-form-label">Address</label>
+                                        <div class="col-10">
+                                            <input type="text" ng-model="student.siblings.guardian.address" class="form-control" required />
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row mt-2">
+                        <div class="col-12 text-center">
+                            <button role="button" type="button" class="btn btn-dark btn-lg" ng-click="proceedToFirstStep()"> <i class="fa fa-arrow-left"></i> Back </button>
+                            <button role="button" type="button"
+                                ng-disabled="!student.details.personal.admissionNo ||
+                                !student.details.personal.firstName ||
+                                !student.details.personal.dateOfBirth ||
+                                !student.details.academic.class ||
+                                !student.details.academic.section ||
+                                !student.siblings.guardian.name ||
+                                !student.siblings.guardian.relation ||
+                                !student.siblings.guardian.phone ||
+                                !student.siblings.guardian.address ||
+                                !student.siblings.guardian.username ||
+                                !student.siblings.guardian.password"
+                                ng-click="proceedToFinalStep()"
+                                class="btn btn-dark btn-lg"
+                            > Proceed <i class="fa fa-arrow-right"></i> </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row" ng-show="views.previous">
+                <div class="col-12">
+                    <div class="row mt-2">
+                        <div class="col-12">
+                            <h3>Previous Educational Details</h3>
+                            <hr class='mt-0 mb-5 hr-divider' />
+                        </div>
+                        <div class="col-12">
+                            <div class="form-group row">
+                                <label class="col-2 pb-2 pl-3 control-label col-form-label"> Institution Name </label>
+                                <div class="col-10">
+                                    <input type="text" class="form-control" ng-model="student.previous.institution"/>
+                                </div>
+                            </div>
+                            <div class="form-group row">
+                                <label class="col-2 pb-2 pl-3 control-label col-form-label"> Class </label>
+                                <div class="col-10">
+                                    <input type="text" class="form-control" ng-model="student.previous.class"/>
+                                </div>
+                            </div>
+                            <div class="form-group row">
+                                <label class="col-2 pb-2 pl-3 control-label col-form-label"> Year </label>
+                                <div class="col-10">
+                                    <input type="text" class="form-control" ng-model="student.previous.year"/>
+                                </div>
+                            </div>
+                            <div class="form-group row">
+                                <label class="col-2 pb-2 pl-3 control-label col-form-label"> Percentage </label>
+                                <div class="col-10">
+                                    <input type="text" class="form-control" ng-model="student.previous.percentage"/>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row mt-2">
+                        <div class="col-4"> </div>
+                        <div class="col-1">
+                            <button role="button" type="button" class="btn btn-dark btn-md" ng-click="proceedToSecondStep()"> <i class="fa fa-arrow-left"></i> Back </button>
+                        </div>
+                        <div class="col-5">
+                            <button role="button" type="button"
+                                ng-disabled="!student.details.personal.admissionNo ||
+                                !student.details.personal.firstName ||
+                                !student.details.personal.dateOfBirth ||
+                                !student.details.academic.class ||
+                                !student.details.academic.section ||
+                                !student.siblings.guardian.name ||
+                                !student.siblings.guardian.relation ||
+                                !student.siblings.guardian.phone ||
+                                !student.siblings.guardian.address ||
+                                !student.siblings.guardian.username ||
+                                !student.siblings.guardian.password ||
+                                editProcessingStatus"
+                                class="btn btn-dark btn-md"
+                                ng-click="doSave()"
+                            >
+                                <span ng-if="!editProcessingStatus"> <i class="fa fa-save"></i> Save </span>
+                                <span ng-if="editProcessingStatus"> <i class="fa fa-spinner fa-spin fa-fw"></i> Saving </span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+<div class="row" ng-show="views.import">
+    <div class="col-12" style="padding-left: 5rem;">
+        <div class="card">
+            <div class="card-block">
+                <button ng-click="changeView('details')" class="btn pull-right btn-danger card-block-input-item"> Return </button>
+                <h4 class="card-title"> Import excel </h4>
+                <div>
+                    <form class="form" ng-upload="saveImported(content)" method="post" action="{{'index.php/qstudents/importExcel'}}" name="importData" role="form" novalidate>
+                        <div class="form-group row" style="margin: 30px 0px; border: 1px solid #EEE; padding: 10px;">
+                            <label class="col-sm-2 text-right control-label col-form-label"> File to import </label>
+                            <div class="col-sm-10">
+                                <input type="file" name="excelcsv" id="excelcsv" accept=".csv, application/vnd.openxmlformats-officedocument.spreadsheetml.sheet, application/vnd.ms-excel" />
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <div class="col-sm-offset-2 col-sm-10">
+                                <button type="submit" class="btn btn-info" ng-disabled="importData.$invalid || $isUploading"> Import </button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row" ng-show="views.reviewImport">
+    <div class="col-12" style="padding-left: 5rem;">
+        <div class="card">
+            <div class="card-block">
+                <button ng-click="changeView('import')" class="btn pull-right btn-danger card-block-input-item">{{phrase.Return}}</button>
+                <h2 class="card-title">Review Imported File</h2>
+                <div>
+
+                    <form class="form-horizontal" ng-submit="reviewImportData()" name="importData" role="form" novalidate>
+                        <div class="row">
+                            <div class="col-12" ng-if="importReview.revise.length">
+                                <h4 class="text-danger"> <i class="fa fa-times"></i> {{phrase.failedImport}} </h4>
+                                <div class="box-body table-responsive">
+                                    <table class="table table-bordered table-hover">
+                                        <tbody>
+                                            <tr>
+                                                <th>Full name</th>
+                                                <th>Admission no</th>
+                                                <th>Birthday</th>
+                                                <th>Class</th>
+                                                <th ng-show="$root.dashboardData.enableSections == '1'">Sections</th>
+                                                <th>Sibling</th>
+                                                <th>Errors <i title="view errors details" tooltip class="fa fa-question-circle"></i></th>
+                                                <td> </td>
+                                            </tr>
+                                            <tr ng-repeat="student in importReview.revise">
+                                                <td><input type="text" name="fullName" class="form-control mobilenumber" ng-model="student.fullName"></td>
+                                                <td><input type="text" name="admissionNum" class="form-control mobilenumber" ng-model="student.admissionNo"></td>
+                                                <td><input type="text" name="brthday" class="form-control mobilenumber" ng-model="student.dateOfBirth" id="brthday" date-picker></td> 
+                                                <td>
+                                                    <select class="form-control" name="studentClass" ng-model="student.studentClass" required>
+                                                        <option ng-repeat="class in importClasses" value="{{class.id}}" ng-selected="student.studentClass == class.id">{{class.className}}</option>
+                                                    </select>
+                                                </td>
+                                                <td ng-show="$root.dashboardData.enableSections == '1'">
+                                                    <select class="form-control" name="studentSection" ng-model="student.studentSection" required>
+                                                        <option ng-repeat="(key,value) in importSections[student.studentClass]" value="{{key}}" ng-selected="student.studentSection == key">{{value}}</option>
+                                                    </select>
+                                                </td>
+                                                <td>
+                                                    <div class="form-group mb-1">
+                                                        <label>Admission no</label>
+                                                        <input type="text" name="siblingAdmission" class="form-control mobilenumber" ng-model="student.guardianId">
+                                                    </div>
+                                                    <div class="text-center mb-0 mt-0"> <h5> OR </h5> </div>
+                                                    <div class="form-group mb-1">
+                                                        <label>Username</label>
+                                                        <input type="text" name="gaurdUsername" class="form-control mobilenumber" ng-model="student.guardianUsername">
+                                                    </div>
+                                                    <div class="form-group mb-0">
+                                                        <label>Password</label>
+                                                        <div class="input-group">
+                                                            <input ng-if="!isGaurdPassShown" type="password" name="gaurdPassword" class="form-control mobilenumber" ng-model="student.guardianPassword">
+                                                            <input ng-if="isGaurdPassShown" type="text" name="gaurdPassword" class="form-control mobilenumber" ng-model="student.guardianPassword">
+                                                            <div class="input-group-append">
+                                                                <span class="input-group-text">
+                                                                    <i ng-if="!isGaurdPassShown" ng-click="toggleGaurdPassVisibilty()" class="togglePassVisibilty fa fa-eye"></i>
+                                                                    <i ng-if="isGaurdPassShown" ng-click="toggleGaurdPassVisibilty()" class="togglePassVisibilty fa fa-eye-slash"></i>
+                                                                </span>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </td>
+                                                <td>
+                                                    <ul style="margin-left: -27px;">
+                                                        <li ng-repeat="error in student.error"> {{error}} </li>
+                                                    </ul>
+                                                </td>
+                                                <td style="width: 110px;">
+                                                    <button type="button" class="btn btn-success btn-circle" title="Fix Issue" tooltip
+                                                        ng-disabled="!student.fullName || !student.admissionNo || !student.dateOfBirth || !student.studentClass ||
+                                                        !student.studentSection || ( !student.guardianId && !student.guardianUsername && !student.guardianPassword ) ||
+                                                        (student.guardianUsername && !student.guardianPassword) || (student.guardianPassword && !student.guardianUsername)"
+                                                        ng-click="fixImport(student,$index)"
+                                                    > <i class="fa fa-check"></i>
+                                                    </button>
+                                                    <button ng-click="removeImport(student,$index,'revise')" type="button" class="btn btn-danger btn-circle" title="{{phrase.Remove}}" tooltip><i class="fa fa-trash-o"></i></button>
+                                                </td>
+                                            </tr>
+                                            <tr ng-show="!importReview.revise.length"><td class="noTableData" colspan="7">{{phrase.noStudents}}</td></tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-12">
+                                <h4 class="text-success"> <i class="fa fa-check"></i> {{phrase.readyImport}} </h4>
+                                <div class="box-body table-responsive">
+                                    <table class="table table-bordered table-hover">
+                                        <tbody>
+                                            <tr>
+                                                <th>Full name</th>
+                                                <th>Admission no</th>
+                                                <th>Birthday</th>
+                                                <th>Class</th>
+                                                <th ng-show="$root.dashboardData.enableSections == '1'">Sections</th>
+                                                <th>Sibling</th>
+                                                <td> </td>
+                                            </tr>
+                                            <tr ng-repeat="student in importReview.ready">
+                                                <td><input type="text" name="ready_fullName" class="form-control mobilenumber" ng-model="student.fullName"></td>
+                                                <td><input type="text" name="ready_admissionNum" class="form-control mobilenumber" ng-model="student.admissionNo"></td>
+                                                <td><input type="text" name="ready_brthday" class="form-control mobilenumber" ng-model="student.dateOfBirth" id="ready_brthday" date-picker></td> 
+                                                <td>
+                                                    <select class="form-control" name="ready_studentClass" ng-model="student.studentClass" required>
+                                                        <option ng-repeat="class in importClasses" value="{{class.id}}" ng-selected="student.studentClass == class.id">{{class.className}}</option>
+                                                    </select>
+                                                </td>
+                                                <td ng-show="$root.dashboardData.enableSections == '1'">
+                                                    <select class="form-control" name="ready_studentSection" ng-model="student.studentSection" required>
+                                                        <option ng-repeat="(key,value) in importSections[student.studentClass]" value="{{key}}" ng-selected="student.studentSection == key">{{value}}</option>
+                                                    </select>
+                                                </td>
+                                                <td>
+                                                    <div class="form-group mb-1">
+                                                        <label>Admission no</label>
+                                                        <input type="text" name="ready_siblingAdmission" class="form-control mobilenumber" ng-model="student.guardianId">
+                                                    </div>
+                                                    <div class="text-center mb-0 mt-0"> <h5> OR </h5> </div>
+                                                    <div class="form-group mb-1">
+                                                        <label>Username</label>
+                                                        <input type="text" name="ready_gaurdUsername" class="form-control mobilenumber" ng-model="student.guardianUsername">
+                                                    </div>
+                                                    <div class="form-group mb-0">
+                                                        <label>Password</label>
+                                                        <div class="input-group">
+                                                            <input ng-if="!isReadyPassShown" type="password" name="ready_gaurdPassword" class="form-control mobilenumber" ng-model="student.guardianPassword">
+                                                            <input ng-if="isReadyPassShown" type="text" name="ready_gaurdPassword" class="form-control mobilenumber" ng-model="student.guardianPassword">
+                                                            <div class="input-group-append">
+                                                                <span class="input-group-text">
+                                                                    <i ng-if="!isReadyPassShown" ng-click="toggleReadyPassVisibilty()" class="togglePassVisibilty fa fa-eye"></i>
+                                                                    <i ng-if="isReadyPassShown" ng-click="toggleReadyPassVisibilty()" class="togglePassVisibilty fa fa-eye-slash"></i>
+                                                                </span>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </td>
+                                                <td><button ng-click="removeImport(student,$index,'ready')" type="button" class="btn btn-danger btn-circle" title="{{phrase.Remove}}" tooltip><i class="fa fa-trash-o"></i></button></td>
+                                            </tr>
+                                            <tr ng-show="!importReview.ready.length"><td class="noTableData" colspan="6">{{phrase.noStudents}}</td></tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-group row">
+                            <div class="col-offset-2 col-10">
+                                <button type="submit" class="btn btn-primary"> Import </button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<modal visible="showModal">
+    <div class="row">
+        <div class="col-9">
+            <input type="text" class="form-control" ng-model="searchSiblingString" id="searchSiblingString" placeholder="Type student name / username / E-mail address">
+        </div>
+        <div class="col-2">
+            <button ng-disabled="searchSiblingString.length == 0" ng-click="doSearch()" class="btn btn-danger btn-flat"> <i class="fa fa-search"></i> Search </button>
+        </div>
+    </div>
+    <div ng-if="Object.keys(siblings).length != 0" class="row">
+        <div class="col-12">
+            <table class="table table-bordered table-hover">
+                <tbody>
+                    <tr>
+                        <th> Student </th>
+                        <th> Guardian </th>
+                        <th> Relation </th>
+                        <th> Actions </th>
+                    </tr>
+                    <tr ng-repeat="sibling in siblings track by $index">
+                        <td> {{ sibling.studentName }} </td>
+                        <td> {{ sibling.gaurdianName }} </td>
+                        <td> {{ sibling.relation }} </td>
+                        <td>
+                            <a ng-if="student.siblings.is_defined != sibling.gaurdianId" class="btn btn-sm btn-success setAsGuardian" ng-click="setAsGuardian( sibling.gaurdianId )"> Set as sibling </a>
+                            <a ng-if="student.siblings.is_defined == sibling.gaurdianId" class="btn btn-sm btn-danger resetGuardian" ng-click="removeGuardian( sibling.gaurdianId )"> Remove sibling </a>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</modal>

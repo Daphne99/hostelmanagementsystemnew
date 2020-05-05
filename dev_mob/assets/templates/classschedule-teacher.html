@@ -1,0 +1,88 @@
+<style type="text/css">
+	.listTable tr td {
+		font-size: 13px;
+		padding: 5px;
+		white-space: normal;
+	}
+	.listTable tr th {
+		font-size: 15px;
+		padding: 8px 5px;
+	}
+	.listTable .options .btn-circle {
+		height: 25px;
+		width: 25px;
+		padding: 3px;
+	}
+	#view-list-block {
+		padding: 15px 10px;
+	}
+	#view-list-block .search-input {
+		margin-bottom: 12px
+	}
+	.page-titles h3 {
+		font-size: 22px;
+		text-align: left;
+	}
+	.current-day-btn {
+		background: #443f84 !important;
+	}
+</style>
+
+<div class="row page-titles" style="margin-bottom: -5px;">
+    <div class="col-12 align-self-center">
+        <h3 class="text-themecolor m-b-0 m-t-0">My Timetable</h3>
+        <!--a href="/portal#" class="btn btn-sm btn-danger" style="position: absolute; right: 15px; top: 3px;">
+      		<i class="fa fa-home"></i> Home
+      	</a-->
+    </div>
+</div>
+
+<div ng-if="current_user_role == 'teacher'">
+	<div class="row">
+		<div class="col-12">
+	      <div class="card">
+	          <div class="card-block">
+	            <div class="table-responsive">
+	                <form class="form-horizontal" name="editDorm" role="form" ng-submit="saveEdit()" novalidate>
+	                		<div style="margin-bottom: 5px; padding-bottom: 5px">
+	                			<button
+	                				class="btn btn-success btn-sm mb-1"
+	                				style="margin-right: 5px"
+	                				ng-repeat="(key,sch) in classSchedule.schedule"
+	                				ng-click="setDayName(sch.dayName)"
+	                				data-ripple
+	                				ng-class="{'current-day-btn': sch.dayName == selectedDayName}"
+	                				>
+	                				{{sch.dayName}}
+	                			</button>
+	                		</div>
+	                		<div>
+	                			<div ng-repeat="(key,sch) in classSchedule.schedule">
+	                				<div ng-show="sch.dayName == selectedDayName">
+	                  				<div ng-repeat="subSch in sch.sub" style="margin:5px;">
+	                						<div class="card" style="background-color: #FAFAFA; border-radius: 5px; border: 1px solid #DDD; padding: 8px; margin-bottom: 12px">
+															  <div class="card-body">
+															    <h5 class="card-title text-info" style="font-size: 17px">{{subSch.subjectId}}</h5>
+														    	<div class="row" style="margin-top: -5px; margin-bottom: 8px">
+														    		<div class="col-6" style="font-size: 15px">
+														    			<i class="fa fa-clock-o text-success"></i> Starts: {{subSch.start}}
+														    		</div>
+														    		<div class="col-6" style="font-size: 15px">
+														    			<i class="fa fa-clock-o text-danger"></i> Ends: {{subSch.end}}
+														    		</div>
+														    	</div>
+															    <span>Class/Section:<b> {{ subSch.className }}/{{ subSch.sectionName }}</b></spann>
+															  </div>
+															</div>
+	                          </div>
+														<div ng-if="sch.sub == null">There are no subjects to display.</div>
+	                				</div>
+	                			</div>
+	                		</div>
+	                </form>
+	            </div>
+	          </div>
+	      </div>
+	  </div>
+	</div>
+</div>

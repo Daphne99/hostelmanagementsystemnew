@@ -1,0 +1,438 @@
+<link rel="stylesheet" href="assets/plugins/bootstrap-select/bootstrap4.1.1-dropdown.css" type="text/css" />
+<style type="text/css">
+	.selected-data-list .remove-all, .selected-data-list .remove-item { cursor: pointer; }
+	ul.list-group > li.list-group-item { padding: 7px !important; }
+	ul.list-group > li.list-group-item small { width: 80%; }
+    .upper-navs .nav-link { cursor: pointer; }
+    .upper-navs .nav-link:hover { background-color: #fff; border-color: #ddd #ddd #fff; }
+    .chatIcon { width: 40px; border: 1px solid #e8e8e8; padding: 5px; border-radius: 50% !important; }
+    .unread { background-color: #e8e8e8 !important; }
+    .unread .chatIcon { border: 1px solid #07a1fa !important; }
+    .unread .text-primary { font-weight: 400 !important; }
+    .load-old-msgs { cursor: pointer; }
+    .chat-bubble-main { color: white !important; padding: 18px 20px !important; line-height: 26px !important;
+                        font-size: 16px !important; border-radius: 7px !important;
+                        /* margin-bottom: 30px !important; width: 90% !important; position: relative !important; */
+                    }
+    .chat-bubble-me { background-color: #94C2ED !important; }
+    .chat-bubble-stranger { background-color: #86BB71 !important; }
+    .chat-bubble-broadcast { background-color:#9B9900 !important; }
+    .chat-bubble-time { color: #cad9d9 !important; font-size: x-small !important; cursor: pointer; }
+    .chat-bubble-time:hover { color: white !important; }
+    .custom-width-75 {  width: 75% !important; }
+    .custom-width-100 {  width: 100% !important; }
+</style>
+
+<div class="row page-titles">
+    <div class="col-md-6 col-8 align-self-center">
+        <h3 class="text-themecolor m-b-0 m-t-0">{{phrase.Messages}}</h3>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-12">
+        <ul class="nav nav-tabs upper-navs" style="border-bottom-width: 2px;">
+            <li class="upper-nav-tabs nav-item"> <a ng-click="changeView('sent')" ng-class="{'active': views.sent }" class="nav-link"> Sent </a> </li>
+            <li class="upper-nav-tabs nav-item"> <a ng-click="changeView('inbox')" ng-class="{'active': views.inbox }" class="nav-link"> Conversations </a> </li>
+        </ul>
+    </div>
+</div>
+
+<div class="container-fluid" ng-if="views.sent">
+    <div ng-if="userRole != 'parent'" class="row mt-3">
+        <div class="col-12">
+            <form class="form-horizontal row" name="filterSent" role="form" novalidate>
+                <div class="col-2">
+                    <div class="form-group row mb-0" ng-class="{'has-error': filterSent.typeOne.$invalid}">
+                        <label class="col-4 text-right control-label col-form-label">
+                            Type<span class="text-danger">*</span>
+                        </label>
+                        <div class="col-8 pr-0 pl-2">
+                            <select class="form-control" ng-change="enableDisableClass()" ng-model="filterForm.type1" required>
+                                <option value="" disabled selected> Pick Type </option>
+                                <option ng-repeat="type in options track by $index" value="{{type.id}}"> {{type.name}} </option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-2">
+                    <div class="form-group row mb-0" ng-class="{'has-error': filterSent.typeTwo.$invalid}">
+                        <label class="col-3 text-right control-label col-form-label">
+                            Role<span class="text-danger">*</span>
+                        </label>
+                        <div class="col-9 pr-0 pl-2">
+                            <select class="form-control" ng-change="enableDisableClass()" ng-model="filterForm.type2" required>
+                                <option value="" disabled selected> Pick Role </option>
+                                <option ng-if="filterForm.type1 == 'acad'" ng-repeat="role in academic track by $index" value="{{role.id}}"> {{role.name}} </option>
+                                <option ng-if="filterForm.type1 == 'non'" ng-repeat="role in roles track by $index" value="{{role.id}}"> {{role.name}} </option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-3">
+                    <div class="form-group row mb-0" ng-class="{'has-error': filterSent.classes.$invalid}">
+                        <label class="col-3 text-right control-label col-form-label">
+                            class<span class="text-danger">*</span>
+                        </label>
+                        <div class="col-9">
+                            <select ng-disabled="filterForm.type1 != 'acad'" ng-required="filterForm.type1 == 'acad'" class="form-control selectpicker" data-live-search="true" data-actions-box="true" ng-model="filterForm.class" name="class_id" ng-change="changeClass()" multiple  >
+                                <option ng-repeat="class in classes" value="{{class.id}}">{{class.name}}</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-3">
+                    <div class="form-group row mb-0" ng-class="{'has-error': filterSent.sections.$invalid}" ng-if="$root.dashboardData.enableSections == '1'">
+                        <label class="col-3 text-right control-label col-form-label">Sections<span class="text-danger">*</span></label>
+                        <div class="col-9">
+                            <select ng-disabled="filterForm.type1 == '' || filterForm.type1 == 'non' || ( filterForm.type1 == 'acad' && filterForm.type2 != 'non' )" ng-required="filterForm.type1 == 'acad' && filterForm.type2 == 'non'" class="form-control selectpicker" data-live-search="true" data-actions-box="true" ng-model="filterForm.section" name="sectionId" multiple >
+                                <option ng-repeat="section in sections" value="{{section.id}}">{{section.name}}</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-2 pl-0 pr-0">
+                    <button ng-click="doFilterSent()" ng-disabled="filterSent.$invalid" class="btn btn-info mr-1 pr-2 pl-2"> <i class="fa fa-search"></i> Filter </button>
+                    <button ng-if="isSentFiltered == true" ng-click="cancelSentFilter()" class="btn btn-danger ml-1 pr-2 pl-2"> <i class="fa fa-times"></i> Cancel Filter </button>
+                </div>
+            </form>
+        </div>
+    </div>
+    <div class="row mt-3">
+        <div ng-if="$root.can('messaging.delMsg')" class="col-1 pr-0 pl-0">
+            <div class="btn-group m-b-10 m-r-10" role="group" aria-label="Button group with nested dropdown">
+                <button ng-click="checkAll()" type="button" class="btn btn-sm btn-secondary font-18 text-dark"><i class="mdi mdi-check"></i></button>
+            </div>
+            <div class="btn-group m-b-10 m-r-10" role="group" aria-label="Button group with nested dropdown">
+                <button type="button" tooltip title="{{phrase.Remove}}" ng-click="markDelete('sent')" class="btn btn-sm btn-secondary font-18 text-dark"><i class="mdi mdi-delete"></i></button>
+            </div>
+        </div>
+        <div class="col-3">
+            <div class="card-block-input-group card-block-input-item">
+                <div class="input-group input-group-sm">
+                    <input type="text" name="table_search" ng-model="searchText" placeholder="{{phrase.Search}}" class="form-control">
+                    <span class="input-group-addon"><i class="fa fa-search"></i></span>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-4">
+            <div class="card-block pr-0 pl-0 pt-0">
+                <div class="card b-all shadow-none">
+                    <div class="sent-data inbox-center b-all table-responsive" style="overflow-x: hidden; overflow-y: scroll !important; height: 550px !important;">
+                        <table class="table table-hover no-wrap table-bordered" style="margin-bottom:0px !important;">
+                            <tbody>
+                                <tr dir-paginate="message in messages | filter:searchText | itemsPerPage:20 track by $index" total-items="totalItems">
+                                    <td ng-if="$root.can('messaging.delMsg')" class="text-center" style="width:40px">
+                                        <div class="checkbox">
+                                            <input type="checkbox" name="checked[]" id="checkbox{{message.id}}" ng-model="message.selected">
+                                            <label for="checkbox{{message.id}}"></label>
+                                        </div>
+                                    </td>
+                                    <td style="cursor: pointer;" ng-click="openMessage(message.id, $index)">
+                                        <div class="row">
+                                            <div class="col-2 pr-2 pl-2" style="max-width: 50px !important;">
+                                                <img ng-if="message.isGroup == true" class="chatIcon" src="../assets/images/icon-group.png">
+                                                <img ng-if="message.isGroup == false" class="chatIcon" ng-src="{{'index.php/dashboard/profileImage/'+message.sender_receiver_data.id}}">
+                                            </div>
+                                            <div class="col-10">
+                                                <div class="row">
+                                                    <div class="col-12">
+                                                        <span class="text-primary"> {{ message.sender_receiver_data.fullName }} </span>
+                                                    </div>
+                                                    <div class="col-7">
+                                                        <span> {{ message.lastMiniMessage }} </span>
+                                                    </div>
+                                                    <div class="pt-2 col-5" style="font-size: xx-small !important;"> {{ message.dateH }} </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr ng-show="!messages.length"><td class="noTableData" colspan="4">{{phrase.noMessages}}</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div ng-if="$root.can('messaging.View')" class="col-8">
+            <div class="container-fluid pt-0" ng-if="isFirstLoaded == true">
+                <div class="row" ng-if="isLoading == true"> <div class="col-12 text-center"> <i class="fa fa-spinner fa-spin fa-fw"></i> Reading Message </div> </div>
+                <div class="row" ng-if="isLoading == false">
+                    <div class="col-12">
+                        <div class="card-block">
+                            <h4 class="card-title"> <i ng-if="messageDet.type == 'multiple'" class="fa fa-users"></i> {{messageDet.fullName}}</h4>
+                            <div ng-if="messageDet.type == 'multiple'" class="card-body">
+                                <div class="row">
+                                    <div class="col-12">
+                                        Participates
+                                        <i ng-click="toogleParticipates()" ng-if="isParticipatesShown == false" class="fa fa-chevron-down"></i>
+                                        <i ng-click="toogleParticipates()" ng-if="isParticipatesShown == true" class="fa fa-chevron-up"></i>
+                                    </div>
+                                </div>
+                                <div class="row" ng-show="isParticipatesShown == true">
+                                    <div class="col-12">
+                                        <label class="btn btn-xs btn-info mr-1 ml-1" ng-repeat="recipient in messageDet.recipients" ng-click="openThisConversation(recipient.id)" > {{ recipient.name }} </label>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="chat-box">
+                                <ul class="chat-list" id="chat-box" chat-box>
+                                    <p ng-if="messageDet.type != 'multiple'" id="loadOld" class="text-muted well well-sm no-shadow text-center load-old-msgs" ng-click="loadOld()">{{phrase.loadOldMessages}}</p>
+                                    <li class="mt-1" ng-repeat="messageOne in message" ng-class="{'reverse': messageOne.userId == $root.dashboardData.baseUser.id}">
+                                        <div class="row" ng-show="messageOne.userId == $root.dashboardData.baseUser.id">
+                                            <div class="col-10 pull-right pr-0 pl-0">
+                                                <div class="chat-content pr-0 pl-0" style=" width: 75% !important;">
+                                                    <h5> {{messageOne.fullName}}</h5>
+                                                    <div style="text-align: right !important; float: right !important;" class="box chat-bubble-main custom-width-{{ messageOne.styler }}" ng-class="{'bg-light-inverse': messageOne.userId == $root.dashboardData.baseUser.id,'bg-light-info': messageOne.userId != $root.dashboardData.baseUser.id, 'chat-bubble-me': messageOne.isMultiple != true, 'chat-bubble-broadcast': messageOne.isMultiple == true }">
+                                                        {{messageOne.messageText}}
+                                                        <br />
+                                                        <span class="chat-bubble-time pull-left" title="{{ messageOne.dateToolTip }}" tooltip>
+                                                            <i class="fa fa-clock-o"></i> {{ messageOne.dateH }} - {{ messageOne.dateHour }}
+                                                        </span>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="col-2 text-center pr-4">
+                                                <div class="chat-img"><img ng-src="{{'index.php/dashboard/profileImage/'+messageOne.userId}}" style="width: 45px;height: 45px;" alt="{{messageOne.fullName}}" /></div>
+                                            </div>
+                                        </div>
+                                        <div class="row" ng-show="messageOne.userId != $root.dashboardData.baseUser.id">
+                                            <div class="col-2 text-left pl-3">
+                                                <div class="chat-img"><img ng-src="{{'index.php/dashboard/profileImage/'+messageOne.userId}}" alt="{{messageOne.fullName}}" /></div>
+                                            </div>
+                                            <div class="col-10 pr-0 pl-0">
+                                                <div class="chat-content pr-5 pl-0 custom-width-{{ messageOne.styler }}">
+                                                    <h5 class="pull-left">{{messageOne.fullName}}</h5>
+                                                    <div style="text-align: left !important; width: 100% !important; float: left !important;" class="box chat-bubble-main chat-bubble-stranger" ng-class="{'bg-light-inverse': messageOne.userId == $root.dashboardData.baseUser.id,'bg-light-info': messageOne.userId != $root.dashboardData.baseUser.id}">
+                                                        {{messageOne.messageText}}
+                                                        <br />
+                                                        <span class="chat-bubble-time pull-right" title="{{ messageOne.dateToolTip }}" tooltip>
+                                                            <i class="fa fa-clock-o"></i> {{ messageOne.dateH }} - {{ messageOne.dateHour }}
+                                                        </span>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                        <div class="card-block b-t">
+                            <div class="row" ng-if="message[message.length-1].enableReply || userRole == 'admin'">
+                                <div class="col-10">
+                                    <textarea class="form-control b-0" ng-enter="replyMessage()" ng-disable="form.disable" ng-model="form.reply" placeholder="{{phrase.typeReply}}"></textarea>
+                              </div>
+                              <div class="col-2 text-right">
+                                  <button style="width: 100% !important;" type="button" ng-disable="form.disable" ng-click="replyMessage()" class="btn btn-info btn-sm"><i class="fa fa-paper-plane-o"></i> Reply </button>
+                              </div>
+                            </div>
+                            <div class="row" ng-if="!message[message.length-1].enableReply && userRole != 'admin'">
+                                <p class="pl-3 pt-2">Sorry, you can't reply for this message.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-12">
+            <dir-pagination-controls class="pull-right" on-page-change="pageChanged(newPageNumber)" template-url="assets/templates/dirPagination.html" ></dir-pagination-controls>
+        </div>
+    </div>
+</div>
+
+<div class="container-fluid" ng-if="views.inbox">
+    <div ng-if="userRole != 'parent'" class="row mt-3">
+        <div class="col-12">
+            <form class="form-horizontal row" name="filterInbox" role="form" novalidate>
+                <div class="col-2">
+                    <div class="form-group row mb-0" ng-class="{'has-error': filterInbox.typeOne.$invalid}">
+                        <label class="col-4 text-right control-label col-form-label">
+                            Type<span class="text-danger">*</span>
+                        </label>
+                        <div class="col-8 pr-0 pl-2">
+                            <select class="form-control" ng-change="enableDisableClass()" ng-model="filterForm.type1" required>
+                                <option value="" disabled selected> Pick Type </option>
+                                <option ng-repeat="type in options track by $index" value="{{type.id}}"> {{type.name}} </option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-2">
+                    <div class="form-group row mb-0" ng-class="{'has-error': filterInbox.typeTwo.$invalid}">
+                        <label class="col-3 text-right control-label col-form-label">
+                            Role<span class="text-danger">*</span>
+                        </label>
+                        <div class="col-9 pr-0 pl-2">
+                            <select class="form-control" ng-change="enableDisableClass()" ng-model="filterForm.type2" required>
+                                <option value="" disabled selected> Pick Role </option>
+                                <option ng-if="filterForm.type1 == 'acad'" ng-repeat="role in academic track by $index" value="{{role.id}}"> {{role.name}} </option>
+                                <option ng-if="filterForm.type1 == 'non'" ng-repeat="role in roles track by $index" value="{{role.id}}"> {{role.name}} </option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-3">
+                    <div class="form-group row mb-0" ng-class="{'has-error': filterInbox.classes.$invalid}">
+                        <label class="col-3 text-right control-label col-form-label">
+                            class<span class="text-danger">*</span>
+                        </label>
+                        <div class="col-9">
+                            <select ng-disabled="filterForm.type1 != 'acad'" ng-required="filterForm.type1 == 'acad'" class="form-control selectpicker" data-live-search="true" data-actions-box="true" ng-model="filterForm.class" name="class_id" ng-change="changeClass()" multiple  >
+                                <option ng-repeat="class in classes" value="{{class.id}}">{{class.name}}</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-3">
+                    <div class="form-group row mb-0" ng-class="{'has-error': filterInbox.sections.$invalid}" ng-if="$root.dashboardData.enableSections == '1'">
+                        <label class="col-3 text-right control-label col-form-label">Sections<span class="text-danger">*</span></label>
+                        <div class="col-9">
+                            <select ng-disabled="filterForm.type1 == '' || filterForm.type1 == 'non' || ( filterForm.type1 == 'acad' && filterForm.type2 != 'non' )" ng-required="filterForm.type1 == 'acad' && filterForm.type2 == 'non'" class="form-control selectpicker" data-live-search="true" data-actions-box="true" ng-model="filterForm.section" name="sectionId" multiple >
+                                <option ng-repeat="section in sections" value="{{section.id}}">{{section.name}}</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-2 pl-0 pr-0">
+                    <button ng-click="doFilterInbox()" ng-disabled="filterInbox.$invalid" class="btn btn-info mr-1 pr-2 pl-2"> <i class="fa fa-search"></i> Filter </button>
+                    <button ng-if="isInboxFiltered == true" ng-click="cancelInboxFilter()" class="btn btn-danger ml-1 pr-2 pl-2"> <i class="fa fa-times"></i> Cancel Filter </button>
+                </div>
+            </form>
+        </div>
+    </div>
+    <div class="row mt-3">
+        <div ng-if="$root.can('messaging.delMsg')" class="col-1 pr-0 pl-0">
+            <div class="btn-group m-b-10 m-r-10" role="group" aria-label="Button group with nested dropdown">
+                <button ng-click="checkAll()" type="button" class="btn btn-sm btn-secondary font-18 text-dark"><i class="mdi mdi-check"></i></button>
+            </div>
+            <div class="btn-group m-b-10 m-r-10" role="group" aria-label="Button group with nested dropdown">
+                <button type="button" tooltip title="{{phrase.Remove}}" ng-click="markDelete('Conversation')" class="btn btn-sm btn-secondary font-18 text-dark"><i class="mdi mdi-delete"></i></button>
+            </div>
+        </div>
+        <div class="col-3">
+            <div class="card-block-input-group card-block-input-item">
+                <div class="input-group input-group-sm">
+                    <input type="text" name="table_search" ng-model="searchText" placeholder="{{phrase.Search}}" class="form-control">
+                    <span class="input-group-addon"><i class="fa fa-search"></i></span>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-4">
+            <div class="card-block pr-0 pl-0 pt-0">
+                <div class="card b-all shadow-none">
+                    <div class="sent-data inbox-center b-all table-responsive" style="overflow-x: hidden; overflow-y: scroll !important; height: 550px !important;">
+                        <table class="table table-hover no-wrap table-bordered" style="margin-bottom:0px !important;">
+                            <tbody>
+                                <tr dir-paginate="message in messages | filter:searchText | itemsPerPage:20 track by $index" total-items="totalItems">
+                                    <td ng-if="$root.can('messaging.delMsg')" class="text-center" style="width:40px">
+                                        <div class="checkbox">
+                                            <input type="checkbox" name="checked[]" id="checkbox{{message.id}}" ng-model="message.selected">
+                                            <label for="checkbox{{message.id}}"></label>
+                                        </div>
+                                    </td>
+                                    <td style="cursor: pointer;" ng-click="readConversation(message.id, $index)">
+                                        <div class="row">
+                                            <div class="col-2 pr-2 pl-2" style="max-width: 50px !important;">
+                                                <img class="chatIcon" ng-src="{{'index.php/dashboard/profileImage/'+message.sender_receiver_data.id}}">
+                                            </div>
+                                            <div class="col-10">
+                                                <div class="row">
+                                                    <div class="col-12">
+                                                        <span class="text-primary"> {{ message.sender_receiver_data.fullName }} </span>
+                                                    </div>
+                                                    <div class="col-7">
+                                                        <span> {{ message.lastMiniMessage }} </span>
+                                                    </div>
+                                                    <div class="pt-2 col-5" style="font-size: xx-small !important;"> {{ message.dateH }} </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr ng-show="!messages.length"><td class="noTableData" colspan="4">{{phrase.noMessages}}</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div ng-if="$root.can('messaging.View')" class="col-8">
+            <div class="container-fluid pt-0" ng-if="isFirstLoaded == true">
+                <div class="row" ng-if="isLoading == true"> <div class="col-12 text-center"> <i class="fa fa-spinner fa-spin fa-fw"></i> Reading Message </div> </div>
+                <div class="row" ng-if="isLoading == false">
+                    <div class="col-12">
+                        <div class="card-block">
+                            <h4 class="card-title"> {{messageDet.fullName}}</h4>
+                            <div class="chat-box">
+                                <ul class="chat-list" id="chat-box" chat-box>
+                                    <p ng-if="messageDet.type != 'multiple'" id="loadOld" class="text-muted well well-sm no-shadow text-center load-old-msgs" ng-click="loadOld()">{{phrase.loadOldMessages}}</p>
+                                    <li class="mt-1" ng-repeat="messageOne in message" ng-class="{'reverse': messageOne.userId == $root.dashboardData.baseUser.id}">
+                                        <div class="row" ng-show="messageOne.userId == $root.dashboardData.baseUser.id">
+                                            <div class="col-10 pull-right pr-0 pl-0">
+                                                <div class="chat-content pr-0 pl-0" style=" width: 75% !important;">
+                                                    <h5> {{messageOne.fullName}}</h5>
+                                                    <div style="text-align: right !important; float: right !important;" class="box chat-bubble-main custom-width-{{ messageOne.styler }}" ng-class="{'bg-light-inverse': messageOne.userId == $root.dashboardData.baseUser.id,'bg-light-info': messageOne.userId != $root.dashboardData.baseUser.id, 'chat-bubble-me': messageOne.isMultiple != true, 'chat-bubble-broadcast': messageOne.isMultiple == true }">
+                                                        {{messageOne.messageText}}
+                                                        <br />
+                                                        <span class="chat-bubble-time pull-left" title="{{ messageOne.dateToolTip }}" tooltip>
+                                                            <i class="fa fa-clock-o"></i> {{ messageOne.dateH }} - {{ messageOne.dateHour }}
+                                                        </span>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="col-2 text-center pr-4">
+                                                <div class="chat-img"><img ng-src="{{'index.php/dashboard/profileImage/'+messageOne.userId}}" style="width: 45px;height: 45px;" alt="{{messageOne.fullName}}" /></div>
+                                            </div>
+                                        </div>
+                                        <div class="row" ng-show="messageOne.userId != $root.dashboardData.baseUser.id">
+                                            <div class="col-2 text-left pl-3">
+                                                <div class="chat-img"><img ng-src="{{'index.php/dashboard/profileImage/'+messageOne.userId}}" alt="{{messageOne.fullName}}" /></div>
+                                            </div>
+                                            <div class="col-10 pr-0 pl-0">
+                                                <div class="chat-content pr-5 pl-0 custom-width-{{ messageOne.styler }}">
+                                                    <h5 class="pull-left">{{messageOne.fullName}}</h5>
+                                                    <div style="text-align: left !important; width: 100% !important; float: left !important;" class="box chat-bubble-main chat-bubble-stranger" ng-class="{'bg-light-inverse': messageOne.userId == $root.dashboardData.baseUser.id,'bg-light-info': messageOne.userId != $root.dashboardData.baseUser.id}">
+                                                        {{messageOne.messageText}}
+                                                        <br />
+                                                        <span class="chat-bubble-time pull-right" title="{{ messageOne.dateToolTip }}" tooltip>
+                                                            <i class="fa fa-clock-o"></i> {{ messageOne.dateH }} - {{ messageOne.dateHour }}
+                                                        </span>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                        <div class="card-block b-t">
+                            <div class="row" ng-if="message[message.length-1].enableReply || userRole == 'admin'">
+                                <div class="col-10">
+                                    <textarea class="form-control b-0" ng-enter="replyConvarsation()" ng-disable="form.disable" ng-model="form.reply" placeholder="{{phrase.typeReply}}"></textarea>
+                              </div>
+                              <div class="col-2 text-right">
+                                  <button style="width: 100% !important;" type="button" ng-disable="form.disable" ng-click="replyConvarsation()" class="btn btn-info btn-sm"><i class="fa fa-paper-plane-o"></i> Reply </button>
+                              </div>
+                            </div>
+                            <div class="row" ng-if="!message[message.length-1].enableReply && userRole != 'admin'">
+                                <p class="pl-3 pt-2">Sorry, you can't reply for this message.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-12">
+            <dir-pagination-controls class="pull-right" on-page-change="pageChanged(newPageNumber)" template-url="assets/templates/dirPagination.html" ></dir-pagination-controls>
+        </div>
+    </div>
+</div>

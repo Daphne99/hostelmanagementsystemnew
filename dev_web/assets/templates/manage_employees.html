@@ -1,0 +1,2203 @@
+<style>
+    .custom-btn-success, .custom-btn-success.disabled { background: #7ace4c; border: 1px solid #7ace4c; color: white !important; }
+    .custom-btn-success:hover { background: #7ace4c; opacity: .8; border: 1px solid #7ace4c; }
+    .employees-navs .nav-link { cursor: pointer; }
+    .employees-navs .nav-link:hover { background-color: #fff; border-color: #ddd #ddd #fff; }
+    .font-medium { font-weight: 500; }
+    .bdColor { color: #8d9ea7; }
+    .label-success { background-color: #7ace4c !important; }
+    .label-danger { background-color: #f33155 !important; }
+    .employeeHeader { text-transform: uppercase; font-weight: 500; font-size: 16px; }
+    .custom-textarea { height: 100px; resize: none; }
+    .remove-extra { color: white !important; }
+    .img-circle { width: 50px; }
+    .employeeLinkName:hover { color: #0791e6 !important; cursor: pointer; }
+    .employees-table-list { font-size: 14px; }
+    .panel-info { border-color: #41b3f9; }
+    .panel { border-radius:0; margin-bottom:30px; border:0; box-shadow:none }
+    .panel .panel-heading { border-radius: 0; font-weight: 500; font-size: 16px; padding: 10px 25px; }
+    .panel-blue .panel-heading, .panel-info .panel-heading { border-color: #41b3f9; color: #fff; background-color: #41b3f9; }
+    .collapse.in { display: block; }
+    .panel .panel-body { padding: 25px; background-color: white; }
+    .panel-custom { background-color: #F1F1F1; box-shadow: 0 1px 1px rgba(0, 0, 0, 0.05); padding: 10px 15px; }
+    .panel .panel-body:first-child h3 { margin-top: 0; font-weight: 500; font-family: Rubik,sans-serif; font-size: 14px; text-transform: uppercase; }
+    .box { border: 3px solid #F1F1F1; }
+    .noTableData { text-align: center !important; }
+    .custom-desc-textarea { height: 250px; resize: none; }
+    .panel-default { border-color: rgba(120,130,140,.13); }
+    .panel-default .panel-heading { color: #263238; background-color: #fff; border-bottom: 1px solid rgba(120,130,140,.13); }
+    .panel-default .panel-body { color: #263238; }
+    .details { font-size: 13px; color: #98a6ad; }
+    .panel .panel-footer { background: #fff; border-radius: 0; padding: 20px 25px; }
+    .panel-info .panel-footer { background: #fff; color: #263238; border-top: 2px solid #41b3f9; }
+    .panel-default .panel-footer { background: #fff; color: #263238; border-top: 2px solid rgba(120,130,140,.13); }
+    .label-rouded, .label-rounded { border-radius: 60px; padding: 4px 12px 3px; font-weight: 500;}
+</style>
+<div class="row page-titles">
+    <div class="col-12 align-self-center">
+        <h3 class="text-themecolor m-b-0 m-t-0"> Employee Management </h3>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-12">
+        <ul class="nav nav-tabs employees-navs" style="border-bottom-width: 2px;">
+            <li ng-show="$root.can('employees.list') || $root.can('employees.myProfile')" class="upper-nav-tabs nav-item"> <a ng-click="jumpTo('employee')" ng-class="{'active': views.employeeList || views.employeeAdd || views.employeeEdit || views.employeeView }" class="nav-link"> Employees </a> </li>
+            <li ng-show="$root.can('departments.list')" class="upper-nav-tabs nav-item"> <a ng-click="jumpTo('department')" ng-class="{'active': views.departmentList || views.departmentAdd || views.departmentEdit }" class="nav-link"> Department </a> </li>
+            <li ng-show="$root.can('designations.list')" class="upper-nav-tabs nav-item"> <a ng-click="jumpTo('designation')" ng-class="{'active': views.designationList || views.designationAdd || views.designationEdit }" class="nav-link"> Designation </a> </li>
+            <li ng-show="$root.can('branchs.list')" class="upper-nav-tabs nav-item"> <a ng-click="jumpTo('branch')" ng-class="{'active': views.branchList || views.branchAdd || views.branchEdit }" class="nav-link"> Branch </a> </li>
+            <li ng-show="$root.can('warnings.list')" class="upper-nav-tabs nav-item"> <a ng-click="jumpTo('warning')" ng-class="{'active': views.warningList || views.warningAdd || views.warningEdit || views.warningView }" class="nav-link"> Warning </a> </li>
+            <li ng-show="$root.can('terminations.list')" class="upper-nav-tabs nav-item"> <a ng-click="jumpTo('termination')" ng-class="{'active': views.terminationList || views.terminationAdd || views.terminationEdit || views.terminationView }" class="nav-link"> Termination </a> </li>
+            <li ng-show="$root.can('promotions.list')" class="upper-nav-tabs nav-item"> <a ng-click="jumpTo('promotion')" ng-class="{'active': views.promotionList || views.promotionAdd || views.promotionEdit || views.promotionView }" class="nav-link"> Promotion </a> </li>
+        </ul>
+    </div>
+</div>
+
+<div class="row" ng-show="views.departmentList">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-block">
+                <div class="card-title">
+                    <button ng-show="$root.can('departments.add_department')" ng-click="changeView('departmentAdd')" class="mb-3 btn pull-right btn-success card-block-input-item" style="font-weight: bold;"> <i class="fa fa-plus-circle"></i> Add Department </button>
+                    <div class="pull-right card-block-input-group card-block-input-item">
+                        <div class="input-group input-group-sm">
+                            <input type="text" name="table_search" ng-model="searchText" placeholder="{{phrase.Search}}" class="form-control input-sm">
+                            <span class="input-group-addon"><i class="fa fa-search"></i></span>
+                        </div>
+                    </div>
+                    <h4>Department List</h4>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-bordered table-hover">
+                            <tbody>
+                                <tr>
+                                    <th> # </th>
+                                    <th> Name </th>
+                                    <th ng-show="$root.can('departments.edit_department') || $root.can('departments.delete_department')" style='width:160px;'> Actions </th>
+                                </tr>
+                                <tr dir-paginate="department in departments | filter:searchText | itemsPerPage:20 track by $index" total-items="totalDepartments">
+                                    <td> {{ $index + 1 }} </td>
+                                    <td> {{ department.name }} </td>
+                                    <td ng-show="$root.can('departments.edit_department') || $root.can('departments.delete_department')">
+                                        <button ng-show="$root.can('departments.edit_department')" ng-click="editDepartment(department.id)" type="button" class="btn custom-btn-success btn btn-xs" title="Edit" tooltip><i class="fa fa-pencil-square-o"></i></button>
+                                        <button ng-show="$root.can('departments.delete_department')" ng-click="removeDepartment(department,$index)" type="button" class="btn btn-danger btn-xs" title="Remove" tooltip><i class="fa fa-trash-o"></i></button>
+                                    </td>
+                                </tr>
+                                <tr ng-show="!departments.length"><td class="noTableData" colspan="3"> No Departments are available at the moment </td></tr>
+                            </tbody>
+                        </table>
+                        <dir-pagination-controls
+                            on-page-change="pageChanged(newPageNumber)"
+                            template-url="assets/templates/dirPagination.html">
+                        </dir-pagination-controls>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row" ng-show="views.departmentAdd">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-block">
+                <button ng-show="$root.can('departments.list')" ng-click="changeView('departmentList')" class="mb-3 btn pull-right btn-danger card-block-input-item"> Cancel Add </button>
+                <div class="card-title"> <h4>Add Department</h4> </div> <br />
+                <div class="card-body">
+                    <form class="form-horizontal" name="addDepartment">
+                        <div class="form-group row" ng-class="{'has-error': addDepartment.name.$invalid}">
+                            <label class="col-2 pb-2 pl-3 control-label col-form-label">Department Name<span class="text-danger">*</span></label>
+                            <div class="col-10">
+                                <input type="text" ng-model="depForm.departmentName" class="form-control" required />
+                            </div>
+                        </div>
+                        <div class="form-group m-b-0">
+                            <div class="offset-sm-2 col-sm-10">
+                                <button ng-if="loadingIcon == false" ng-click="createDepartment()" class="btn btn-success waves-effect waves-light" ng-disabled="addDepartment.$invalid"> <i class="fa fa-plus"></i> Create department </button>
+                                <button ng-if="loadingIcon == true" class="btn btn-success waves-effect waves-light" disabled> <i class="fa fa-spinner fa-spin fa-fw"></i> Creating department </button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row" ng-show="views.departmentEdit">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-block">
+                <button ng-show="$root.can('departments.list')" ng-click="changeView('departmentList')" class="mb-3 btn pull-right btn-danger card-block-input-item"> Cancel Edit </button>
+                <div class="card-title"> <h4>Edit Department</h4> </div> <br />
+                <div class="card-body">
+                    <form class="form-horizontal" name="modifyDepartment">
+                        <div class="form-group row" ng-class="{'has-error': modifyDepartment.name.$invalid}">
+                            <label class="col-2 pb-2 pl-3 control-label col-form-label">Department Name<span class="text-danger">*</span></label>
+                            <div class="col-10">
+                                <input type="text" ng-model="depForm.departmentName" class="form-control" required />
+                            </div>
+                        </div>
+                        <div class="form-group m-b-0">
+                            <div class="offset-sm-2 col-sm-10">
+                                <button ng-if="loadingIcon == false" ng-click="saveDepartment()" class="btn btn-info waves-effect waves-light" ng-disabled="modifyDepartment.$invalid"> <i class="fa fa-save"></i> Edit department </button>
+                                <button ng-if="loadingIcon == true" class="btn btn-info waves-effect waves-light" disabled> <i class="fa fa-spinner fa-spin fa-fw"></i> Saving </button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row" ng-show="views.designationList">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-block">
+                <div class="card-title">
+                    <button ng-show="$root.can('designations.add_designation')" ng-click="changeView('designationAdd')" class="mb-3 btn pull-right btn-success card-block-input-item" style="font-weight: bold;"> <i class="fa fa-plus-circle"></i> Add designation </button>
+                    <div class="pull-right card-block-input-group card-block-input-item">
+                        <div class="input-group input-group-sm">
+                            <input type="text" name="table_search" ng-model="searchText" placeholder="{{phrase.Search}}" class="form-control input-sm">
+                            <span class="input-group-addon"><i class="fa fa-search"></i></span>
+                        </div>
+                    </div>
+                    <h4>Designation List</h4>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-bordered table-hover">
+                            <tbody>
+                                <tr>
+                                    <th> # </th>
+                                    <th> Name </th>
+                                    <th ng-show="$root.can('designations.edit_designation') || $root.can('designations.delete_designation')" style='width:160px;'> Actions </th>
+                                </tr>
+                                <tr dir-paginate="designation in designations | filter:searchText | itemsPerPage:20 track by $index" total-items="totalDesignations">
+                                    <td> {{ $index + 1 }} </td>
+                                    <td> {{ designation.name }} </td>
+                                    <td ng-show="$root.can('designations.edit_designation') || $root.can('designations.delete_designation')">
+                                        <button ng-show="$root.can('designations.edit_designation')" ng-click="editDesignation(designation.id)" type="button" class="btn custom-btn-success btn btn-xs" title="Edit" tooltip><i class="fa fa-pencil-square-o"></i></button>
+                                        <button ng-show="$root.can('designations.delete_designation')" ng-click="removeDesignation(designation,$index)" type="button" class="btn btn-danger btn-xs" title="Remove" tooltip><i class="fa fa-trash-o"></i></button>
+                                    </td>
+                                </tr>
+                                <tr ng-show="!designations.length"><td class="noTableData" colspan="3"> No Designations are available at the moment </td></tr>
+                            </tbody>
+                        </table>
+                        <dir-pagination-controls
+                            on-page-change="pageChanged(newPageNumber)"
+                            template-url="assets/templates/dirPagination.html">
+                        </dir-pagination-controls>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row" ng-show="views.designationAdd">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-block">
+                <button ng-show="$root.can('designations.list')" ng-click="changeView('designationList')" class="mb-3 btn pull-right btn-danger card-block-input-item"> Cancel Add </button>
+                <div class="card-title"> <h4>Add Designation</h4> </div> <br />
+                <div class="card-body">
+                    <form class="form-horizontal" name="addDesignation">
+                        <div class="form-group row" ng-class="{'has-error': addDesignation.name.$invalid}">
+                            <label class="col-2 pb-2 pl-3 control-label col-form-label">Designation Name<span class="text-danger">*</span></label>
+                            <div class="col-10">
+                                <input type="text" ng-model="desForm.designationName" class="form-control" required />
+                            </div>
+                        </div>
+                        <div class="form-group m-b-0">
+                            <div class="offset-sm-2 col-sm-10">
+                                <button ng-if="loadingIcon == false" ng-click="createDesignation()" class="btn btn-success waves-effect waves-light" ng-disabled="addDesignation.$invalid"> <i class="fa fa-plus"></i> Create designation </button>
+                                <button ng-if="loadingIcon == true" class="btn btn-success waves-effect waves-light" disabled> <i class="fa fa-spinner fa-spin fa-fw"></i> Creating designation </button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row" ng-show="views.designationEdit">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-block">
+                <button ng-show="$root.can('designations.list')" ng-click="changeView('designationList')" class="mb-3 btn pull-right btn-danger card-block-input-item"> Cancel Edit </button>
+                <div class="card-title"> <h4>Edit Designation</h4> </div> <br />
+                <div class="card-body">
+                    <form class="form-horizontal" name="modifyDesignation">
+                        <div class="form-group row" ng-class="{'has-error': modifyDesignation.name.$invalid}">
+                            <label class="col-2 pb-2 pl-3 control-label col-form-label">Designation Name<span class="text-danger">*</span></label>
+                            <div class="col-10">
+                                <input type="text" ng-model="desForm.designationName" class="form-control" required />
+                            </div>
+                        </div>
+                        <div class="form-group m-b-0">
+                            <div class="offset-sm-2 col-sm-10">
+                                <button ng-if="loadingIcon == false" ng-click="saveDesignation()" class="btn btn-info waves-effect waves-light" ng-disabled="modifyDesignation.$invalid"> <i class="fa fa-save"></i> Edit designation </button>
+                                <button ng-if="loadingIcon == true" class="btn btn-info waves-effect waves-light" disabled> <i class="fa fa-spinner fa-spin fa-fw"></i> Saving </button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row" ng-show="views.branchList">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-block">
+                <div class="card-title">
+                    <button ng-show="$root.can('branchs.add_branch')" ng-click="changeView('branchAdd')" class="mb-3 btn pull-right btn-success card-block-input-item" style="font-weight: bold;"> <i class="fa fa-plus-circle"></i> Add branch </button>
+                    <div class="pull-right card-block-input-group card-block-input-item">
+                        <div class="input-group input-group-sm">
+                            <input type="text" name="table_search" ng-model="searchText" placeholder="{{phrase.Search}}" class="form-control input-sm">
+                            <span class="input-group-addon"><i class="fa fa-search"></i></span>
+                        </div>
+                    </div>
+                    <h4>Branch List</h4>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-bordered table-hover">
+                            <tbody>
+                                <tr>
+                                    <th> # </th>
+                                    <th> Name </th>
+                                    <th ng-show="$root.can('branchs.edit_branch') || $root.can('branchs.delete_branch')" style='width:160px;'> Actions </th>
+                                </tr>
+                                <tr dir-paginate="branch in branchs | filter:searchText | itemsPerPage:20 track by $index" total-items="totalBranchs">
+                                    <td> {{ $index + 1 }} </td>
+                                    <td> {{ branch.name }} </td>
+                                    <td ng-show="$root.can('branchs.edit_branch') || $root.can('branchs.delete_branch')">
+                                        <button ng-show="$root.can('branchs.edit_branch')" ng-click="editBranch(branch.id)" type="button" class="btn custom-btn-success btn btn-xs" title="Edit" tooltip><i class="fa fa-pencil-square-o"></i></button>
+                                        <button ng-show="$root.can('branchs.delete_branch')" ng-click="removeBranch(branch,$index)" type="button" class="btn btn-danger btn-xs" title="Remove" tooltip><i class="fa fa-trash-o"></i></button>
+                                    </td>
+                                </tr>
+                                <tr ng-show="!branchs.length"><td class="noTableData" colspan="3"> No Branchs are available at the moment </td></tr>
+                            </tbody>
+                        </table>
+                        <dir-pagination-controls
+                            on-page-change="pageChanged(newPageNumber)"
+                            template-url="assets/templates/dirPagination.html">
+                        </dir-pagination-controls>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row" ng-show="views.branchAdd">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-block">
+                <button ng-show="$root.can('branchs.list')" ng-click="changeView('branchList')" class="mb-3 btn pull-right btn-danger card-block-input-item"> Cancel Add </button>
+                <div class="card-title"> <h4>Add Branch</h4> </div> <br />
+                <div class="card-body">
+                    <form class="form-horizontal" name="addBranch">
+                        <div class="form-group row" ng-class="{'has-error': addBranch.name.$invalid}">
+                            <label class="col-2 pb-2 pl-3 control-label col-form-label">Branch Name<span class="text-danger">*</span></label>
+                            <div class="col-10">
+                                <input type="text" ng-model="branchForm.branchName" class="form-control" required />
+                            </div>
+                        </div>
+                        <div class="form-group m-b-0">
+                            <div class="offset-sm-2 col-sm-10">
+                                <button ng-if="loadingIcon == false" ng-click="createBranch()" class="btn btn-success waves-effect waves-light" ng-disabled="addBranch.$invalid"> <i class="fa fa-plus"></i> Create branch </button>
+                                <button ng-if="loadingIcon == true" class="btn btn-success waves-effect waves-light" disabled> <i class="fa fa-spinner fa-spin fa-fw"></i> Creating branch </button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row" ng-show="views.branchEdit">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-block">
+                <button ng-show="$root.can('branchs.list')" ng-click="changeView('branchList')" class="mb-3 btn pull-right btn-danger card-block-input-item"> Cancel Edit </button>
+                <div class="card-title"> <h4>Edit Branch</h4> </div> <br />
+                <div class="card-body">
+                    <form class="form-horizontal" name="modifyBranch">
+                        <div class="form-group row" ng-class="{'has-error': modifyBranch.name.$invalid}">
+                            <label class="col-2 pb-2 pl-3 control-label col-form-label">Branch Name<span class="text-danger">*</span></label>
+                            <div class="col-10">
+                                <input type="text" ng-model="branchForm.branchName" class="form-control" required />
+                            </div>
+                        </div>
+                        <div class="form-group m-b-0">
+                            <div class="offset-sm-2 col-sm-10">
+                                <button ng-if="loadingIcon == false" ng-click="saveBranch()" class="btn btn-info waves-effect waves-light" ng-disabled="modifyBranch.$invalid"> <i class="fa fa-save"></i> Edit Branch </button>
+                                <button ng-if="loadingIcon == true" class="btn btn-info waves-effect waves-light" disabled> <i class="fa fa-spinner fa-spin fa-fw"></i> Saving </button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row" ng-show="views.employeeList">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-block">
+                <button ng-show="$root.can('employees.add_employee')" ng-click="changeView('employeeAdd')" class="mb-3 btn pull-right btn-success card-block-input-item" style="font-weight: bold;"> <i class="fa fa-plus-circle"></i> Add Employee </button>
+                <div class="pull-right card-block-input-group card-block-input-item">
+                    <div class="input-group input-group-sm">
+                        <input type="text" name="table_search" ng-model="searchText" placeholder="{{phrase.Search}}" class="form-control input-sm">
+                        <span class="input-group-addon"><i class="fa fa-search"></i></span>
+                    </div>
+                </div>
+                <h4>Employee List</h4>
+            </div>
+            <div class="card-body">
+                <div class="container-fluid pb-0 pt-0 mb-3">
+                    <div class="row">
+                        <div class="col-4">
+                            <div class="form-group">
+                                <label for="searchDepartment"> Department </label>
+                                <select ng-change="filterEmployeesData()" ng-model="selectedDepartment" class="form-control" name="searchDepartment" id="searchDepartment">
+                                    <option value="0" selected> All Departments </option>
+                                    <option ng-repeat="department in filterByDepartments track by $index" value="{{department.id}}"> {{ department.name }} </option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-4">
+                            <div class="form-group">
+                                <label for="searchDesignation"> Designation </label>
+                                <select ng-change="filterEmployeesData()" ng-model="selectedDesignation" class="form-control" name="searchDesignation" id="searchDesignation">
+                                    <option value="0" selected> All Designations </option>
+                                    <option ng-repeat="designation in filterByDesignations track by $index" value="{{designation.id}}"> {{ designation.name }} </option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-4">
+                            <div class="form-group">
+                                <label for="searchRole"> Role </label>
+                                <select ng-change="filterEmployeesData()" ng-model="selectedRole" class="form-control" name="searchRole" id="searchRole">
+                                    <option value="0" selected> All Roles </option>
+                                    <option ng-repeat="role in filterByRoles track by $index" value="{{role.id}}"> {{ role.name }} </option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="table-responsive">
+                    <table class="table table-bordered table-hover employees-table-list">
+                        <tbody>
+                            <tr>
+                                <th> # </th>
+                                <th> Photo </th>
+                                <th> Name </th>
+                                <th> Department </th>
+                                <th> Phone </th>
+                                <th> Fingerprint No. </th>
+                                <th> Pay Grade </th>
+                                <th> Joining Date </th>
+                                <th> Status </th>
+                                <th style='width:115px;' ng-show="$root.can('employees.view_employee') || $root.can('employees.edit_employee') || $root.can('employees.delete_employee')"> Action </th>
+                            </tr>
+                            <tr dir-paginate="employee in employees | filter:searchText | itemsPerPage:20 track by $index" total-items="totalEmployees">
+                                <td> {{ $index + 1 }} </td>
+                                <td> <img src="/manageRoles/profileImage/{{employee.profile_pic}}" class="img-circle" /> </td>
+                                <td>
+                                    <span class="font-medium"> <a ng-click="viewEmployee(employee.employee_id)" class="employeeLinkName"> {{ employee.fullName }} </a> </span> <br />
+                                    <span class="text-muted">Role : {{ employee.role }}</span> <br ng-if="employee.has_supervisor" />
+                                    <span ng-if="employee.has_supervisor" class="text-muted">Supervisor : {{ employee.supervisor }}</span> <br />
+                                    <span class="text-muted">Academic Role : {{ employee.academic_role }}</span> <br ng-if="employee.has_supervisor" />
+                                </td>
+                                <td>
+                                    <span class="font-medium"> {{ employee.department }} </span> <br />
+                                    <span class="text-muted">Designation : {{ employee.designation }}</span> <br />
+                                    <span class="text-muted">Branch : {{ employee.branch }}</span>
+                                </td>
+                                <td>
+                                    <span class="font-medium"> {{ employee.phone }} </span> <br />
+                                    <span class="text-muted">Email : {{ employee.email }}</span>
+                                </td>
+                                <td>
+                                    <span class="font-medium"> {{ employee.finger_id }} </span>
+                                </td>
+                                <td>
+                                    <span ng-if="employee.has_payGrade" class="font-medium"> {{ employee.paygrade_name }} </span>
+                                    <span ng-if="employee.has_payGrade" class="bdColor">(Monthly)</span> <br />
+                                    <span ng-if="employee.has_hourlySalaries" class="font-medium"> {{ employee.hourly_name }} </span>
+                                    <span ng-if="employee.has_hourlySalaries" class="bdColor">(Hourly)</span> <br />
+                                </td>
+                                <td>
+                                    <span class="font-medium"> {{ employee.date_of_joining }} </span> <br />
+                                    <span class="text-muted">{{ employee.joining_date }}</span> <br />
+                                    <span class="text-muted">Job Status : {{ employee.permanent_status }}</span>
+                                </td>
+                                <td>
+                                    <span ng-if="employee.status == '1'" class="label label-rouded label-success">Active</span>
+                                    <span ng-if="employee.status == '2'" class="label label-rouded label-warning">Inactive</span>
+                                    <span ng-if="employee.status == '3'" class="label label-rouded label-danger">Terminate</span>
+                                </td>
+                                <td ng-show="$root.can('employees.view_employee') || $root.can('employees.edit_employee') || $root.can('employees.delete_employee')">
+                                    <button ng-show="$root.can('employees.view_employee')" ng-click="viewEmployee(employee.employee_id)" type="button" class="btn btn-primary btn btn-xs" title="Profile" tooltip><i class="fa fa-th-large"></i></button>
+                                    <button ng-show="$root.can('employees.edit_employee')" ng-click="editEmployee(employee.employee_id)" type="button" class="btn custom-btn-success btn btn-xs" title="Edit" tooltip><i class="fa fa-pencil-square-o"></i></button>
+                                    <button ng-show="$root.can('employees.delete_employee')" ng-click="removeEmployee( employee, $index )" type="button" class="btn btn-danger btn-xs" title="Remove" tooltip><i class="fa fa-trash-o"></i></button>
+                                </td>
+                            </tr>
+                            <tr class="text-center" ng-if="!employees.length">
+                                <td colspan="10"> No Employees could be found on the moment </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    <dir-pagination-controls
+                        on-page-change="pageChanged(newPageNumber)"
+                        template-url="assets/templates/dirPagination.html">
+                    </dir-pagination-controls>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row" ng-show="views.employeeAdd">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-block">
+                <button ng-show="$root.can('employees.list') || $root.can('employees.myProfile')" ng-click="changeView('employeeList')" class="mb-3 btn pull-right btn-danger card-block-input-item"> Cancel Add </button>
+                <div class="card-title"> <h2>Add Employee</h2> </div> <br />
+                <div class="card-body">
+                    <form class="form-horizontal" name="addEmployee" method="post" action="" role="form">
+                        <div class="row">
+                            <div class="col-12">
+                                <h3 class="employeeHeader"> Employee Account </h3>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-3">
+                                <div class="form-group" ng-class="{'has-error': addEmployee.roleId.$invalid}">
+                                    <label for="roleId" style="font-weight: 500;">Role<span class="text-danger">*</span></label>
+                                    <select class="form-control" ng-model="add_employee.account.role" name="roleId" id="roleId" required>
+                                        <option value="" disabled selected> --- Please Select --- </option>
+                                        <option ng-repeat="role in filterByRoles track by $index" value="{{role.id}}"> {{ role.name }} </option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-3">
+                                <div class="form-group" ng-class="{'has-error': addEmployee.Username.$invalid}">
+                                    <label for="username" style="font-weight: 500;">Username<span class="text-danger">*</span></label>
+                                    <div class="input-group">
+                                        <span class="input-group-addon"><i class="fa fa-user"></i></span>
+                                        <input type="text" class="form-control" ng-model="add_employee.account.username" placeholder="Enter your user name" name="username" id="username" required/>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-3">
+                                <div class="form-group" ng-class="{'has-error': addEmployee.Password.$invalid}">
+                                    <label for="password" style="font-weight: 500;">Password<span class="text-danger">*</span></label>
+                                    <div class="input-group">
+                                        <span class="input-group-addon"><i class="fa fa-lock"></i></span>
+                                        <input type="password" class="form-control" ng-model="add_employee.account.password" placeholder="Enter Password" name="password" id="password" required/>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-3">
+                                <div class="form-group" ng-class="{'has-error': addEmployee.academicRole.$invalid }">
+                                    <label for="academicRole" style="font-weight: 500;">Academic Role<span class="text-danger">*</span></label>
+                                    <select class="form-control" ng-model="add_employee.account.academicRole" name="academicRole" id="academicRole" required>
+                                        <option value="" disabled selected> --- Please Select --- </option>
+                                        <option value="teacher"> Teaching Staff </option>
+                                        <option value="nonTeacher"> Non Teaching Staff </option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                        <hr class="mt-0 mb-3" />
+                        <div class="row">
+                            <div class="col-12">
+                                <h3 class="employeeHeader"> Personal Information </h3>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-3">
+                                <div class="form-group" ng-class="{'has-error': addEmployee.firstName.$invalid}">
+                                    <label for="firstName" style="font-weight: 500;">First Name<span class="text-danger">*</span></label>
+                                    <input type="text" class="form-control" ng-model="add_employee.information.firstName" placeholder="Enter first name" name="firstName" id="firstName" required/>
+                                </div>
+                            </div>
+                            <div class="col-3">
+                                <div class="form-group">
+                                    <label for="lastName" style="font-weight: 500;">Last Name</label>
+                                    <input type="text" class="form-control" ng-model="add_employee.information.lastName" placeholder="Enter last name" name="lastName" id="lastName" />
+                                </div>
+                            </div>
+                            <div class="col-3">
+                                <div class="form-group" ng-class="{'has-error': addEmployee.FingerprintNo.$invalid}">
+                                    <label for="FingerprintNo" style="font-weight: 500;">Fingerprint No.<span class="text-danger">*</span></label>
+                                    <input type="text" class="form-control" ng-model="add_employee.information.FingerprintNo" placeholder="Enter Finger Pin No." name="FingerprintNo" id="FingerprintNo" required/>
+                                </div>
+                            </div>
+                            <div class="col-3">
+                                <div class="form-group">
+                                    <label for="supervisor" style="font-weight: 500;">Supervisor</label>
+                                    <select class="form-control" ng-model="add_employee.information.supervisor" name="supervisor" id="supervisor">
+                                        <option value="" selected> --- Please Select --- </option>
+                                        <option ng-repeat="supervisor in supervisors track by $index" value="{{supervisor.id}}"> {{ supervisor.first_name }} {{ supervisor.last_name }} </option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-3">
+                                <div class="form-group" ng-class="{'has-error': addEmployee.DepartmentId.$invalid}">
+                                    <label for="department" style="font-weight: 500;">Department Name<span class="text-danger">*</span></label>
+                                    <select class="form-control" ng-model="add_employee.information.department" name="department" id="department" required>
+                                        <option value="" selected disabled> --- Please Select --- </option>
+                                        <option ng-repeat="department in filterByDepartments track by $index" value="{{department.id}}"> {{ department.name }} </option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-3">
+                                <div class="form-group" ng-class="{'has-error': addEmployee.DesignationId.$invalid}">
+                                    <label for="designation" style="font-weight: 500;">Designation Name<span class="text-danger">*</span></label>
+                                    <select class="form-control" ng-model="add_employee.information.designation" name="designation" id="designation" required>
+                                        <option value="" selected disabled> --- Please Select --- </option>
+                                        <option ng-repeat="designation in filterByDesignations track by $index" value="{{designation.id}}"> {{ designation.name }} </option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-3">
+                                <div class="form-group">
+                                    <label for="branch" style="font-weight: 500;">Branch Name</label>
+                                    <select class="form-control" ng-model="add_employee.information.branch" name="branch" id="branch">
+                                        <option value="" selected> --- Please Select --- </option>
+                                        <option ng-repeat="branch in filterByBranchs track by $index" value="{{branch.id}}"> {{ branch.name }} </option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-3">
+                                <div class="form-group">
+                                    <label for="workShift" style="font-weight: 500;">Work Shift</label>
+                                    <select class="form-control" ng-model="add_employee.information.shift" name="workShift" id="workShift">
+                                        <option value="" selected disabled> --- Please Select --- </option>
+                                        <option ng-repeat="shift in workShifts track by $index" value="{{shift.id}}"> {{ shift.name }} </option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-3">
+                                <div class="form-group">
+                                    <label for="monthlyPaygrade" style="font-weight: 500;">Monthly Pay Grade</label>
+                                    <select class="form-control" ng-model="add_employee.information.paygrade" name="monthlyPaygrade" id="monthlyPaygrade">
+                                        <option value="" selected disabled> --- Please Select --- </option>
+                                        <option ng-repeat="paygrade in filterByPaygrade track by $index" value="{{paygrade.id}}"> {{ paygrade.name }} </option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-3">
+                                <div class="form-group">
+                                    <label for="hourlySalary" style="font-weight: 500;">Hourly Pay Grade</label>
+                                    <select class="form-control" ng-model="add_employee.information.salary" name="hourlySalary" id="hourlySalary">
+                                        <option value="" selected disabled> --- Please Select --- </option>
+                                        <option ng-repeat="salary in filterBySalaries track by $index" value="{{salary.id}}"> {{ salary.name }} </option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-3">
+                                <div class="form-group">
+                                    <label for="empEmail" style="font-weight: 500;">Email</label>
+                                    <div class="input-group">
+                                        <span class="input-group-addon"><i class="fa fa-envelope"></i></span>
+                                        <input type="email" class="form-control" ng-model="add_employee.information.mail" placeholder="Enter email" name="empEmail" id="empEmail" />
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-3">
+                                <div class="form-group" ng-class="{'has-error': addEmployee.Phone.$invalid}">
+                                    <label for="empPhone" style="font-weight: 500;">Phone<span class="text-danger">*</span></label>
+                                    <div class="input-group">
+                                        <span class="input-group-addon">+91</span>
+                                        <input type="number" class="form-control" ng-model="add_employee.information.phone" placeholder="Enter phone" name="empPhone" id="empPhone" required/>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-3">
+                                <div class="form-group" ng-class="{'has-error': addEmployee.gender.$invalid}">
+                                    <label for="gender" style="font-weight: 500;">Gender<span class="text-danger">*</span></label>
+                                    <select class="form-control" ng-model="add_employee.information.gender" name="gender" id="gender" required>
+                                        <option value="" selected disabled> --- Please Select --- </option>
+                                        <option value="Male"> Male </option>
+                                        <option value="Female"> Female </option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-3">
+                                <div class="form-group">
+                                    <label for="religion" style="font-weight: 500;">Religion</label>
+                                    <input type="text" class="form-control" ng-model="add_employee.information.religion" placeholder="Enter religion" name="religion" id="religion" />
+                                </div>
+                            </div>
+                            <div class="col-3">
+                                <div class="form-group" ng-class="{'has-error': addEmployee.birthday.$invalid}">
+                                    <label for="birthday" style="font-weight: 500;">Date Of Birth<span class="text-danger">*</span></label>
+                                    <div class="input-group">
+                                        <span class="input-group-addon"><i class="fa fa-calendar"></i></span>
+                                        <input type="text" class="form-control" date-picker ng-model="add_employee.information.birthday" placeholder="Enter date of birth" name="birthday" id="birthday" readonly required />
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-3">
+                                <div class="form-group" ng-class="{'has-error': addEmployee.joinday.$invalid}">
+                                    <label for="joinday" style="font-weight: 500;">Date Of Joining<span class="text-danger">*</span></label>
+                                    <div class="input-group">
+                                        <span class="input-group-addon"><i class="fa fa-calendar"></i></span>
+                                        <input type="text" class="form-control" date-picker ng-model="add_employee.information.joinday" placeholder="Enter date of joining" name="joinday" id="joinday" readonly required />
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-3">
+                                <div class="form-group">
+                                    <label for="leaveday" style="font-weight: 500;">Date Of Leaving</label>
+                                    <div class="input-group">
+                                        <span class="input-group-addon"><i class="fa fa-calendar"></i></span>
+                                        <input type="text" class="form-control" date-picker ng-model="add_employee.information.leaveday" placeholder="Enter date of leaving" name="leaveday" id="leaveday" readonly />
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-3">
+                                <div class="form-group">
+                                    <label for="marital" style="font-weight: 500;">Marital Status</label>
+                                    <select class="form-control" ng-model="add_employee.information.marital" name="marital" id="marital">
+                                        <option value="" selected> --- Please Select --- </option>
+                                        <option value="Unmarried"> Unmarried </option>
+                                        <option value="Married"> Married </option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-3">
+                                <div class="form-group" ng-class="{'has-error': addEmployee.status.$invalid}">
+                                    <label for="status" style="font-weight: 500;">Status<span class="text-danger">*</span></label>
+                                    <select class="form-control" ng-model="add_employee.information.status" name="status" id="status" required>
+                                        <option value="" disabled selected> --- Please Select --- </option>
+                                        <option value="Active"> Active </option>
+                                        <option value="Inactive"> Inactive </option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-3">
+                                <div class="form-group">
+                                    <label for="photo" style="font-weight: 500;">Photo</label>
+                                    <div class="input-group">
+                                        <span class="input-group-addon"><i class="fa fa-picture-o"></i></span>
+                                        <input type="file" class="form-control" ng-model="add_employee.information.photo" accept="image/jpg, image/jpeg, image/png" name="photo" id="photo" />
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-3">
+                                <div class="form-group">
+                                    <label for="address" style="font-weight: 500;">Address</label>
+                                    <textarea class="form-control custom-textarea" ng-model="add_employee.information.address" name="address" id="address"></textarea>
+                                </div>
+                            </div>
+                            <div class="col-3">
+                                <div class="form-group">
+                                    <label for="emergency" style="font-weight: 500;">Emergency Contact</label>
+                                    <textarea class="form-control custom-textarea" ng-model="add_employee.information.emergency" name="emergency" id="emergency"></textarea>
+                                </div>
+                            </div>
+                        </div>
+                        <hr class="mt-0 mb-3" />
+                        <div class="row">
+                            <div class="col-10">
+                                <h3 class="employeeHeader"> Education Qualification </h3>
+                            </div>
+                            <div class="col-2">
+                                <a ng-click="addEducationQualification()" class="btn btn-sm custom-btn-success pull-right"> <i class="fa fa-plus-circle"></i> Add Education Qualification </a>
+                            </div>
+                        </div>
+                        <hr class="mt-0 mb-3" />
+                        <div class="form-group" ng-repeat="education in add_employee.educational track by $index">
+                            <div class="row">
+                                <div class="col-3">
+                                    <div class="form-group" ng-class="{'has-error': addEmployee.institute_$index.$invalid}">
+                                        <label for="institute_{{$index}}" style="font-weight: 500;">Institute<span class="text-danger">*</span></label>
+                                        <select class="form-control" ng-model="education.institute" name="institute_{{$index}}" id="institute_{{$index}}" required>
+                                            <option value="" disabled selected> --- Please Select --- </option>
+                                            <option value="Board"> Board </option>
+                                            <option value="University"> University </option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="col-3">
+                                    <div class="form-group" ng-class="{'has-error': addEmployee.university_$index.$invalid}">
+                                        <label for="university_{{$index}}" style="font-weight: 500;">Board / University Name<span class="text-danger">*</span></label>
+                                        <input type="text" class="form-control" ng-model="education.university" placeholder="Enter board/university name" name="university_{{$index}}" id="university_{{$index}}" required />
+                                    </div>
+                                </div>
+                                <div class="col-3">
+                                    <div class="form-group" ng-class="{'has-error': addEmployee.degree_$index.$invalid}">
+                                        <label for="degree_{{$index}}" style="font-weight: 500;">Degree<span class="text-danger">*</span></label>
+                                        <input type="text" class="form-control" ng-model="education.degree" placeholder="B.Sc. Engr.(Bachelor of Science in Engineering)" name="degree_{{$index}}" id="degree_{{$index}}" required />
+                                    </div>
+                                </div>
+                                <div class="col-3">
+                                    <div class="form-group" ng-class="{'has-error': addEmployee.passingYear_$index.$invalid}">
+                                        <label for="passing_{{ $index }}" style="font-weight: 500;">Passing year<span class="text-danger">*</span></label>
+                                        <div class="input-group">
+                                            <span class="input-group-addon"><i class="fa fa-calendar-o"></i></span>
+                                            <input type="date" class="form-control" ng-model="education.passingYear" placeholder="Enter Year" name="passing_{{ $index }}" id="passing_{{ $index }}" required />
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-3">
+                                    <div class="form-group">
+                                        <label for="result_{{$index}}" style="font-weight: 500;">Result</label>
+                                        <select class="form-control" ng-model="education.result" name="result_{{$index}}" id="result_{{$index}}">
+                                            <option value="" disabled selected> --- Please Select --- </option>
+                                            <option value="First class"> First class </option>
+                                            <option value="Second class"> Second class </option>
+                                            <option value="Third class"> Third class </option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="col-3">
+                                    <div class="form-group">
+                                        <label for="gpa_{{$index}}" style="font-weight: 500;">GPA / CGPA</label>
+                                        <input type="text" class="form-control" date-picker ng-model="education.gpa" placeholder="Example: 5.00,4.63" name="gpa_{{$index}}" id="gpa_{{$index}}" />
+                                    </div>
+                                </div>
+                                <div class="col-6">
+                                    <a ng-click="removeEducationQualification($index)" class="btn btn-sm btn-danger pull-right remove-extra"> Remove </a>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-10">
+                                <h3 class="employeeHeader"> Professional Experience </h3>
+                            </div>
+                            <div class="col-2">
+                                <a ng-click="addProfessionalExperience()" class="btn btn-sm custom-btn-success pull-right"> <i class="fa fa-plus-circle"></i> Add Professional Experience </a>
+                            </div>
+                        </div>
+                        <hr class="mt-0 mb-3" />
+                        <div class="form-group" ng-repeat="profession in add_employee.professional track by $index">
+                            <div class="row">
+                                <div class="col-3">
+                                    <div class="form-group" ng-class="{'has-error': addEmployee.organization_$index.$invalid}">
+                                        <label for="organization_{{$index}}" style="font-weight: 500;">Organization Name<span class="text-danger">*</span></label>
+                                        <input type="text" class="form-control" ng-model="profession.organization" placeholder="Enter organization name" name="organization_{{$index}}" id="organization_{{$index}}" required />
+                                    </div>
+                                </div>
+                                <div class="col-3">
+                                    <div class="form-group" ng-class="{'has-error': addEmployee.designation_$index.$invalid}">
+                                        <label for="designation_{{$index}}" style="font-weight: 500;">Designation<span class="text-danger">*</span></label>
+                                        <input type="text" class="form-control" ng-model="profession.designation" placeholder="Enter designation" name="designation_{{$index}}" id="designation_{{$index}}" required />
+                                    </div>
+                                </div>
+                                <div class="col-3">
+                                    <div class="form-group" ng-class="{'has-error': addEmployee.fromDate_$index.$invalid}">
+                                        <label for="fromDate_{{$index}}" style="font-weight: 500;">From Date<span class="text-danger">*</span></label>
+                                        <div class="input-group">
+                                            <span class="input-group-addon"><i class="fa fa-calendar"></i></span>
+                                            <input type="date" class="form-control" ng-model="profession.from" placeholder="Enter from date" name="fromDate_{{$index}}" id="fromDate_{{$index}}" required />
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-3">
+                                    <div class="form-group" ng-class="{'has-error': addEmployee.toDate_$index.$invalid}">
+                                        <label for="toDate_{{$index}}" style="font-weight: 500;">To Date<span class="text-danger">*</span></label>
+                                        <div class="input-group">
+                                            <span class="input-group-addon"><i class="fa fa-calendar"></i></span>
+                                            <input type="date" class="form-control" ng-model="profession.to" placeholder="Enter to date" name="toDate_{{$index}}" id="toDate_{{$index}}" required />
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-3">
+                                    <div class="form-group" ng-class="{'has-error': addEmployee.responsibility_$index.$invalid}">
+                                        <label for="responsibility_{{$index}}" style="font-weight: 500;">Responsibility<span class="text-danger">*</span></label>
+                                        <textarea class="form-control custom-textarea" ng-model="profession.responsibility" name="responsibility_{{$index}}" id="responsibility_{{$index}}" required></textarea>
+                                    </div>
+                                </div>
+                                <div class="col-3">
+                                    <div class="form-group" ng-class="{'has-error': addEmployee.skill_$index.$invalid}">
+                                        <label for="skill_{{$index}}" style="font-weight: 500;">Skill<span class="text-danger">*</span></label>
+                                        <textarea class="form-control custom-textarea" ng-model="profession.skill" name="skill_{{$index}}" id="skill_{{$index}}" required></textarea>
+                                    </div>
+                                </div>
+                                <div class="col-6">
+                                    <a ng-click="removeProfessionalExperience($index)" class="btn btn-sm btn-danger pull-right remove-extra"> Remove </a>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-12">
+                                <button ng-if="loadingIcon == false" class="btn btn-success waves-effect waves-light" ng-click="confirmCreateEmployee()" ng-disabled="addEmployee.$invalid"> <i class="fa fa-plus"></i> Create employee </button>
+                                <button ng-if="loadingIcon == true" class="btn btn-success waves-effect waves-light" disabled> <i class="fa fa-spinner fa-spin fa-fw"></i> Creating employee </button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row" ng-show="views.employeeEdit">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-block">
+                <button ng-show="$root.can('employees.list') || $root.can('employees.myProfile')" ng-click="changeView('employeeList')" class="mb-3 btn pull-right btn-danger card-block-input-item"> Cancel Edit </button>
+                <div class="card-title"> <h2>Edit Employee</h2> </div> <br />
+                <div class="card-body">
+                    <form class="form-horizontal" name="modifyEmployee" method="post" action="" role="form">
+                        <div class="row">
+                            <div class="col-12">
+                                <h3 class="employeeHeader"> Employee Account </h3>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-3">
+                                <div class="form-group" ng-class="{'has-error': modifyEmployee.roleId.$invalid}">
+                                    <label for="roleId" style="font-weight: 500;">Role<span class="text-danger">*</span></label>
+                                    <select class="form-control" ng-model="edit_employee.account.role" name="roleId" id="roleId" required>
+                                        <option value="" disabled selected> --- Please Select --- </option>
+                                        <option ng-repeat="role in filterByRoles track by $index" value="{{role.id}}"> {{ role.name }} </option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-3">
+                                <div class="form-group" ng-class="{'has-error': modifyEmployee.Username.$invalid}">
+                                    <label for="username" style="font-weight: 500;">Username<span class="text-danger">*</span></label>
+                                    <div class="input-group">
+                                        <span class="input-group-addon"><i class="fa fa-user"></i></span>
+                                        <input type="text" class="form-control" ng-model="edit_employee.account.username" placeholder="Enter your user name" name="username" id="username" required/>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-3">
+                                <div class="form-group">
+                                    <label for="password" style="font-weight: 500;">Password</label>
+                                    <div class="input-group">
+                                        <span class="input-group-addon"><i class="fa fa-lock"></i></span>
+                                        <input type="password" class="form-control" ng-model="edit_employee.account.password" placeholder="Enter Password" name="password" id="password" />
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-3">
+                                <div class="form-group" ng-class="{'has-error': modifyEmployee.academicRole.$invalid }">
+                                    <label for="editAcademicRole" style="font-weight: 500;">Academic Role<span class="text-danger">*</span></label>
+                                    <select class="form-control" ng-model="edit_employee.account.academicRole" name="editAcademicRole" id="editAcademicRole" required>
+                                        <option value="" disabled selected> --- Please Select --- </option>
+                                        <option value="teacher"> Teaching Staff </option>
+                                        <option value="nonTeacher"> Non Teaching Staff </option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                        <hr class="mt-0 mb-3" />
+                        <div class="row">
+                            <div class="col-12">
+                                <h3 class="employeeHeader"> Personal Information </h3>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-3">
+                                <div class="form-group" ng-class="{'has-error': modifyEmployee.firstName.$invalid}">
+                                    <label for="firstName" style="font-weight: 500;">First Name<span class="text-danger">*</span></label>
+                                    <input type="text" class="form-control" ng-model="edit_employee.information.firstName" placeholder="Enter first name" name="firstName" id="firstName" required/>
+                                </div>
+                            </div>
+                            <div class="col-3">
+                                <div class="form-group">
+                                    <label for="lastName" style="font-weight: 500;">Last Name</label>
+                                    <input type="text" class="form-control" ng-model="edit_employee.information.lastName" placeholder="Enter last name" name="lastName" id="lastName" />
+                                </div>
+                            </div>
+                            <div class="col-3">
+                                <div class="form-group" ng-class="{'has-error': modifyEmployee.FingerprintNo.$invalid}">
+                                    <label for="FingerprintNo" style="font-weight: 500;">Fingerprint No.<span class="text-danger">*</span></label>
+                                    <input type="text" class="form-control" ng-model="edit_employee.information.FingerprintNo" placeholder="Enter Finger Pin No." name="FingerprintNo" id="FingerprintNo" required/>
+                                </div>
+                            </div>
+                            <div class="col-3">
+                                <div class="form-group">
+                                    <label for="supervisor" style="font-weight: 500;">Supervisor</label>
+                                    <select class="form-control" ng-model="edit_employee.information.supervisor" name="supervisor" id="supervisor">
+                                        <option value="" selected> --- Please Select --- </option>
+                                        <option ng-repeat="supervisor in supervisors track by $index" value="{{supervisor.id}}"> {{ supervisor.first_name }} {{ supervisor.last_name }} </option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-3">
+                                <div class="form-group" ng-class="{'has-error': modifyEmployee.DepartmentId.$invalid}">
+                                    <label for="department" style="font-weight: 500;">Department Name<span class="text-danger">*</span></label>
+                                    <select class="form-control" ng-model="edit_employee.information.department" name="department" id="department" required>
+                                        <option value="" selected disabled> --- Please Select --- </option>
+                                        <option ng-repeat="department in filterByDepartments track by $index" value="{{department.id}}"> {{ department.name }} </option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-3">
+                                <div class="form-group" ng-class="{'has-error': modifyEmployee.DesignationId.$invalid}">
+                                    <label for="designation" style="font-weight: 500;">Designation Name<span class="text-danger">*</span></label>
+                                    <select class="form-control" ng-model="edit_employee.information.designation" name="designation" id="designation" required>
+                                        <option value="" selected disabled> --- Please Select --- </option>
+                                        <option ng-repeat="designation in filterByDesignations track by $index" value="{{designation.id}}"> {{ designation.name }} </option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-3">
+                                <div class="form-group">
+                                    <label for="branch" style="font-weight: 500;">Branch Name</label>
+                                    <select class="form-control" ng-model="edit_employee.information.branch" name="branch" id="branch">
+                                        <option value="" selected> --- Please Select --- </option>
+                                        <option ng-repeat="branch in filterByBranchs track by $index" value="{{branch.id}}"> {{ branch.name }} </option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-3">
+                                <div class="form-group">
+                                    <label for="workShift" style="font-weight: 500;">Work Shift</label>
+                                    <select class="form-control" ng-model="edit_employee.information.shift" name="workShift" id="workShift">
+                                        <option value="" selected disabled> --- Please Select --- </option>
+                                        <option ng-repeat="shift in workShifts track by $index" value="{{shift.id}}"> {{ shift.name }} </option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-3">
+                                <div class="form-group">
+                                    <label for="monthlyPaygrade" style="font-weight: 500;">Monthly Pay Grade</label>
+                                    <select class="form-control" ng-model="edit_employee.information.paygrade" name="monthlyPaygrade" id="monthlyPaygrade">
+                                        <option value="" selected disabled> --- Please Select --- </option>
+                                        <option ng-repeat="paygrade in filterByPaygrade track by $index" value="{{paygrade.id}}"> {{ paygrade.name }} </option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-3">
+                                <div class="form-group">
+                                    <label for="hourlySalary" style="font-weight: 500;">Hourly Pay Grade</label>
+                                    <select class="form-control" ng-model="edit_employee.information.salary" name="hourlySalary" id="hourlySalary">
+                                        <option value="" selected disabled> --- Please Select --- </option>
+                                        <option ng-repeat="salary in filterBySalaries track by $index" value="{{salary.id}}"> {{ salary.name }} </option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-3">
+                                <div class="form-group">
+                                    <label for="empEmail" style="font-weight: 500;">Email</label>
+                                    <div class="input-group">
+                                        <span class="input-group-addon"><i class="fa fa-envelope"></i></span>
+                                        <input type="email" class="form-control" ng-model="edit_employee.information.mail" placeholder="Enter email" name="empEmail" id="empEmail" />
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-3">
+                                <div class="form-group" ng-class="{'has-error': modifyEmployee.Phone.$invalid}">
+                                    <label for="empPhone" style="font-weight: 500;">Phone<span class="text-danger">*</span></label>
+                                    <div class="input-group">
+                                        <span class="input-group-addon">+91</span>
+                                        <input type="number" class="form-control" ng-model="edit_employee.information.phone" placeholder="Enter phone" name="empPhone" id="empPhone" required/>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-3">
+                                <div class="form-group" ng-class="{'has-error': modifyEmployee.gender.$invalid}">
+                                    <label for="gender" style="font-weight: 500;">Gender<span class="text-danger">*</span></label>
+                                    <select class="form-control" ng-model="edit_employee.information.gender" name="gender" id="gender" required>
+                                        <option value="" selected disabled> --- Please Select --- </option>
+                                        <option value="Male"> Male </option>
+                                        <option value="Female"> Female </option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-3">
+                                <div class="form-group">
+                                    <label for="religion" style="font-weight: 500;">Religion</label>
+                                    <input type="text" class="form-control" ng-model="edit_employee.information.religion" placeholder="Enter religion" name="religion" id="religion" />
+                                </div>
+                            </div>
+                            <div class="col-3">
+                                <div class="form-group" ng-class="{'has-error': modifyEmployee.birthday.$invalid}">
+                                    <label for="birthday" style="font-weight: 500;">Date Of Birth<span class="text-danger">*</span></label>
+                                    <div class="input-group">
+                                        <span class="input-group-addon"><i class="fa fa-calendar"></i></span>
+                                        <input type="text" class="form-control" date-picker ng-model="edit_employee.information.birthday" placeholder="Enter date of birth" name="birthday" id="birthday" readonly required />
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-3">
+                                <div class="form-group" ng-class="{'has-error': modifyEmployee.joinday.$invalid}">
+                                    <label for="joinday" style="font-weight: 500;">Date Of Joining<span class="text-danger">*</span></label>
+                                    <div class="input-group">
+                                        <span class="input-group-addon"><i class="fa fa-calendar"></i></span>
+                                        <input type="text" class="form-control" date-picker ng-model="edit_employee.information.joinday" placeholder="Enter date of joining" name="joinday" id="joinday" readonly required />
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-3">
+                                <div class="form-group">
+                                    <label for="leaveday" style="font-weight: 500;">Date Of Leaving</label>
+                                    <div class="input-group">
+                                        <span class="input-group-addon"><i class="fa fa-calendar"></i></span>
+                                        <input type="text" class="form-control" date-picker ng-model="edit_employee.information.leaveday" placeholder="Enter date of leaving" name="leaveday" id="leaveday" readonly />
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-3">
+                                <div class="form-group">
+                                    <label for="marital" style="font-weight: 500;">Marital Status</label>
+                                    <select class="form-control" ng-model="edit_employee.information.marital" name="marital" id="marital">
+                                        <option value="" selected> --- Please Select --- </option>
+                                        <option value="Unmarried"> Unmarried </option>
+                                        <option value="Married"> Married </option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-3">
+                                <div class="form-group" ng-class="{'has-error': modifyEmployee.status.$invalid}">
+                                    <label for="status" style="font-weight: 500;">Status<span class="text-danger">*</span></label>
+                                    <select class="form-control" ng-model="edit_employee.information.status" name="status" id="status" required>
+                                        <option value="" disabled selected> --- Please Select --- </option>
+                                        <option value="Active"> Active </option>
+                                        <option value="Inactive"> Inactive </option>
+                                        <option value="Terminate"> Terminate </option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-3">
+                                <div class="form-group">
+                                    <label for="photo" style="font-weight: 500;">Photo</label>
+                                    <div class="input-group">
+                                        <span class="input-group-addon"><i class="fa fa-picture-o"></i></span>
+                                        <input type="file" class="form-control" ng-model="edit_employee.information.photo" accept="image/jpg, image/jpeg, image/png" name="photo" id="photo" />
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-3">
+                                <div class="form-group">
+                                    <label for="address" style="font-weight: 500;">Address</label>
+                                    <textarea class="form-control custom-textarea" ng-model="edit_employee.information.address" name="address" id="address"></textarea>
+                                </div>
+                            </div>
+                            <div class="col-3">
+                                <div class="form-group">
+                                    <label for="emergency" style="font-weight: 500;">Emergency Contact</label>
+                                    <textarea class="form-control custom-textarea" ng-model="edit_employee.information.emergency" name="emergency" id="emergency"></textarea>
+                                </div>
+                            </div>
+                        </div>
+                        <hr class="mt-0 mb-3" />
+                        <div class="row">
+                            <div class="col-10">
+                                <h3 class="employeeHeader"> Education Qualification </h3>
+                            </div>
+                            <div class="col-2">
+                                <a ng-click="editEducationQualification()" class="btn btn-sm custom-btn-success pull-right"> <i class="fa fa-plus-circle"></i> Add Education Qualification </a>
+                            </div>
+                        </div>
+                        <hr class="mt-0 mb-3" />
+                        <div class="form-group" ng-repeat="education in edit_employee.educational track by $index">
+                            <div class="row">
+                                <div class="col-3">
+                                    <div class="form-group" ng-class="{'has-error': modifyEmployee.institute_$index.$invalid}">
+                                        <label for="institute_{{$index}}" style="font-weight: 500;">Institute<span class="text-danger">*</span></label>
+                                        <select class="form-control" ng-model="education.institute" name="institute_{{$index}}" id="institute_{{$index}}" required>
+                                            <option value="" disabled selected> --- Please Select --- </option>
+                                            <option value="Board"> Board </option>
+                                            <option value="University"> University </option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="col-3">
+                                    <div class="form-group" ng-class="{'has-error': modifyEmployee.university_$index.$invalid}">
+                                        <label for="university_{{$index}}" style="font-weight: 500;">Board / University Name<span class="text-danger">*</span></label>
+                                        <input type="text" class="form-control" ng-model="education.university" placeholder="Enter board/university name" name="university_{{$index}}" id="university_{{$index}}" required />
+                                    </div>
+                                </div>
+                                <div class="col-3">
+                                    <div class="form-group" ng-class="{'has-error': modifyEmployee.degree_$index.$invalid}">
+                                        <label for="degree_{{$index}}" style="font-weight: 500;">Degree<span class="text-danger">*</span></label>
+                                        <input type="text" class="form-control" ng-model="education.degree" placeholder="B.Sc. Engr.(Bachelor of Science in Engineering)" name="degree_{{$index}}" id="degree_{{$index}}" required />
+                                    </div>
+                                </div>
+                                <div class="col-3">
+                                    <div class="form-group" ng-class="{'has-error': modifyEmployee.passingYear_$index.$invalid}">
+                                        <label for="passing_{{ $index }}" style="font-weight: 500;">Passing year<span class="text-danger">*</span></label>
+                                        <div class="input-group">
+                                            <span class="input-group-addon"><i class="fa fa-calendar-o"></i></span>
+                                            <input type="date" class="form-control" ng-model="education.passingYear" placeholder="Enter Year" name="passing_{{ $index }}" id="passing_{{ $index }}" required />
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-3">
+                                    <div class="form-group">
+                                        <label for="result_{{$index}}" style="font-weight: 500;">Result</label>
+                                        <select class="form-control" ng-model="education.result" name="result_{{$index}}" id="result_{{$index}}">
+                                            <option value="" disabled selected> --- Please Select --- </option>
+                                            <option value="First class"> First class </option>
+                                            <option value="Second class"> Second class </option>
+                                            <option value="Third class"> Third class </option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="col-3">
+                                    <div class="form-group">
+                                        <label for="gpa_{{$index}}" style="font-weight: 500;">GPA / CGPA</label>
+                                        <input type="text" class="form-control" date-picker ng-model="education.gpa" placeholder="Example: 5.00,4.63" name="gpa_{{$index}}" id="gpa_{{$index}}" />
+                                    </div>
+                                </div>
+                                <div class="col-6">
+                                    <a ng-click="deleteEducationQualification($index)" class="btn btn-sm btn-danger pull-right remove-extra"> Remove </a>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-10">
+                                <h3 class="employeeHeader"> Professional Experience </h3>
+                            </div>
+                            <div class="col-2">
+                                <a ng-click="editProfessionalExperience()" class="btn btn-sm custom-btn-success pull-right"> <i class="fa fa-plus-circle"></i> Add Professional Experience </a>
+                            </div>
+                        </div>
+                        <hr class="mt-0 mb-3" />
+                        <div class="form-group" ng-repeat="profession in edit_employee.professional track by $index">
+                            <div class="row">
+                                <div class="col-3">
+                                    <div class="form-group" ng-class="{'has-error': modifyEmployee.organization_$index.$invalid}">
+                                        <label for="organization_{{$index}}" style="font-weight: 500;">Organization Name<span class="text-danger">*</span></label>
+                                        <input type="text" class="form-control" ng-model="profession.organization" placeholder="Enter organization name" name="organization_{{$index}}" id="organization_{{$index}}" required />
+                                    </div>
+                                </div>
+                                <div class="col-3">
+                                    <div class="form-group" ng-class="{'has-error': modifyEmployee.designation_$index.$invalid}">
+                                        <label for="designation_{{$index}}" style="font-weight: 500;">Designation<span class="text-danger">*</span></label>
+                                        <input type="text" class="form-control" ng-model="profession.designation" placeholder="Enter designation" name="designation_{{$index}}" id="designation_{{$index}}" required />
+                                    </div>
+                                </div>
+                                <div class="col-3">
+                                    <div class="form-group" ng-class="{'has-error': modifyEmployee.fromDate_$index.$invalid}">
+                                        <label for="fromDate_{{$index}}" style="font-weight: 500;">From Date<span class="text-danger">*</span></label>
+                                        <div class="input-group">
+                                            <span class="input-group-addon"><i class="fa fa-calendar"></i></span>
+                                            <input type="date" class="form-control" ng-model="profession.from" placeholder="Enter from date" name="fromDate_{{$index}}" id="fromDate_{{$index}}" required />
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-3">
+                                    <div class="form-group" ng-class="{'has-error': modifyEmployee.toDate_$index.$invalid}">
+                                        <label for="toDate_{{$index}}" style="font-weight: 500;">To Date<span class="text-danger">*</span></label>
+                                        <div class="input-group">
+                                            <span class="input-group-addon"><i class="fa fa-calendar"></i></span>
+                                            <input type="date" class="form-control" ng-model="profession.to" placeholder="Enter to date" name="toDate_{{$index}}" id="toDate_{{$index}}" required />
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-3">
+                                    <div class="form-group" ng-class="{'has-error': modifyEmployee.responsibility_$index.$invalid}">
+                                        <label for="responsibility_{{$index}}" style="font-weight: 500;">Responsibility<span class="text-danger">*</span></label>
+                                        <textarea class="form-control custom-textarea" ng-model="profession.responsibility" name="responsibility_{{$index}}" id="responsibility_{{$index}}" required></textarea>
+                                    </div>
+                                </div>
+                                <div class="col-3">
+                                    <div class="form-group" ng-class="{'has-error': modifyEmployee.skill_$index.$invalid}">
+                                        <label for="skill_{{$index}}" style="font-weight: 500;">Skill<span class="text-danger">*</span></label>
+                                        <textarea class="form-control custom-textarea" ng-model="profession.skill" name="skill_{{$index}}" id="skill_{{$index}}" required></textarea>
+                                    </div>
+                                </div>
+                                <div class="col-6">
+                                    <a ng-click="deleteProfessionalExperience($index)" class="btn btn-sm btn-danger pull-right remove-extra"> Remove </a>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-12">
+                                <button ng-if="loadingIcon == false" class="btn btn-info waves-effect waves-light" ng-click="confirmUpdateEmployee()" ng-disabled="modifyEmployee.$invalid"> <i class="fa fa-save"></i> Update employee </button>
+                                <button ng-if="loadingIcon == true" class="btn btn-info waves-effect waves-light" disabled> <i class="fa fa-spinner fa-spin fa-fw"></i> Updating employee </button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row" ng-show="views.employeeView">
+    <div class="col-12">
+        <div class="panel panel-info">
+            <div class="panel-heading">
+                <i class="mdi mdi-table fa-fw"></i> Profile
+                <a ng-show="$root.can('employees.list') || $root.can('employees.myProfile')" ng-click="changeView('employeeList')" style="background-color: #41b3f9;border-color: #41b3f9;" class="btn btn-sm btn-info pull-right"> Back </a>
+            </div>
+            <div class="panel-wrapper collapse in" aria-expanded="true">
+                <div class="panel-body" style="border: 3px solid #41b3f9;">
+                    <div class="panel-body">
+                        <div class="row">
+                            <div class="col-6">
+                                <div id="resume">
+                                    <p><strong>{{ employeeForm.first_name }} {{ employeeForm.last_name }}</strong></p>
+                                    <p><b>E-mail :</b> {{ employeeForm.email }}</p>
+                                    <p class="applicant_address"> <b>Address : </b> {{ employeeForm.address }}</p>
+                                    <p> <b>Mobile No :</b> +91{{ employeeForm.phone }}</p>
+                                </div>
+                            </div>
+                            <div class="col-6">
+                                <div class="applicant_pic text-right">
+                                    <img style="width: 154px;height:165px" src="/manageRoles/profileImage/{{ employeeForm.photo }}" />
+                                </div>
+                                <br>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-12 education_qualification">
+                                <section class="content">
+                                    <div class="row">
+                                        <div class="col-12">
+                                            <div class="panel-custom">
+                                                <h3 class="panel-title"><i class="fa fa-graduation-cap"></i> EDUCATION QUALIFICATION</h3>
+                                            </div>
+                                            <div class="box">
+                                                <div class="box-body">
+                                                    <table id="example1" class="table table-bordered table-hover">
+                                                        <thead class="education_lable">
+                                                            <tr>
+                                                                <th>Institute</th>
+                                                                <th>Degree</th>
+                                                                <th>Board / University Name</th>
+                                                                <th>Result</th>
+                                                                <th>GPA / CGPA</th>
+                                                                <th>Passing Year</th>
+                                                            </tr>
+                                                        </thead>
+                                                        <tbody class="education_lable">
+                                                            <tr ng-repeat="education in employeeForm.education track by $index" class="text-center">
+                                                                <td> {{ education.institute }} </td>
+                                                                <td> {{ education.degree }} </td>
+                                                                <td> {{ education.board_university }} </td>
+                                                                <td> {{ education.result }} </td>
+                                                                <td> {{ education.cgpa }} </td>
+                                                                <td> {{ education.passing_year }} </td>
+                                                            </tr>
+                                                            <tr ng-if="!employeeForm.education.length" class="text-center">
+                                                                <td>--</td>
+                                                                <td>--</td>
+                                                                <td>--</td>
+                                                                <td>--</td>
+                                                                <td>--</td>
+                                                                <td>--</td>
+                                                            </tr>
+                                                        </tbody>
+                                                    </table>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </section>
+                                <br>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-12 education_qualification">
+                                <section class="content">
+                                    <div class="row">
+                                        <div class="col-12">
+                                            <div class="panel-custom">
+                                                <h3 class="panel-title"><i class="fa fa-laptop"></i> PROFESSIONAL EXPERIENCE
+                                                </h3>
+                                            </div>
+                                            <div class="box">
+                                                <div class="box-body">
+                                                    <table id="example1" class="table table-bordered table-hover">
+                                                        <thead class="education_lable">
+                                                            <tr>
+                                                                <th>Organization Name</th>
+                                                                <th>Designation</th>
+                                                                <th>Duration</th>
+                                                                <th>Responsibility</th>
+                                                                <th>Skill</th>
+                                                            </tr>
+                                                        </thead>
+                                                        <tbody class="education_lable">
+                                                            <tr ng-repeat="experience in employeeForm.experience track by $index" class="text-center">
+                                                                <td> {{ experience.organization_name }} </td>
+                                                                <td> {{ experience.designation }} </td>
+                                                                <td> {{ experience.duration }} </td>
+                                                                <td> {{ experience.responsibility }} </td>
+                                                                <td> {{ experience.skill }} </td>
+                                                            </tr>
+                                                            <tr ng-if="!employeeForm.experience.length">
+                                                                <td>--</td>
+                                                                <td>--</td>
+                                                                <td>--</td>
+                                                                <td>--</td>
+                                                                <td>--</td>
+                                                            </tr>
+                                                        </tbody>
+                                                    </table>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </section>
+                                <br>
+                            </div>
+                        </div>
+
+                        <div class="personal_info">
+                            <div class="row">
+                                <div class="col-12">
+                                    <div class="panel-custom">
+                                        <h3 class="panel-title"><i class="fa fa-info-circle"></i> PERSONAL INFORMATION</h3>
+                                    </div>
+                                    <div class="box">
+                                        <div class="personal_info">
+                                            <div class="item row">
+                                                <div class="col-3">Name</div>
+                                                <div class="col-9">: {{ employeeForm.first_name }} {{ employeeForm.last_name }} </div>
+                                            </div>
+                                            <div class="item row">
+                                                <div class="col-3">Email</div>
+                                                <div class="col-9">: {{ employeeForm.email }} </div>
+                                            </div>
+                                            <div class="item row">
+                                                <div class="col-3">Address</div>
+                                                <div class="col-9">: {{ employeeForm.address }} </div>
+                                            </div>
+                                            <div class="item row">
+                                                <div class="col-3">Mobile</div>
+                                                <div class="col-9">: +91{{ employeeForm.phone }} </div>
+                                            </div>
+                                            <div class="item row">
+                                                <div class="col">Date Of Joining</div>
+                                                <div class="col-9">: {{ employeeForm.date_of_joining }}</div>
+                                            </div>
+                                            <div class="item row">
+                                                <div class="col">Date Of Birth</div>
+                                                <div class="col-9">: {{ employeeForm.date_of_birth }}</div>
+                                            </div>
+                                            <div class="item row">
+                                                <div class="col-3">Gender</div>
+                                                <div class="col-9">: {{ employeeForm.gender }}</div>
+                                            </div>
+                                            <div class="item row">
+                                                <div class="col-3">Religion</div>
+                                                <div class="col-9">: {{ employeeForm.religion }}</div>
+                                            </div>
+                                            <div class="item row">
+                                                <div class="col-3">Marital Status</div>
+                                                <div class="col-9">: {{ employeeForm.marital_status }}</div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row" ng-show="views.warningList">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-block">
+                <div class="card-title">
+                    <button ng-show="$root.can('warnings.add_warning')" ng-click="changeView('warningAdd')" class="mb-3 btn pull-right btn-success card-block-input-item" style="font-weight: bold;"> <i class="fa fa-plus-circle"></i> Add Warning</button>
+                    <div class="pull-right card-block-input-group card-block-input-item">
+                        <div class="input-group input-group-sm">
+                            <input type="text" name="table_search" ng-model="searchText" placeholder="{{phrase.Search}}" class="form-control input-sm">
+                            <span class="input-group-addon"><i class="fa fa-search"></i></span>
+                        </div>
+                    </div>
+                    <h4>Warnings List</h4>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-bordered table-hover">
+                            <tbody>
+                                <tr>
+                                    <th> # </th>
+                                    <th> Employee Name </th>
+                                    <th> Warning Date </th>
+                                    <th> Subject </th>
+                                    <th> Warning Type </th>
+                                    <th> Warning By </th>
+                                    <th ng-show="$root.can('warnings.view_warning') || $root.can('warnings.edit_warning') || $root.can('warnings.delete_warning')" style='width:160px;'> Actions </th>
+                                </tr>
+                                <tr dir-paginate="warning in warnings | filter:searchText | itemsPerPage:20 track by $index" total-items="totalWarnings">
+                                    <td> {{ $index + 1 }} </td>
+                                    <td> {{ warning.to }} </td>
+                                    <td> {{ warning.warning_date }} </td>
+                                    <td> {{ warning.subject }} </td>
+                                    <td> {{ warning.warning_type }} </td>
+                                    <td> {{ warning.by }} </td>
+                                    <td ng-show="$root.can('warnings.view_warning') || $root.can('warnings.edit_warning') || $root.can('warnings.delete_warning')">
+                                        <button ng-show="$root.can('warnings.view_warning')" ng-click="viewWarning(warning.id)" type="button" class="btn btn-primary btn btn-xs" title="View Details" tooltip><i class="fa fa-th-large"></i></button>
+                                        <button ng-show="$root.can('warnings.edit_warning')" ng-click="editWarning(warning.id)" type="button" class="btn custom-btn-success btn btn-xs" title="Edit" tooltip><i class="fa fa-pencil-square-o"></i></button>
+                                        <button ng-show="$root.can('warnings.delete_warning')" ng-click="removeWarning(warning,$index)" type="button" class="btn btn-danger btn-xs" title="Remove" tooltip><i class="fa fa-trash-o"></i></button>
+                                    </td>
+                                </tr>
+                                <tr ng-show="!warnings.length"><td class="noTableData" colspan="7"> No Warnings are available at the moment </td></tr>
+                            </tbody>
+                        </table>
+                        <dir-pagination-controls
+                            on-page-change="pageChanged(newPageNumber)"
+                            template-url="assets/templates/dirPagination.html">
+                        </dir-pagination-controls>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row" ng-show="views.warningAdd">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-block">
+                <button ng-show="$root.can('warnings.list')" ng-click="changeView('warningList')" class="mb-3 btn pull-right btn-danger card-block-input-item"> Cancel Add </button>
+                <div class="card-title"> <h4>Add Warning</h4> </div> <br />
+                <div class="card-body">
+                    <form class="form-horizontal" name="addWarning">
+                        <div class="form-group row" ng-class="{'has-error': addWarning.to.$invalid}">
+                            <label for="warningTo" class="col-2 pb-2 pl-3 control-label col-form-label">Warning To<span class="text-danger">*</span></label>
+                            <div class="col-10">
+                                <select ng-model="warningForm.to" class="form-control" name="warningTo" id="warningTo" required>
+                                    <option value="" disabled selected> --- Please Select --- </option>
+                                    <option ng-repeat="employee in supervisors track by $index" value="{{employee.id}}"> {{ employee.first_name }} {{ employee.last_name }} </option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="form-group row" ng-class="{'has-error': addWarning.type.$invalid}">
+                            <label for="warningType" class="col-2 pb-2 pl-3 control-label col-form-label">Warning Type<span class="text-danger">*</span></label>
+                            <div class="col-10">
+                                <input ng-model="warningForm.type" type="text" name="warningType" id="warningType" class="form-control" required placeholder="Enter warning type" />
+                            </div>
+                        </div>
+                        <div class="form-group row" ng-class="{'has-error': addWarning.subject.$invalid}">
+                            <label for="warningSubject" class="col-2 pb-2 pl-3 control-label col-form-label">Subject<span class="text-danger">*</span></label>
+                            <div class="col-10">
+                                <input ng-model="warningForm.subject" type="text" name="warningSubject" id="warningSubject" class="form-control" required placeholder="Enter subject" />
+                            </div>
+                        </div>
+                        <div class="form-group row" ng-class="{'has-error': addWarning.by.$invalid}">
+                            <label for="warningBy" class="col-2 pb-2 pl-3 control-label col-form-label">Warning By<span class="text-danger">*</span></label>
+                            <div class="col-10">
+                                <select ng-model="warningForm.by" class="form-control" name="warningBy" id="warningBy" required>
+                                    <option value="" disabled selected> --- Please Select --- </option>
+                                    <option ng-repeat="employee in supervisors track by $index" value="{{employee.id}}"> {{ employee.first_name }} {{ employee.last_name }} </option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="form-group row" ng-class="{'has-error': addWarning.date.$invalid}">
+                            <label for="warningDate" class="col-2 pb-2 pl-3 control-label col-form-label">Warning Date<span class="text-danger">*</span></label>
+                            <div class="col-10">
+                                <div class="input-group">
+                                    <span class="input-group-addon"><i class="fa fa-calendar"></i></span>
+                                    <input ng-model="warningForm.date" date-picker type="text" name="warningDate" id="warningDate" class="form-control" required readonly />
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <label for="warningDesc" class="col-2 pb-2 pl-3 control-label col-form-label">Description</label>
+                            <div class="col-10">
+                                <textarea placeholder="Enter description" class="form-control custom-desc-textarea" ng-model="warningForm.desc" name="warningDesc" id="warningDesc"></textarea>
+                            </div>
+                        </div>
+                        <div class="form-group m-b-0">
+                            <div class="offset-sm-2 col-sm-10">
+                                <button ng-if="loadingIcon == false" ng-click="createWarning()" class="btn btn-success waves-effect waves-light" ng-disabled="addWarning.$invalid"> <i class="fa fa-plus"></i> Create warning</button>
+                                <button ng-if="loadingIcon == true" class="btn btn-success waves-effect waves-light" disabled> <i class="fa fa-spinner fa-spin fa-fw"></i> Creating warning </button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row" ng-show="views.warningEdit">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-block">
+                <button ng-show="$root.can('warnings.list')" ng-click="changeView('warningList')" class="mb-3 btn pull-right btn-danger card-block-input-item"> Cancel Edit </button>
+                <div class="card-title"> <h4>Edit Warning</h4> </div> <br />
+                <div class="card-body">
+                    <form class="form-horizontal" name="modifyWarning">
+                        <div class="form-group row" ng-class="{'has-error': modifyWarning.to.$invalid}">
+                            <label for="warningTo" class="col-2 pb-2 pl-3 control-label col-form-label">Warning To<span class="text-danger">*</span></label>
+                            <div class="col-10">
+                                <select ng-model="warningForm.warning_to" class="form-control" name="warningTo" id="warningTo" required>
+                                    <option value="" disabled selected> --- Please Select --- </option>
+                                    <option ng-repeat="employee in supervisors track by $index" value="{{employee.id}}"> {{ employee.first_name }} {{ employee.last_name }} </option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="form-group row" ng-class="{'has-error': modifyWarning.type.$invalid}">
+                            <label for="warningType" class="col-2 pb-2 pl-3 control-label col-form-label">Warning Type<span class="text-danger">*</span></label>
+                            <div class="col-10">
+                                <input ng-model="warningForm.type" type="text" name="warningType" id="warningType" class="form-control" required placeholder="Enter warning type" />
+                            </div>
+                        </div>
+                        <div class="form-group row" ng-class="{'has-error': modifyWarning.subject.$invalid}">
+                            <label for="warningSubject" class="col-2 pb-2 pl-3 control-label col-form-label">Subject<span class="text-danger">*</span></label>
+                            <div class="col-10">
+                                <input ng-model="warningForm.subject" type="text" name="warningSubject" id="warningSubject" class="form-control" required placeholder="Enter subject" />
+                            </div>
+                        </div>
+                        <div class="form-group row" ng-class="{'has-error': modifyWarning.by.$invalid}">
+                            <label for="warningBy" class="col-2 pb-2 pl-3 control-label col-form-label">Warning By<span class="text-danger">*</span></label>
+                            <div class="col-10">
+                                <select ng-model="warningForm.warning_by" class="form-control" name="warningBy" id="warningBy" required>
+                                    <option value="" disabled selected> --- Please Select --- </option>
+                                    <option ng-repeat="employee in supervisors track by $index" value="{{employee.id}}"> {{ employee.first_name }} {{ employee.last_name }} </option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="form-group row" ng-class="{'has-error': modifyWarning.date.$invalid}">
+                            <label for="edit-warningDate" class="col-2 pb-2 pl-3 control-label col-form-label">Warning Date<span class="text-danger">*</span></label>
+                            <div class="col-10">
+                                <div class="input-group">
+                                    <span class="input-group-addon"><i class="fa fa-calendar"></i></span>
+                                    <input ng-model="warningForm.modelDate" date-picker type="text" name="edit-warningDate" id="edit-warningDate" class="form-control" required readonly />
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <label for="warningDesc" class="col-2 pb-2 pl-3 control-label col-form-label">Description</label>
+                            <div class="col-10">
+                                <textarea placeholder="Enter description" class="form-control custom-desc-textarea" ng-model="warningForm.description" name="warningDesc" id="warningDesc"></textarea>
+                            </div>
+                        </div>
+                        <div class="form-group m-b-0">
+                            <div class="offset-sm-2 col-sm-10">
+                                <button ng-if="loadingIcon == false" ng-click="saveWarning()" class="btn btn-info waves-effect waves-light" ng-disabled="modifyWarning.$invalid"> <i class="fa fa-save"></i> Save warning</button>
+                                <button ng-if="loadingIcon == true" class="btn btn-info waves-effect waves-light" disabled> <i class="fa fa-spinner fa-spin fa-fw"></i> Saving warning </button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row" ng-show="views.warningView">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-block">
+                <button ng-show="$root.can('warnings.list')" ng-click="changeView('warningList')" class="mb-3 btn pull-right btn-danger card-block-input-item"> Back </button>
+                <div class="card-title"> <h4>Employee Warning Details</h4> </div> <br />
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-12">
+                            <div class="panel panel-info">
+                                <div class="panel-heading">{{ warningForm.subject }}</div>
+                                <div class="panel-wrapper collapse in" style="border: 3px solid #41b3f9;">
+                                    <div class="panel-body">
+                                        <span class="details"><i class="fa fa-user"></i>&nbsp; {{ warningForm.to }} </span>&nbsp;
+                                        <span class="details"><i class="fa fa-align-justify"></i>&nbsp; {{ warningForm.department }} </span>&nbsp;
+                                        <p class="coverLater">{{ warningForm.description }}<br></p>
+                                    </div>
+                                    <div class="panel-footer">
+                                        <p class="mt-0 mb-0">
+                                            <b>Warning By :</b> {{ warningForm.by }},
+                                            <b>Warning Date :</b> {{ warningForm.date_formatted }}
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row" ng-show="views.terminationList">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-block">
+                <div class="card-title">
+                    <button ng-show="$root.can('terminations.add_terminations')" ng-click="changeView('terminationAdd')" class="mb-3 btn pull-right btn-success card-block-input-item" style="font-weight: bold;"> <i class="fa fa-plus-circle"></i> Add Termination</button>
+                    <div class="pull-right card-block-input-group card-block-input-item">
+                        <div class="input-group input-group-sm">
+                            <input type="text" name="table_search" ng-model="searchText" placeholder="{{phrase.Search}}" class="form-control input-sm">
+                            <span class="input-group-addon"><i class="fa fa-search"></i></span>
+                        </div>
+                    </div>
+                    <h4>Terminations List</h4>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-bordered table-hover">
+                            <tbody>
+                                <tr>
+                                    <th> # </th>
+                                    <th> Employee Name </th>
+                                    <th> Subject </th>
+                                    <th> Termination Type </th>
+                                    <th> Notice Date </th>
+                                    <th> Termination Date </th>
+                                    <th> Termination By </th>
+                                    <th> status </th>
+                                    <th ng-show="$root.can('terminations.view_termination') || $root.can('terminations.edit_terminations') || $root.can('terminations.delete_terminations')" style='width:160px;'> Actions </th>
+                                </tr>
+                                <tr dir-paginate="termination in terminations | filter:searchText | itemsPerPage:20 track by $index" total-items="totalTerminations">
+                                    <td> {{ $index + 1 }} </td>
+                                    <td> {{ termination.to }} </td>
+                                    <td> {{ termination.subject }} </td>
+                                    <td> {{ termination.type }} </td>
+                                    <td> {{ termination.notice_date }} </td>
+                                    <td> {{ termination.termination_date }} </td>
+                                    <td> {{ termination.by }} </td>
+                                    <td>
+                                        <span ng-if="termination.status == 1" class="label label-rouded label-info">Pending</span>
+                                        <span ng-if="termination.status == 2" class="label label-rouded label-success">Approved</span>
+                                    </td>
+                                    <td ng-show="$root.can('terminations.view_termination') || $root.can('terminations.edit_terminations') || $root.can('terminations.delete_terminations')">
+                                        <button ng-show="$root.can('terminations.view_termination')" ng-click="viewTermination(termination.id)" type="button" class="btn btn-primary btn btn-xs" title="View Details" tooltip><i class="fa fa-th-large"></i></button>
+                                        <button ng-show="$root.can('terminations.edit_terminations')" ng-if="termination.status == 1" ng-click="editTermination(termination.id)" type="button" class="btn custom-btn-success btn btn-xs" title="Edit" tooltip><i class="fa fa-pencil-square-o"></i></button>
+                                        <button ng-show="$root.can('terminations.delete_terminations')" ng-if="termination.status == 1" ng-click="removeTermination(termination,$index)" type="button" class="btn btn-danger btn-xs" title="Remove" tooltip><i class="fa fa-trash-o"></i></button>
+                                    </td>
+                                </tr>
+                                <tr ng-show="!terminations.length"><td class="noTableData" colspan="9"> No Terminations are available at the moment </td></tr>
+                            </tbody>
+                        </table>
+                        <dir-pagination-controls
+                            on-page-change="pageChanged(newPageNumber)"
+                            template-url="assets/templates/dirPagination.html">
+                        </dir-pagination-controls>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row" ng-show="views.terminationAdd">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-block">
+                <button ng-show="$root.can('terminations.list')" ng-click="changeView('terminationList')" class="mb-3 btn pull-right btn-danger card-block-input-item"> Cancel Add </button>
+                <div class="card-title"> <h4>Add Termination</h4> </div> <br />
+                <div class="card-body">
+                    <form class="form-horizontal" name="addTermination">
+                        <div class="form-group row" ng-class="{'has-error': addTermination.to.$invalid}">
+                            <label for="terminationTo" class="col-2 pb-2 pl-3 control-label col-form-label">Employee Terminated<span class="text-danger">*</span></label>
+                            <div class="col-10">
+                                <select ng-model="terminationForm.to" class="form-control" name="terminationTo" id="terminationTo" required>
+                                    <option value="" disabled selected> --- Please Select --- </option>
+                                    <option ng-repeat="employee in supervisors track by $index" value="{{employee.id}}"> {{ employee.first_name }} {{ employee.last_name }} </option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="form-group row" ng-class="{'has-error': addTermination.type.$invalid}">
+                            <label for="terminationType" class="col-2 pb-2 pl-3 control-label col-form-label">Termination Type<span class="text-danger">*</span></label>
+                            <div class="col-10">
+                                <input ng-model="terminationForm.type" type="text" name="terminationType" id="terminationType" class="form-control" required placeholder="Enter termination type" />
+                            </div>
+                        </div>
+                        <div class="form-group row" ng-class="{'has-error': addTermination.subject.$invalid}">
+                            <label for="terminationSubject" class="col-2 pb-2 pl-3 control-label col-form-label">Subject<span class="text-danger">*</span></label>
+                            <div class="col-10">
+                                <input ng-model="terminationForm.subject" type="text" name="terminationSubject" id="terminationSubject" class="form-control" required placeholder="Enter subject" />
+                            </div>
+                        </div>
+                        <div class="form-group row" ng-class="{'has-error': addTermination.by.$invalid}">
+                            <label for="terminationBy" class="col-2 pb-2 pl-3 control-label col-form-label">Terminated By<span class="text-danger">*</span></label>
+                            <div class="col-10">
+                                <select ng-model="terminationForm.by" class="form-control" name="terminationBy" id="terminationBy" required>
+                                    <option value="" disabled selected> --- Please Select --- </option>
+                                    <option ng-repeat="employee in supervisors track by $index" value="{{employee.id}}"> {{ employee.first_name }} {{ employee.last_name }} </option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="form-group row" ng-class="{'has-error': addTermination.noticeDate.$invalid}">
+                            <label for="noticeDate" class="col-2 pb-2 pl-3 control-label col-form-label">Notice Date<span class="text-danger">*</span></label>
+                            <div class="col-10">
+                                <div class="input-group">
+                                    <span class="input-group-addon"><i class="fa fa-calendar"></i></span>
+                                    <input ng-model="terminationForm.noticeDate" date-picker type="text" name="noticeDate" id="noticeDate" class="form-control" required readonly />
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-group row" ng-class="{'has-error': addTermination.terminationDate.$invalid}">
+                            <label for="terminationDate" class="col-2 pb-2 pl-3 control-label col-form-label">Termination Date<span class="text-danger">*</span></label>
+                            <div class="col-10">
+                                <div class="input-group">
+                                    <span class="input-group-addon"><i class="fa fa-calendar"></i></span>
+                                    <input ng-model="terminationForm.terminateDate" date-picker type="text" name="terminationDate" id="terminationDate" class="form-control" required readonly />
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <label for="terminationDesc" class="col-2 pb-2 pl-3 control-label col-form-label">Description</label>
+                            <div class="col-10">
+                                <textarea placeholder="Enter description" class="form-control custom-desc-textarea" ng-model="terminationForm.desc" name="terminationDesc" id="terminationDesc"></textarea>
+                            </div>
+                        </div>
+                        <div class="form-group m-b-0">
+                            <div class="offset-sm-2 col-sm-10">
+                                <button ng-if="loadingIcon == false" ng-click="createTermination()" class="btn btn-success waves-effect waves-light" ng-disabled="addTermination.$invalid"> <i class="fa fa-plus"></i> Create termination</button>
+                                <button ng-if="loadingIcon == true" class="btn btn-success waves-effect waves-light" disabled> <i class="fa fa-spinner fa-spin fa-fw"></i> Creating termination</button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row" ng-show="views.terminationEdit">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-block">
+                <button ng-show="$root.can('terminations.list')" ng-click="changeView('terminationList')" class="mb-3 btn pull-right btn-danger card-block-input-item"> Cancel Edit </button>
+                <div class="card-title"> <h4>Edit Termination</h4> </div> <br />
+                <div class="card-body">
+                    <form class="form-horizontal" name="modifyTermination">
+                        <div class="form-group row" ng-class="{'has-error': modifyTermination.to.$invalid}">
+                            <label for="terminationTo" class="col-2 pb-2 pl-3 control-label col-form-label">Employee Terminated<span class="text-danger">*</span></label>
+                            <div class="col-10">
+                                <select ng-model="terminationForm.terminate_to" class="form-control" name="terminationTo" id="terminationTo" required>
+                                    <option value="" disabled selected> --- Please Select --- </option>
+                                    <option ng-repeat="employee in supervisors track by $index" value="{{employee.id}}"> {{ employee.first_name }} {{ employee.last_name }} </option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="form-group row" ng-class="{'has-error': modifyTermination.type.$invalid}">
+                            <label for="terminationType" class="col-2 pb-2 pl-3 control-label col-form-label">Termination Type<span class="text-danger">*</span></label>
+                            <div class="col-10">
+                                <input ng-model="terminationForm.type" type="text" name="terminationType" id="terminationType" class="form-control" required placeholder="Enter termination type" />
+                            </div>
+                        </div>
+                        <div class="form-group row" ng-class="{'has-error': modifyTermination.subject.$invalid}">
+                            <label for="terminationSubject" class="col-2 pb-2 pl-3 control-label col-form-label">Subject<span class="text-danger">*</span></label>
+                            <div class="col-10">
+                                <input ng-model="terminationForm.subject" type="text" name="terminationSubject" id="terminationSubject" class="form-control" required placeholder="Enter subject" />
+                            </div>
+                        </div>
+                        <div class="form-group row" ng-class="{'has-error': modifyTermination.by.$invalid}">
+                            <label for="terminationBy" class="col-2 pb-2 pl-3 control-label col-form-label">Terminated By<span class="text-danger">*</span></label>
+                            <div class="col-10">
+                                <select ng-model="terminationForm.terminate_by" class="form-control" name="terminationBy" id="terminationBy" required>
+                                    <option value="" disabled selected> --- Please Select --- </option>
+                                    <option ng-repeat="employee in supervisors track by $index" value="{{employee.id}}"> {{ employee.first_name }} {{ employee.last_name }} </option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="form-group row" ng-class="{'has-error': modifyTermination.Noticedate.$invalid}">
+                            <label for="noticeDateEdit" class="col-2 pb-2 pl-3 control-label col-form-label">Notice Date<span class="text-danger">*</span></label>
+                            <div class="col-10">
+                                <div class="input-group">
+                                    <span class="input-group-addon"><i class="fa fa-calendar"></i></span>
+                                    <input ng-model="terminationForm.modelNoticeDate" date-picker type="text" name="noticeDateEdit" id="noticeDateEdit" class="form-control" required readonly />
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-group row" ng-class="{'has-error': modifyTermination.Terminationdate.$invalid}">
+                            <label for="terminationDateEdit" class="col-2 pb-2 pl-3 control-label col-form-label">Termination Date<span class="text-danger">*</span></label>
+                            <div class="col-10">
+                                <div class="input-group">
+                                    <span class="input-group-addon"><i class="fa fa-calendar"></i></span>
+                                    <input ng-model="terminationForm.modelTerminationDate" date-picker type="text" name="terminationDateEdit" id="terminationDateEdit" class="form-control" required readonly />
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <label for="terminationDesc" class="col-2 pb-2 pl-3 control-label col-form-label">Description</label>
+                            <div class="col-10">
+                                <textarea placeholder="Enter description" class="form-control custom-desc-textarea" ng-model="terminationForm.description" name="terminationDesc" id="terminationDesc"></textarea>
+                            </div>
+                        </div>
+                        <div class="form-group m-b-0">
+                            <div class="offset-sm-2 col-sm-10">
+                                <button ng-if="loadingIcon == false" ng-click="saveTermination()" class="btn btn-info waves-effect waves-light" ng-disabled="modifyTermination.$invalid"> <i class="fa fa-save"></i> Save termination</button>
+                                <button ng-if="loadingIcon == true" class="btn btn-info waves-effect waves-light" disabled> <i class="fa fa-spinner fa-spin fa-fw"></i> Saving termination</button>
+                                
+                                <button ng-if="speicalLoadingIcon == false && terminationForm.status == 1" ng-click="approveTermination(terminationForm.termination_id)" class="btn btn-danger waves-effect waves-light" ng-disabled="modifyTermination.$invalid"> <i class="fa fa-check"></i> Approve termination</button>
+                                <button ng-if="speicalLoadingIcon == true && terminationForm.status == 1" class="btn btn-danger waves-effect waves-light" disabled> <i class="fa fa-spinner fa-spin fa-fw"></i> Approving termination</button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row" ng-show="views.terminationView">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-block">
+                <button ng-show="$root.can('terminations.list')" ng-click="changeView('terminationList')" class="mb-3 btn pull-right btn-danger card-block-input-item"> Back </button>
+                <div class="card-title"> <h4>Employee Termination Details</h4> </div> <br />
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-12">
+                            <div class="panel panel-info">
+                                <div class="panel-heading">{{ terminationForm.subject }}</div>
+                                <div class="panel-wrapper collapse in" style="border: 3px solid #41b3f9;">
+                                    <div class="panel-body">
+                                        <span class="details"><i class="fa fa-user"></i>&nbsp; {{ terminationForm.to }} </span>&nbsp;
+                                        <span class="details"><i class="fa fa-align-justify"></i>&nbsp; {{ terminationForm.department }} </span>&nbsp;
+                                        <span class="details"> &nbsp;
+                                            <span ng-if="terminationForm.status == 1" class="label label-rouded label-info">Pending</span>
+                                            <span ng-if="terminationForm.status == 2" class="label label-rouded label-success">Approved</span>
+                                        </span>&nbsp;
+                                        <p class="coverLater">{{ terminationForm.description }}<br></p>
+                                    </div>
+                                    <div class="panel-footer">
+                                        <p class="mt-0 mb-0">
+                                            <b>Terminate By :</b> {{ terminationForm.by }},
+                                            <b>	Notice date :</b> {{ terminationForm.notice_date_formatted }}
+                                            <b>	Termination date :</b> {{ terminationForm.termination_date_formatted }}
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row" ng-show="views.promotionList">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-block">
+                <div class="card-title">
+                    <button ng-show="$root.can('promotions.add_promotion')" ng-click="changeView('promotionAdd')" class="mb-3 btn pull-right btn-success card-block-input-item" style="font-weight: bold;"> <i class="fa fa-plus-circle"></i> Add promotion</button>
+                    <div class="pull-right card-block-input-group card-block-input-item">
+                        <div class="input-group input-group-sm">
+                            <input type="text" name="table_search" ng-model="searchText" placeholder="{{phrase.Search}}" class="form-control input-sm">
+                            <span class="input-group-addon"><i class="fa fa-search"></i></span>
+                        </div>
+                    </div>
+                    <h4>Promotions List</h4>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-bordered table-hover">
+                            <tbody>
+                                <tr>
+                                    <th> # </th>
+                                    <th> Employee Name </th>
+                                    <th> Promotion Date </th>
+                                    <th> Promoted Department </th>
+                                    <th> Promoted Designation </th>
+                                    <th> Promoted Pay Grade </th>
+                                    <th> Promoted Salary </th>
+                                    <th> Promoted By </th>
+                                    <th> status </th>
+                                    <th ng-show="$root.can('promotions.edit_promotion') || $root.can('promotions.delete_promotion')" style='width:160px;'> Actions </th>
+                                </tr>
+                                <tr dir-paginate="promotion in promotions | filter:searchText | itemsPerPage:20 track by $index" total-items="totalPromotions">
+                                    <td> {{ $index + 1 }} </td>
+                                    <td> {{ promotion.to }} </td>
+                                    <td> {{ promotion.date }} </td>
+                                    <td> {{ promotion.current_dep }} <b style="font-weight: bold;">To</b> {{ promotion.promoted_dep }} </td>
+                                    <td> {{ promotion.current_des }} <b style="font-weight: bold;">To</b> {{ promotion.promoted_des }} </td>
+                                    <td> {{ promotion.current_paygrade }} <b style="font-weight: bold;">To</b> {{ promotion.promoted_paygrade }} </td>
+                                    <td> {{ promotion.current_salary }} <b style="font-weight: bold;">To</b> {{ promotion.new_salary }} </td>
+                                    <td> {{ promotion.by }} </td>
+                                    <td>
+                                        <span ng-if="promotion.status == 1" class="label label-rouded label-info">Pending</span>
+                                        <span ng-if="promotion.status == 2" class="label label-rouded label-success">Approved</span>
+                                    </td>
+                                    <td ng-show="$root.can('promotions.edit_promotion') || $root.can('promotions.delete_promotion')">
+                                        <button ng-show="$root.can('promotions.edit_promotion')" ng-if="promotion.status == 1" ng-click="editPromotion(promotion.id)" type="button" class="btn custom-btn-success btn btn-xs" title="Edit" tooltip><i class="fa fa-pencil-square-o"></i></button>
+                                        <button ng-show="$root.can('promotions.delete_promotion')" ng-if="promotion.status == 1" ng-click="removePromotion(promotion,$index)" type="button" class="btn btn-danger btn-xs" title="Remove" tooltip><i class="fa fa-trash-o"></i></button>
+                                    </td>
+                                </tr>
+                                <tr ng-show="!promotions.length"><td class="noTableData" colspan="10"> No Promotions are available at the moment </td></tr>
+                            </tbody>
+                        </table>
+                        <dir-pagination-controls
+                            on-page-change="pageChanged(newPageNumber)"
+                            template-url="assets/templates/dirPagination.html">
+                        </dir-pagination-controls>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row" ng-show="views.promotionAdd">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-block">
+                <button ng-show="$root.can('promotions.list')" ng-click="changeView('promotionList')" class="mb-3 btn pull-right btn-danger card-block-input-item"> Cancel Add </button>
+                <div class="card-title"> <h4>Add Promotion</h4> </div> <br />
+                <div class="card-body">
+                    <form class="form-horizontal" name="addPromotion">
+                        <div class="row">
+                            <div class="col-4">
+                                <div class="form-group" ng-class="{'has-error': addPromotion.to.$invalid}">
+                                    <label for="promotionTo">Employee Promoted<span class="text-danger">*</span></label>
+                                    <select ng-model="promotionForm.to" ng-change="loadEmployeeBasicData()" class="form-control" name="promotionTo" id="promotionTo" required>
+                                        <option value="" disabled selected> --- Please Select --- </option>
+                                        <option ng-repeat="employee in supervisors track by $index" value="{{employee.id}}"> {{ employee.first_name }} {{ employee.last_name }} </option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-4">
+                                <div class="form-group" ng-class="{'has-error': addPromotion.by.$invalid}">
+                                    <label for="promotionBy">Promoted By<span class="text-danger">*</span></label>
+                                    <select ng-model="promotionForm.by" class="form-control" name="promotionBy" id="promotionBy" required>
+                                        <option value="" disabled selected> --- Please Select --- </option>
+                                        <option ng-repeat="employee in supervisors track by $index" value="{{employee.id}}"> {{ employee.first_name }} {{ employee.last_name }} </option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-4">
+                                <div class="form-group" ng-class="{'has-error': addPromotion.promotionDate.$invalid}">
+                                    <label for="promotionDate">Promotion Date<span class="text-danger">*</span></label>
+                                    <div class="input-group">
+                                        <span class="input-group-addon"><i class="fa fa-calendar"></i></span>
+                                        <input ng-model="promotionForm.promotionDate" date-picker type="text" name="promotionDate" id="promotionDate" class="form-control" required readonly />
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-3">
+                                <div class="form-group" ng-class="{'has-error': addPromotion.currDep.$invalid}">
+                                    <label for="currDep">Current Department<span class="text-danger">*</span></label>
+                                    <input ng-model="promotionForm.currDep" type="text" name="currDep" id="currDep" class="form-control" required readonly placeholder="Select Employee to load department" />
+                                </div>
+                            </div>
+                            <div class="col-3">
+                                <div class="form-group" ng-class="{'has-error': addPromotion.currDes.$invalid}">
+                                    <label for="currDes">Current Designation<span class="text-danger">*</span></label>
+                                    <input ng-model="promotionForm.currDes" type="text" name="currDes" id="currDes" class="form-control" required readonly placeholder="Select Employee to load designation" />
+                                </div>
+                            </div>
+                            <div class="col-3">
+                                <div class="form-group" ng-class="{'has-error': addPromotion.currPayGrade.$invalid}">
+                                    <label for="currPayGrade">Current Pay Grade<span class="text-danger">*</span></label>
+                                    <input ng-model="promotionForm.currPayGrade" type="text" name="currPayGrade" id="currPayGrade" class="form-control" required readonly placeholder="Select Employee to load PayGrade" />
+                                </div>
+                            </div>
+                            <div class="col-3">
+                                <div class="form-group" ng-class="{'has-error': addPromotion.currSalary.$invalid}">
+                                    <label for="currSalary">Current Salary<span class="text-danger">*</span></label>
+                                    <input ng-model="promotionForm.currSalary" type="text" name="currSalary" id="currSalary" class="form-control" required readonly placeholder="Select Employee to load Salary" />
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-3">
+                                <div class="form-group" ng-class="{'has-error': addPromotion.promotedDep.$invalid}">
+                                    <label for="promotedDep">Promoted Department<span class="text-danger">*</span></label>
+                                    <select ng-model="promotionForm.promotedDep" class="form-control" name="promotedDep" id="promotedDep" required>
+                                        <option value="" disabled selected> --- Please Select --- </option>
+                                        <option ng-repeat="department in departments track by $index" value="{{department.id}}"> {{ department.name }} </option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-3">
+                                <div class="form-group" ng-class="{'has-error': addPromotion.promotedDes.$invalid}">
+                                    <label for="promotedDes">Promoted Designation<span class="text-danger">*</span></label>
+                                    <select class="form-control" ng-model="promotionForm.promotedDes" name="promotedDes" id="promotedDes" required>
+                                        <option value="" selected disabled> --- Please Select --- </option>
+                                        <option ng-repeat="designation in designations track by $index" value="{{designation.id}}"> {{ designation.name }} </option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-3">
+                                <div class="form-group" ng-class="{'has-error': addPromotion.promotedPayGrade.$invalid}">
+                                    <label for="promotedPayGrade">Promoted Pay Grade<span class="text-danger">*</span></label>
+                                    <select class="form-control" ng-change="loadPaygradeSalary()" ng-model="promotionForm.promotedPayGrade" name="promotedPayGrade" id="promotedPayGrade" required>
+                                        <option value="" selected disabled> --- Please Select --- </option>
+                                        <option ng-repeat="grade in payGrades track by $index" value="{{grade.id}}"> {{ grade.name }} </option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-3">
+                                <div class="form-group" ng-class="{'has-error': addPromotion.promotedSalary.$invalid}">
+                                    <label for="promotedSalary">New Salary<span class="text-danger">*</span></label>
+                                    <input ng-model="promotionForm.promotedSalary" type="text" name="promotedSalary" id="promotedSalary" class="form-control" required readonly placeholder="Enter new Salary" />
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-4">
+                                <label for="promotionDesc">Description</label>
+                                <textarea placeholder="Enter description" class="form-control custom-textarea" ng-model="promotionForm.desc" name="promotionDesc" id="promotionDesc"></textarea>
+                            </div>
+                        </div>
+                        <div class="row mt-2">
+                            <div class="col-12">
+                                <button ng-if="loadingIcon == false" ng-click="createPromotion()" class="btn btn-success waves-effect waves-light" ng-disabled="addPromotion.$invalid"> <i class="fa fa-plus"></i> Create promotion</button>
+                                <button ng-if="loadingIcon == true" class="btn btn-success waves-effect waves-light" disabled> <i class="fa fa-spinner fa-spin fa-fw"></i> Creating promotion</button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row" ng-show="views.promotionEdit">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-block">
+                <button ng-show="$root.can('promotions.list')" ng-click="changeView('promotionList')" class="mb-3 btn pull-right btn-danger card-block-input-item"> Cancel Edit </button>
+                <div class="card-title"> <h4>Edit Promotion</h4> </div> <br />
+                <div class="card-body">
+                    <form class="form-horizontal" name="modifyPromotion">
+                        <div class="row">
+                            <div class="col-4">
+                                <div class="form-group" ng-class="{'has-error': modifyPromotion.to.$invalid}">
+                                    <label for="editPromotionTo">Employee Promoted<span class="text-danger">*</span></label>
+                                    <select ng-model="promotionForm.promotion_to" class="form-control" name="editPromotionTo" id="editPromotionTo" required readonly>
+                                        <option value="" disabled selected> --- Please Select --- </option>
+                                        <option ng-repeat="employee in supervisors track by $index" value="{{employee.id}}"> {{ employee.first_name }} {{ employee.last_name }} </option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-4">
+                                <div class="form-group" ng-class="{'has-error': modifyPromotion.by.$invalid}">
+                                    <label for="editPromotionBy">Promoted By<span class="text-danger">*</span></label>
+                                    <select ng-model="promotionForm.promotion_by" class="form-control" name="editPromotionBy" id="editPromotionBy" required>
+                                        <option value="" disabled selected> --- Please Select --- </option>
+                                        <option ng-repeat="employee in supervisors track by $index" value="{{employee.id}}"> {{ employee.first_name }} {{ employee.last_name }} </option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-4">
+                                <div class="form-group" ng-class="{'has-error': modifyPromotion.promotionDate.$invalid}">
+                                    <label for="editPromotionDate">Promotion Date<span class="text-danger">*</span></label>
+                                    <div class="input-group">
+                                        <span class="input-group-addon"><i class="fa fa-calendar"></i></span>
+                                        <input ng-model="promotionForm.date" date-picker type="text" name="editPromotionDate" id="editPromotionDate" class="form-control" required readonly />
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-3">
+                                <div class="form-group" ng-class="{'has-error': modifyPromotion.currDep.$invalid}">
+                                    <label for="editCurrDep">Current Department<span class="text-danger">*</span></label>
+                                    <input ng-model="promotionForm.current_dep_id" type="text" name="editCurrDep" id="editCurrDep" class="form-control" required readonly placeholder="Select Employee to load department" />
+                                </div>
+                            </div>
+                            <div class="col-3">
+                                <div class="form-group" ng-class="{'has-error': modifyPromotion.currDes.$invalid}">
+                                    <label for="editCurrDes">Current Designation<span class="text-danger">*</span></label>
+                                    <input ng-model="promotionForm.current_des_id" type="text" name="editCurrDes" id="editCurrDes" class="form-control" required readonly placeholder="Select Employee to load designation" />
+                                </div>
+                            </div>
+                            <div class="col-3">
+                                <div class="form-group" ng-class="{'has-error': modifyPromotion.currPayGrade.$invalid}">
+                                    <label for="editCurrPayGrade">Current Pay Grade<span class="text-danger">*</span></label>
+                                    <input ng-model="promotionForm.current_pay_id" type="text" name="editCurrPayGrade" id="editCurrPayGrade" class="form-control" required readonly placeholder="Select Employee to load PayGrade" />
+                                </div>
+                            </div>
+                            <div class="col-3">
+                                <div class="form-group" ng-class="{'has-error': modifyPromotion.currSalary.$invalid}">
+                                    <label for="editCurrSalary">Current Salary<span class="text-danger">*</span></label>
+                                    <input ng-model="promotionForm.current_salary" type="text" name="editCurrSalary" id="editCurrSalary" class="form-control" required readonly placeholder="Select Employee to load Salary" />
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-3">
+                                <div class="form-group" ng-class="{'has-error': modifyPromotion.promotedDep.$invalid}">
+                                    <label for="editPromotedDep">Promoted Department<span class="text-danger">*</span></label>
+                                    <select ng-model="promotionForm.promoted_dep_id" class="form-control" name="editPromotedDep" id="editPromotedDep" required>
+                                        <option value="" disabled selected> --- Please Select --- </option>
+                                        <option ng-repeat="department in departments track by $index" value="{{department.id}}"> {{ department.name }} </option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-3">
+                                <div class="form-group" ng-class="{'has-error': modifyPromotion.promotedDes.$invalid}">
+                                    <label for="editPromotedDes">Promoted Designation<span class="text-danger">*</span></label>
+                                    <select class="form-control" ng-model="promotionForm.promoted_des_id" name="editPromotedDes" id="editPromotedDes" required>
+                                        <option value="" selected disabled> --- Please Select --- </option>
+                                        <option ng-repeat="designation in designations track by $index" value="{{designation.id}}"> {{ designation.name }} </option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-3">
+                                <div class="form-group" ng-class="{'has-error': modifyPromotion.promotedPayGrade.$invalid}">
+                                    <label for="editPromotedPayGrade">Promoted Pay Grade<span class="text-danger">*</span></label>
+                                    <select class="form-control" ng-change="loadEditPaygradeSalary()" ng-model="promotionForm.promoted_pay_id" name="editPromotedPayGrade" id="editPromotedPayGrade" required>
+                                        <option value="" selected disabled> --- Please Select --- </option>
+                                        <option ng-repeat="grade in payGrades track by $index" value="{{grade.id}}"> {{ grade.name }} </option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-3">
+                                <div class="form-group" ng-class="{'has-error': modifyPromotion.promotedSalary.$invalid}">
+                                    <label for="editPromotedSalary">New Salary<span class="text-danger">*</span></label>
+                                    <input ng-model="promotionForm.new_salary" type="text" name="editPromotedSalary" id="editPromotedSalary" class="form-control" required readonly placeholder="Enter new Salary" />
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-4">
+                                <label for="editPromotionDesc">Description</label>
+                                <textarea placeholder="Enter description" class="form-control custom-textarea" ng-model="promotionForm.description" name="editPromotionDesc" id="editPromotionDesc"></textarea>
+                            </div>
+                        </div>
+                        <div class="row mt-2">
+                            <div class="col-12">
+                                <button ng-if="loadingIcon == false" ng-click="savePromotion()" class="btn btn-info waves-effect waves-light" ng-disabled="modifyPromotion.$invalid"> <i class="fa fa-save"></i> Save promotion</button>
+                                <button ng-if="loadingIcon == true" class="btn btn-info waves-effect waves-light" disabled> <i class="fa fa-spinner fa-spin fa-fw"></i> Saving promotion</button>
+                                
+                                <button ng-if="speicalLoadingIcon == false && promotionForm.status == 1" ng-click="approvePromotion(promotionForm.promotion_id)" class="btn btn-success waves-effect waves-light" ng-disabled="modifyPromotion.$invalid"> <i class="fa fa-check"></i> Approve promotion</button>
+                                <button ng-if="speicalLoadingIcon == true && promotionForm.status == 1" class="btn btn-success waves-effect waves-light" disabled> <i class="fa fa-spinner fa-spin fa-fw"></i> Approving promotion</button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

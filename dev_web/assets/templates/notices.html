@@ -1,0 +1,284 @@
+<link rel="stylesheet" href="assets/plugins/bootstrap-select/bootstrap4.1.1-dropdown.css" type="text/css" />
+<style type="text/css">
+	.selected-data-list .remove-all, .selected-data-list .remove-item { cursor: pointer; }
+	ul.list-group > li.list-group-item { padding: 7px !important; }
+	ul.list-group > li.list-group-item small { width: 80%; }
+    .upper-navs .nav-link { cursor: pointer; }
+    .upper-navs .nav-link:hover { background-color: #fff; border-color: #ddd #ddd #fff; }
+    .chatIcon { width: 40px; height: 40px; border-radius: 8px !important; }
+    .unread { background-color: #e8e8e8 !important; }
+    .edit-modal-image { height: 60px; margin-left: 7.3rem !important; }
+    .edit-modal-image .overlay { top: 0; left: 0; background: rgba(0, 0, 0, 0); transition: background 0.5s ease; position: absolute; width: 15%; height: 100%; }
+    .edit-modal-image:hover .overlay { display: block; background: rgba(0, 0, 0, .3); }
+    .edit-modal-image img { position: absolute; width: 100px; height: 60px; left: 0; }
+    .edit-modal-image .button { position: absolute; width: 100px; left:0; text-align: center; opacity: 0; transition: opacity .35s ease; }
+    .edit-modal-image .button a { padding: 12px 48px; text-align: center; color: white; border: solid 2px white; z-index: 900; font-size: x-small; position: absolute; left: 25px; top: 0px; color: white !important; }
+    .edit-modal-image:hover .button { opacity: 1; }
+</style>
+
+<div class="row page-titles">
+    <div class="col-md-6 col-8 align-self-center">
+        <h3 class="text-themecolor m-b-0 m-t-0">Notices</h3>
+    </div>
+</div>
+
+<div ng-if="userRole != 'parent'" class="row">
+    <div class="col-12">
+        <ul class="nav nav-tabs upper-navs" style="border-bottom-width: 2px;">
+            <li class="upper-nav-tabs nav-item"> <a ng-click="changeView('notices')" ng-class="{'active': views.notices }" class="nav-link"> All Notices </a> </li>
+            <li class="upper-nav-tabs nav-item"> <a ng-click="changeView('myNotices')" ng-class="{'active': views.myNotices }" class="nav-link"> My Notices </a> </li>
+        </ul>
+    </div>
+</div>
+
+<div class="container-fluid" ng-if="views.notices || views.myNotices">
+    <div ng-if="userRole != 'parent'" class="row mt-3">
+        <div class="col-12">
+            <form class="form-horizontal row" name="filterNotices" role="form" novalidate>
+                <div class="col-2">
+                    <div class="form-group mb-0" ng-class="{'has-error': filterNotices.typeOne.$invalid}">
+                        <label class="control-label"> Type<span class="text-danger">*</span> </label>
+                        <select class="form-control" ng-change="enableDisableClass()" ng-model="filterForm.type1" required>
+                            <option value="" disabled selected> Pick Type </option>
+                            <option ng-repeat="type in options track by $index" value="{{type.id}}"> {{type.name}} </option>
+                        </select>
+                    </div>
+                </div>
+                <div class="col-2">
+                    <div class="form-group mb-0" ng-class="{'has-error': filterNotices.typeTwo.$invalid}">
+                        <label class="control-label"> Role<span class="text-danger">*</span> </label>
+                        <select class="form-control" ng-change="enableDisableClass()" ng-model="filterForm.type2" required>
+                            <option value="" disabled selected> Pick Role </option>
+                            <option ng-if="filterForm.type1 == 'acad'" ng-repeat="role in academic track by $index" value="{{role.id}}"> {{role.name}} </option>
+                            <option ng-if="filterForm.type1 == 'non'" ng-repeat="role in roles track by $index" value="{{role.id}}"> {{role.name}} </option>
+                        </select>
+                    </div>
+                </div>
+                <div class="col-2">
+                    <div class="form-group mb-0" ng-class="{'has-error': filterNotices.classes.$invalid}">
+                        <label class="control-label"> class<span class="text-danger">*</span> </label>
+                        <select ng-disabled="filterForm.type1 != 'acad'" ng-required="filterForm.type1 == 'acad'" class="form-control selectpicker" data-live-search="true" data-actions-box="true" ng-model="filterForm.class" name="class_id" ng-change="changeClass()" multiple  >
+                            <option ng-repeat="class in classes" value="{{class.id}}">{{class.name}}</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="col-2">
+                    <div class="form-group mb-0" ng-class="{'has-error': filterNotices.sections.$invalid}" ng-if="$root.dashboardData.enableSections == '1'">
+                        <label class="control-label">Sections<span class="text-danger">*</span></label>
+                        <select ng-disabled="filterForm.type1 == '' || filterForm.type1 == 'non' || ( filterForm.type1 == 'acad' && filterForm.type2 != 'non' )" ng-required="filterForm.type1 == 'acad' && filterForm.type2 == 'non'" class="form-control selectpicker" data-live-search="true" data-actions-box="true" ng-model="filterForm.section" name="sectionId" multiple >
+                            <option ng-repeat="section in sections" value="{{section.id}}">{{section.name}}</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="col-2">
+                    <div class="form-group mb-0" ng-class="{'has-error': filterNotices.date.$invalid}">
+                        <label for="filterDate" class="control-label"> From<span class="text-danger">*</span> </label>
+                        <input type="text" date-picker name="filterDate" id="filterDate" class="form-control" ng-model="filterForm.date" required />
+                    </div>
+                </div>
+                <div class="col-2 pl-0 pr-0 pt-4">
+                    <button ng-click="dofilterNotices()" ng-disabled="filterNotices.$invalid" class="btn btn-info mr-1 pr-2 pl-2"> <i class="fa fa-search"></i> Filter </button>
+                    <button ng-if="isNoticesFiltered == true" ng-click="cancelNoticesFilter()" class="btn btn-danger ml-1 pr-2 pl-2"> <i class="fa fa-times"></i> Cancel Filter </button>
+                </div>
+            </form>
+        </div>
+    </div>
+    <div class="row mt-3">
+        <div class="col-1 pr-0 pl-0">
+            <div class="btn-group m-b-10 m-r-10" role="group" aria-label="Button group with nested dropdown">
+                <button ng-click="checkAll()" type="button" class="btn btn-sm btn-secondary font-18 text-dark"><i class="mdi mdi-check"></i></button>
+            </div>
+            <div class="btn-group m-b-10 m-r-10" role="group" aria-label="Button group with nested dropdown">
+                <button type="button" tooltip title="{{phrase.Remove}}" ng-click="markDelete('sent')" class="btn btn-sm btn-secondary font-18 text-dark"><i class="mdi mdi-delete"></i></button>
+            </div>
+        </div>
+        <div class="col-3">
+            <div class="card-block-input-group card-block-input-item">
+                <div class="input-group input-group-sm">
+                    <input type="text" name="table_search" ng-model="searchText" placeholder="{{phrase.Search}}" class="form-control">
+                    <span class="input-group-addon"><i class="fa fa-search"></i></span>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-4">
+            <div class="card-block pr-0 pl-0 pt-0">
+                <div class="sent-data inbox-center b-all table-responsive" style="overflow-x: hidden; overflow-y: scroll !important; height: 550px !important;">
+                    <table class="table table-hover no-wrap table-bordered" style="margin-bottom:0px !important;">
+                        <tr dir-paginate="notice in notices | filter:searchText | itemsPerPage:20 track by $index" total-items="totalItems">
+                            <td ng-class="{'unread': notice.isRead == false}" class="text-center" style="width:40px">
+                                <div class="checkbox">
+                                    <input type="checkbox" name="checked[]" id="checkbox{{notice.id}}" ng-model="notice.selected">
+                                    <label for="checkbox{{notice.id}}"></label>
+                                </div>
+                            </td>
+                            <td style="cursor: pointer;" ng-class="{'unread': notice.isRead == false}" ng-click="openNotice(notice.id, $index)">
+                                <div class="row">
+                                    <div class="col-2 pr-2 pl-2" style="max-width: 50px !important;">
+                                        <img class="chatIcon" ng-src="{{'index.php/notices/noticeImage/' + notice.newsImage}}">
+                                    </div>
+                                    <div class="col-10">
+                                        <div class="row">
+                                            <div class="col-12">
+                                                <span ng-if="notice.isRead == true" class="text-primary"> {{ notice.name }} </span>
+                                                <span ng-if="notice.isRead == false" class="text-primary">
+                                                    <strong> <i class="font-small fa fa-circle" style="font-size: xx-small;"></i> {{ notice.name }} </strong>
+                                                </span>
+                                            </div>
+                                            <div class="col-7"> <span>  </span> </div>
+                                            <div class="pt-2 col-5" style="font-size: xx-small !important;"> {{ notice.creation }} </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr ng-show="!notices.length"><td class="noTableData" colspan="4"> No Notices are available </td></tr>
+                    </table>
+                </div>
+            </div>
+        </div>
+        <div class="col-8">
+            <div class="container-fluid pt-0" ng-if="isFirstLoaded == true">
+                <div class="row" ng-if="isLoading == true"> <div class="col-12 text-center"> <i class="fa fa-spinner fa-spin fa-fw"></i> Reading Notice Data </div> </div>
+                <div class="row" ng-if="isLoading == false">
+                    <div class="col-12">
+                        <div class="card-block">
+                            <h4 class="card-title">
+                                <i class="fa fa-calendar-check-o"></i> {{ noticeDet.newsTitle }}
+                                <span class="pull-right">
+                                    <div ng-if="noticeDet.status == true" class="btn-group m-b-10 m-r-10" role="group">
+                                        <button type="button" title="Edit Notice" tooltip ng-click="editNotice(noticeDet.id, noticeDet.targetIndex)" class="btn btn-sm btn-info font-18 text-white"><i class="fa fa-pencil"></i></button>
+                                        <button type="button" title="Delete Notice" tooltip ng-click="removeNotice(noticeDet.id, noticeDet.targetIndex)" class="btn btn-sm btn-danger font-18 text-white"><i class="fa fa-trash"></i></button>
+                                    </div>
+                                </span>
+                            </h4> <br />
+                            <div class="card-body">
+                                <div class="row mt-3 mb-3">
+                                    <div class="col-3 text-right"> <b>Notice Creator</b> </div>
+                                    <div class="col-9"> {{ noticeDet.creator }} <span class="pull-right"> <small class="text-muted" title="Created On : {{ noticeDet.creation_date }}" tooltip> <i class="fa fa-clock-o"></i> {{ noticeDet.creation }} </small> </span> </div>
+                                </div>
+                                <div class="row mt-3 mb-3">
+                                    <div class="col-3 text-right"> <b>Notice Duration</b> </div>
+                                    <div class="col-9"> {{ noticeDet.newsDate }} <span class="pull-right"> <small class="text-muted" title="Notice Date" tooltip> <i class="fa fa-info-circle"></i> {{ noticeDet.until }} </small> </span> </div>
+                                </div>
+                                <div class="row mt-3 mb-3">
+                                    <div class="col-3 text-right"> <b>Notice Details</b> </div>
+                                    <div class="col-9">
+                                        <div ng-bind-html="noticeDet.newsText"></div>
+                                    </div>
+                                </div>
+                                <div class="row mt-3 mb-3">
+                                    <div class="col-3 text-right"> <b>Guest list</b> </div>
+                                    <div class="col-9"> <button ng-click="openGuests()" class="btn btn-sm btn-info"> See invited guests </button> </div>
+                                </div>
+                                <div class="row mt-3 mb-3">
+                                    <div class="col-3 text-right"> <b>Notice Image</b> </div>
+                                    <div class="col-9"> <img style="width: 100% !important;" ng-src="{{'index.php/notices/noticeImage/' + noticeDet.newsImage}}" /> </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-12">
+            <dir-pagination-controls class="pull-right" on-page-change="pageChanged(newPageNumber)" template-url="assets/templates/dirPagination.html" ></dir-pagination-controls>
+        </div>
+    </div>
+</div>
+
+<modal visible="guestsModal">
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-12">
+                <div class="table-responsive" style="overflow-x: hidden;">
+                    <table class="table table-hover no-wrap table-bordered">
+                        <tbody>
+                            <tr>
+                                <th> # </th>
+                                <th> Guest name </th>
+                                <th ng-if="noticeDet.status == true"> Status </th>
+                                <th ng-if="noticeDet.status == true"> Operations </th>
+                            </tr>
+                            <tr ng-repeat="guest in noticeDet.members track by $index">
+                                <td> {{ $index + 1 }} </td>
+                                <td> <i ng-if="guest.details.isSeen == true" title="seen at {{ guest.details.seenDate }}" tooltip class="fa fa-check-circle text-success"></i> {{ guest.name }} </td>
+                                <td ng-if="noticeDet.status == true">
+                                    <span ng-if="guest.details.status == 0"> <i class="fa fa-minus-circle text-danger"></i> Not Seen </span>
+                                    <span ng-if="guest.details.status == 1"> <i class="fa fa-check text-success"></i> Seen </span>
+                                    <span ng-if="guest.details.status == 2"> <i class="fa fa-exclamation-triangle text-warning"></i> Maybe </span>
+                                    <span ng-if="guest.details.status == 3"> <i class="fa fa-check-circle text-success"></i> Going </span>
+                                    <span ng-if="guest.details.status == 4"> <i class="fa fa-times-circle text-danger"></i> Decline </span>
+                                </td>
+                                <td ng-if="noticeDet.status == true">
+                                    
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</modal>
+
+<modal visible="noticeModal">
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-block">
+                        <div class="card-body">
+                            <div class="form">
+                                <form class="form-horizontal" name="updateNotice" role="form" novalidate>
+                                    <div class="form-group row" ng-class="{'has-error': updateNotice.noticeTitle.$invalid}">
+                                        <label class="col-sm-2 text-right control-label col-form-label">Title *</label>
+                                        <div class="col-sm-10">
+                                            <input type="text" name="noticeTitle" class="form-control" ng-model="updateForm.noticeTitle" placeholder="Enter the notice name" required />
+                                        </div>
+                                    </div>
+                                    <div class="form-group row" ng-class="{'has-error': updateNotice.noticeDate.$invalid}">
+                                        <label for="noticeDate" class="col-sm-2 text-right control-label col-form-label">Date *</label>
+                                        <div class="col-sm-10">
+                                            <input type="text" name="noticeDate" id="noticeDate" date-picker class="form-control" ng-model="updateForm.noticeDate" placeholder="Enter the notice date" required />
+                                        </div>
+                                    </div>
+                                    <div class="form-group row" ng-class="{'has-error': updateNotice.noticeContent.$invalid}">
+                                        <label class="col-sm-2 text-right control-label col-form-label">Content *</label>
+                                        <div class="col-sm-10">
+                                            <textarea ck-editor name="noticeContent" class="form-control" ng-model="updateForm.noticeContent" placeholder="Enter the description regarding the notice" style="height:250px" required></textarea>
+                                        </div>
+                                    </div>
+                                    <div class="form-group row">
+                                        <label class="col-sm-2 text-right control-label col-form-label">Image</label>
+                                        <div class="col-sm-10">
+                                            <input type="file" name="noticeImage" id="noticeImage" class="form-control" ng-model="updateForm.noticeImage" accept="image/jpg, image/jpeg, image/png" />
+                                        </div>
+                                    </div>
+                                    <div class="form-group row" ng-if="noticeDet.newsImage != 'default.png' && updateForm.imageStatus == 'true'">
+                                        <div class="col-sm-12">
+                                            <div class="container edit-modal-image">
+                                                <img ng-src="{{'index.php/notices/noticeImage/' + noticeDet.newsImage}}" />
+                                                <div class="overlay"></div>
+                                                <div class="button mt-3"><a ng-click="removeCurrentImage()" class="btn btn-xs btn-danger pt-1 pb-1 pr-1 pl-1 remove-img-btn"> Remove </a></div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="form-group m-b-0 row">
+                                        <div class="offset-sm-2 col-sm-10">
+                                            <button ng-if="isLoading == false" ng-click="saveNotice()" class="btn btn-info waves-effect waves-light" ng-disabled="updateNotice.$invalid"> <i class="fa fa-pencil"></i> Update Notice</button>
+                                            <button ng-if="isLoading == true" class="btn btn-info waves-effect waves-light" disabled> <i class="fa fa-spinner fa-spin fa-fw"></i> Updating Notice</button>
+                                        </div>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</modal>

@@ -1,0 +1,1544 @@
+<style>
+    .custom-btn-success, .custom-btn-success.disabled { background: #7ace4c; border: 1px solid #7ace4c; color: white !important; }
+    .custom-btn-success:hover { background: #7ace4c; opacity: .8; border: 1px solid #7ace4c; }
+    .label-success { background-color: #7ace4c !important; }
+    .custom-rounded-img { border: 3px solid #ccc !important; border-radius: 50% !important; width: 128px !important; height: 128px !important; padding: 5px !important; }
+    .custom-parent-rounded-img { border: 3px solid #ccc !important; border-radius: 50% !important; width: 64px !important; height: 64px !important; padding: 5px !important; }
+    .upper-nav-tabs { font-size: small; }
+    .profile-navs .nav-link { cursor: pointer; }
+    .profile-navs .nav-link:hover { background-color: #fff; border-color: #ddd #ddd #fff; border-bottom-color: #009efb !important; border-bottom-width: 3px; }
+    .nav-link.active { font-weight: 500; border-bottom-color: #009efb !important; border-bottom-width: 3px; }
+    .dashed-hr { border-top: 1px dotted rgb(204, 204, 204) !important; }
+    .gaurdianRow { font-size: small; }
+    .noTableData { text-align: center !important; }
+    .chat-bubble-main { color: white !important; padding: 18px 20px !important; line-height: 26px !important; font-size: 16px !important; border-radius: 7px !important; }
+    .chat-bubble-me { background-color: #94C2ED !important; }
+    .chat-bubble-stranger { background-color: #86BB71 !important; }
+    .chat-bubble-time { color: #cad9d9 !important; font-size: x-small !important; cursor: pointer; }
+    .chat-bubble-time:hover { color: white !important; }
+    .custom-width-75 {  width: 75% !important; }
+    .custom-width-100 {  width: 100% !important; }
+    #chat-box { height: 100% !important; }
+    .cellBackColor { cursor: pointer; background: #f2f7f8 !important; font-weight: 600; color: white !important; }
+    .attenBackColorP { background-color: #3c763d !important; }
+    .attenBackColorA { background-color: #f62d51 !important; }
+    .attenBackColorW { background-color: #009efb !important; }
+    .attenBackColorH { background-color: #ffbc34 !important; }
+    .cellBackColor:hover { background-color: #000 !important; color: #FFF !important; }
+    .panel-info { border-color: #41b3f9; }
+    .panel { border-radius:0; margin-bottom:30px; border:0; box-shadow:none }
+    .panel .panel-heading { border-radius: 0; font-weight: 500; font-size: 16px; padding: 10px 25px; }
+    .panel-blue .panel-heading, .panel-info .panel-heading { border-color: #41b3f9; color: #fff; background-color: #41b3f9; }
+    .collapse.in { display: block; }
+    .panel .panel-body { padding: 25px; background-color: white; }
+    .panel-custom { background-color: #F1F1F1; box-shadow: 0 1px 1px rgba(0, 0, 0, 0.05); padding: 10px 15px; }
+    .panel .panel-body:first-child h3 { margin-top: 0; font-weight: 500; font-family: Rubik,sans-serif; font-size: 14px; text-transform: uppercase; }
+    .box { border: 3px solid #F1F1F1; }
+    .panel-default { border-color: rgba(120,130,140,.13); }
+    .panel-default .panel-heading { color: #263238; background-color: #fff; border-bottom: 1px solid rgba(120,130,140,.13); }
+    .panel-default .panel-body { color: #263238; }
+    .details { font-size: 13px; color: #98a6ad; }
+    .panel .panel-footer { background: #fff; border-radius: 0; padding: 20px 25px; }
+    .panel-info .panel-footer { background: #fff; color: #263238; border-top: 2px solid #41b3f9; }
+    .panel-default .panel-footer { background: #fff; color: #263238; border-top: 2px solid rgba(120,130,140,.13); }
+    .label-rouded, .label-rounded { border-radius: 8px; padding: 6px 8px 5px; font-weight: 500; width: 65px !important; }
+    .attendanceHeader { font-size: 21px !important; }
+    .sessionName { color: black !important; border: 1px solid #41b3f9; background-color: white; border-radius: 10px; padding: 5px 30px; margin: 0px 25px; }
+    .arrowNavs { color: white !important; cursor: pointer; }
+    #attendanceTable { font-size: 80% !important; padding: 0.25rem 0.15rem; }
+    #attendanceTable thead tr th { font-size: 80% !important; padding: 0.25rem 0.15rem; }
+    #attendanceTable tbody tr td { font-size: 80% !important; padding: 0.25rem 0.15rem; }
+    .bolderTitle { font-weight: 500; }
+    .hr-divider { border-color: #f62d51; }
+    .btn-dark { color: #fff; background-color: #343a40; border-color: #343a40; }
+    .input-group { position: relative !important; display: flex !important; flex-wrap: wrap !important; -webkit-box-align: stretch !important; align-items: stretch !important; width: 100% !important; }
+    .input-group > .custom-file { display: flex !important; -webkit-box-align: center !important; align-items: center !important; }
+    .input-group > .custom-file, .input-group > .custom-select, .input-group > .form-control { position: relative !important; -webkit-box-flex: 1 !important; flex: 1 1 auto !important; width: 1% !important; margin-bottom: 0 !important; }
+    .custom-file { height: calc(2.25rem + 2px) !important; }
+    .custom-file-input { position: relative !important; z-index: 2 !important; width: 100% !important; height: calc(2.25rem + 2px) !important; margin: 0 !important; opacity: 0 !important; }
+    .custom-file-label { position: absolute !important; top: 0 !important; right: 0 !important; left: 0 !important; z-index: 1 !important; height: calc(2.25rem + 2px) !important; padding: .375rem .75rem !important; line-height: 1.5 !important; color: #495057 !important; background-color: #fff !important; border: 1px solid #ced4da !important; border-radius: .25rem !important; }
+    .add-row-btn { color: white !important; }
+    .search-Sibling-btn { color: white !important; }
+    .setAsGuardian { color: white !important; }
+    .resetGuardian { color: white !important; }
+    .upper-nav-tabs, .edit-upper-nav-tabs { cursor: pointer; }
+    .formFontModifiy { font-size: smaller; }
+    .togglePassVisibilty { cursor: pointer; }
+    .jumpToUploadExcel { cursor: pointer; }
+    .input-group-append { margin-left: -1px; display: flex; }
+    .input-group > .input-group-append { border-top-left-radius: 0; border-bottom-left-radius: 0; }
+    .input-group > .input-group-append:last-child > .input-group-text:not(:last-child) { border-top-right-radius: 0; border-bottom-right-radius: 0; }
+    .input-group-text { display: -webkit-box; display: -ms-flexbox; display: flex; -webkit-box-align: center; -ms-flex-align: center; align-items: center; padding: .375rem .75rem; margin-bottom: 0; font-size: 1rem; font-weight: 400; line-height: 1.5; color: #495057; text-align: center; white-space: nowrap; background-color: #e9ecef; border: 1px solid #ced4da; border-radius: .25rem; }
+</style>
+<div class="row page-titles">
+    <div class="col-6 align-self-center">
+        <h3 class="text-themecolor m-b-0 m-t-0">Students</h3>
+    </div>
+    <div class="col-6">
+	    
+    </div>
+</div>
+
+<div class="row" ng-show="views.list">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-block">
+                <div ng-show="userRole != 'parent'" class="card-title">
+                    <div class="row mb-3">
+                        <div class="col-2">
+                            <div class="form-group">
+                                <label>Search</label>
+                                <div class="card-block-input-group card-block-input-item">
+                                    <div class="input-group input-group-sm">
+                                        <input type="text" name="table_search" ng-model="form.search" ng-enter="filterForm(1)" placeholder="{{phrase.Search}}" class="form-control">
+                                        <span class="input-group-addon"><i class="fa fa-search"></i></span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-2">
+                            <div class="form-group">
+                                <label>Class</label>
+                                <select class="form-control" ng-model="form.class" ng-change="changeClass()">
+                                    <option value="" disabled> Select Class </option>
+                                    <option ng-repeat="class in classes track by $index" ng-value="class.id"> {{class.name}} </option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-2">
+                            <div class="form-group">
+                                <label>Section</label>
+                                <select class="form-control" ng-model="form.section">
+                                    <option value="" disabled> Select Section </option>
+                                    <option ng-repeat="section in sections track by $index" ng-value="section.id"> {{section.name}} </option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-2">
+                            <div class="form-group">
+                                <label>Fee Group Type</label>
+                                <select class="form-control" ng-model="form.type">
+                                    <option value="" disabled> Select Fee Group Type </option>
+                                    <option ng-repeat="type in types track by $index" ng-value="type.id"> {{type.name}} </option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-2">
+                            <div class="form-group">
+                                <label>Student Category</label>
+                                <select class="form-control" ng-model="form.category">
+                                    <option value="" disabled> Select Student Category </option>
+                                    <option ng-repeat="category in categories track by $index" ng-value="category.id"> {{category.name}} </option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-2" ng-if="isFiltered == false">
+                            <button style="margin-top: 2.0rem !important;" class="btn btn-success mt-4 text-white form-control" ng-if="loadingIcon == false" ng-click="filterForm(1)"> <i class="fa fa-search"></i> Search </button>
+                            <button style="margin-top: 2.0rem !important;" class="btn btn-success mt-4 text-white form-control" ng-if="loadingIcon == true" disabled> <i class="fa fa-spinner fa-spin fa-fw"></i> Searching </button>
+                        </div>
+                        <div class="col-1 pr-1 pl-0" ng-if="isFiltered == true">
+                            <button style="margin-top: 2.0rem !important;" class="btn btn-sm btn-success mt-4 text-white form-control" ng-if="loadingIcon == false" ng-click="filterForm(1)"> <i class="fa fa-search"></i> Search </button>
+                            <button style="margin-top: 2.0rem !important;" class="btn btn-sm btn-success mt-4 text-white form-control" ng-if="loadingIcon == true" disabled> <i class="fa fa-spinner fa-spin fa-fw"></i> Searching </button>
+                        </div>
+                        <div class="col-1 pr-0 pl-1" ng-if="isFiltered == true">
+                            <button style="margin-top: 2.0rem !important;" class="btn btn-sm btn-danger mt-4 text-white form-control" ng-if="speicalLoadingIcon == false" ng-click="cancelFilter()"> <i class="fa fa-times"></i> Cancel Filter </button>
+                            <button style="margin-top: 2.0rem !important;" class="btn btn-sm btn-danger mt-4 text-white form-control" ng-if="speicalLoadingIcon == true" disabled> <i class="fa fa-spinner fa-spin fa-fw"></i> Cancelling </button>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-12">
+                            <div class="table-responsive">
+                                <table class="table table-bordered table-hover">
+                                    <thead>
+                                        <tr>
+                                            <th> Roll No. </th>
+                                            <th> Full Name </th>
+                                            <th> Admission No. </th>
+                                            <th> Phone No. </th>
+                                            <th> Class / Section </th>
+                                            <th> Gaurdian Name </th>
+                                            <th>
+                                                Action
+                                            </th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr dir-paginate="student in students | filter:searchText | itemsPerPage: 20 track by $index" total-items="totalItems">
+                                            <td> {{ student.rollNo }} </td>
+                                            <td> {{ student.name }} </td>
+                                            <td> {{ student.admission }} </td>
+                                            <td> {{ student.phone }} </td>
+                                            <td> {{ student.class }}{{ student.section }} </td>
+                                            <td> {{ student.parentName }} </td>
+                                            <td>
+                                                <button class="btn btn-xs custom-btn-success" ng-click="openStudent(student.id)" title="View" tooltip> <i class="fa fa-info-circle"></i> </button>
+                                                <button ng-if="$root.can('students.editStudent')" class="btn btn-xs btn-info" ng-click="editStudent($index)" title="Edit" tooltip> <i class="fa fa-pencil"></i> </button>
+                                                <button ng-if="$root.can('students.delStudent')" class="btn btn-xs btn-danger" ng-click="deleteStudent($index)" title="Delete" tooltip> <i class="fa fa-trash"></i> </button>
+                                            </td>
+                                        </tr>
+                                        <tr ng-if="!students.length"> <td colspan="7"> No Students are available </td> </tr>
+                                    </tbody>
+                                </table>
+                                <dir-pagination-controls
+                                    on-page-change="pageChanged(newPageNumber)"
+                                    template-url="assets/templates/dirPagination.html" >
+                                </dir-pagination-controls>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row" ng-show="views.info">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-block">
+                <div class="card-title">
+                    <div class="row mb-3">
+                        <div class="col-10"></div>
+                        <div class="col-2">
+                            <button ng-click="changeView('list')" class="ml-1 btn btn-danger pull-right"> Back </button>
+                            <button ng-if="$root.can('students.editStudent')" ng-click="changeView('edit')" class="mr-1 btn btn-info pull-right"> <i class="fa fa-edit"></i> Edit </button>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-3">
+                            <div class="card">
+                                <div class="card-block" style="background-color: white !important;">
+                                    <div class="card-body">
+                                        <div class="row">
+                                            <div class="col-12 text-center">
+                                                <img class="custom-rounded-img" src="index.php/manage-students/viewImage/{{studentInfo.main.photo}}" /> <br />
+                                                <h3><b>{{studentInfo.main.name}}</b></h3>
+                                            </div>
+                                            <div class="col-12 text-center"> <small style="color: #aaa !important;">Student</small> </div>
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-12">
+                                                <table class="table table-hover" style="border: 1px solid #eceeef !important;">
+                                                    <tr> <td>Admission No.</td> <td class="text-right"> {{studentInfo.main.adm}} </td> </tr>
+                                                    <tr> <td>Roll</td> <td class="text-right"> {{studentInfo.main.roll}} </td> </tr>
+                                                    <tr> <td>Class</td> <td class="text-right"> {{studentInfo.main.class}} </td> </tr>
+                                                    <tr> <td>Section</td> <td class="text-right"> {{studentInfo.main.section}} </td> </tr>
+                                                </table>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>  
+                        </div>
+                        <div class="col-9">
+                            <div class="row">
+                                <div class="col-12">
+                                    <ul class="nav nav-tabs profile-navs" style="border-bottom-width: 2px;">
+                                        <li class="upper-nav-tabs nav-item"> <a ng-click="changeTab('profile')" ng-class="{'active': tabs.profile }" class="nav-link"> Profile </a> </li>
+                                        <li class="upper-nav-tabs nav-item"> <a ng-click="changeTab('parents')" ng-class="{'active': tabs.parents }" class="nav-link"> Parents </a> </li>
+                                        <li ng-if="$root.can('students.Attendance')" class="upper-nav-tabs nav-item"> <a ng-click="changeTab('attendance')" ng-class="{'active': tabs.attendance }" class="nav-link"> Attendance </a> </li>
+                                        <li ng-if="$root.can('students.Marksheet')" class="upper-nav-tabs nav-item"> <a ng-click="changeTab('marksheet')" ng-class="{'active': tabs.marksheet }" class="nav-link"> Marksheet </a> </li>
+                                        <li ng-if="$root.can('students.invoices')" class="upper-nav-tabs nav-item"> <a ng-click="changeTab('invoice')" ng-class="{'active': tabs.invoice }" class="nav-link"> Invoice </a> </li>
+                                        <li ng-if="$root.can('students.docs')" class="upper-nav-tabs nav-item"> <a ng-click="changeTab('document')" ng-class="{'active': tabs.document }" class="nav-link"> Document </a> </li>
+                                        <li ng-if="$root.can('students.transport')" class="upper-nav-tabs nav-item"> <a ng-click="changeTab('transportaion')" ng-class="{'active': tabs.transportaion }" class="nav-link"> Transportaion </a> </li>
+                                        <li ng-if="$root.can('students.hostel')" class="upper-nav-tabs nav-item"> <a ng-click="changeTab('hostel')" ng-class="{'active': tabs.hostel }" class="nav-link"> Hostel </a> </li>
+                                        <li ng-if="$root.can('students.discipline')" class="upper-nav-tabs nav-item"> <a ng-click="changeTab('discipline')" ng-class="{'active': tabs.discipline }" class="nav-link"> Discipline </a> </li>
+                                    </ul>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-12">
+                                    <div class="card">
+                                        <div class="card-block" style="background-color: white !important;">
+                                            <div class="card-body">
+                                                <div class="container-fluid" ng-show="tabs.profile">
+                                                    <div class="row">
+                                                        <div class="col-3"> UserName </div> <div class="col-3"> {{studentInfo.profile.username}} </div>
+                                                        <div class="col-3"> Gender </div> <div class="col-3"> {{studentInfo.profile.gender}} </div>
+                                                    </div>
+                                                    <div class="row">
+                                                        <div class="col-3"> Fee Group Type </div> <div class="col-3"> {{studentInfo.profile.type}} </div>
+                                                        <div class="col-3"> Religion </div> <div class="col-3"> {{studentInfo.profile.religion}} </div>
+                                                    </div>
+                                                    <div class="row">
+                                                        <div class="col-3"> Date of Birth </div> <div class="col-3"> {{studentInfo.profile.birthday}} </div>
+                                                        <div class="col-3"> Phone </div> <div class="col-3"> {{studentInfo.profile.phone}} </div>
+                                                    </div>
+                                                    <div class="row">
+                                                        <div class="col-3"> Blood Group </div> <div class="col-3"> {{studentInfo.profile.blood}} </div>
+                                                        <div class="col-3"> Address </div> <div class="col-3"> {{studentInfo.profile.address}} </div>
+                                                    </div>
+                                                    <div class="row">
+                                                        <div class="col-3"> Email </div> <div class="col-3"> {{studentInfo.profile.email}} </div>
+                                                        <div class="col-3"> State </div> <div class="col-3"> {{studentInfo.profile.state}} </div>
+                                                    </div>
+                                                    <div class="row">
+                                                        <div class="col-3"> Student Category </div> <div class="col-3"> {{studentInfo.profile.category}} </div>
+                                                        <div class="col-3"> Country </div> <div class="col-3"> {{studentInfo.profile.country}} </div>
+                                                    </div>
+                                                </div>
+                                                <div class="container-fluid" ng-show="tabs.parents">
+                                                    <div class="row">
+                                                        <div class="col-2"> Sibling </div>
+                                                        <div class="col-10">
+                                                            <div class="row" ng-repeat="sibling in studentInfo.parents.sibling">
+                                                                <div class="col-12"> {{ sibling.name }} ( {{ sibling.admission }} ) </div>
+                                                            </div>
+                                                            <div class="row" ng-if="!studentInfo.parents.sibling.length">
+                                                                <div class="col-12"> No sibling found </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <hr class="dashed-hr" />
+                                                    <div class="row">
+                                                        <div class="col-6 text-center">
+                                                            <img class="custom-parent-rounded-img" src="index.php/manage-students/parentImage/{{studentInfo.parents.father.pic}}" />
+                                                        </div>
+                                                        <div class="col-6 text-center">
+                                                            <img class="custom-parent-rounded-img" src="index.php/manage-students/parentImage/{{studentInfo.parents.mother.pic}}" />
+                                                        </div>
+                                                    </div>
+                                                    <div class="row">
+                                                        <div class="col-3"> Father's Name </div> <div class="col-3"> {{studentInfo.parents.father.name}} </div>
+                                                        <div class="col-3"> Mother's Name </div> <div class="col-3"> {{studentInfo.parents.mother.name}} </div>
+                                                    </div>
+                                                    <div class="row">
+                                                        <div class="col-3"> Father's Profession </div> <div class="col-3"> {{studentInfo.parents.father.job}} </div>
+                                                        <div class="col-3"> Mother's Profession </div> <div class="col-3"> {{studentInfo.parents.mother.job}} </div>
+                                                    </div>
+                                                    <div class="row">
+                                                        <div class="col-3"> Mobile </div> <div class="col-3"> {{studentInfo.parents.father.phone}} </div>
+                                                        <div class="col-3"> Mobile </div> <div class="col-3"> {{studentInfo.parents.mother.phone}} </div>
+                                                    </div>
+                                                    <div class="row">
+                                                        <div class="col-3"> Father's Qualification </div> <div class="col-3"> {{studentInfo.parents.father.qualification}} </div>
+                                                        <div class="col-3"> Mother's Qualification </div> <div class="col-3"> {{studentInfo.parents.mother.qualification}} </div>
+                                                    </div>
+                                                    <div class="row">
+                                                        <div class="col-3"> Email </div> <div class="col-3"> {{studentInfo.parents.father.email}} </div>
+                                                        <div class="col-3"> Email </div> <div class="col-3"> {{studentInfo.parents.mother.email}} </div>
+                                                    </div>
+                                                    <hr class="dashed-hr" />
+                                                    <div class="row gaurdianRow">
+                                                        <div class="col-12 text-center"> <h3><b>Guardian</b></h3> </div>
+                                                    </div>
+                                                    <div class="row gaurdianRow">
+                                                        <div class="col-1 bolderTitle"> Name </div> <div class="col-3"> {{ studentInfo.parents.gaurdian.name }} </div>
+                                                        <div class="col-1 bolderTitle"> Relation </div> <div class="col-3"> {{ studentInfo.parents.gaurdian.relation }} </div>
+                                                        <div class="col-1 bolderTitle"> Profession </div> <div class="col-3 pl-4"> {{ studentInfo.parents.gaurdian.job }} </div>
+                                                    </div>
+                                                    <div class="row gaurdianRow">
+                                                        <div class="col-1 bolderTitle"> Mobile </div> <div class="col-3"> {{ studentInfo.parents.gaurdian.phone }} </div>
+                                                        <div class="col-1 bolderTitle"> Address </div> <div class="col-3"> {{ studentInfo.parents.gaurdian.address }} </div>
+                                                        <div class="col-1 bolderTitle"> Email </div> <div class="col-3 pl-4"> {{ studentInfo.parents.gaurdian.email }} </div>
+                                                    </div>
+                                                    <div class="row gaurdianRow">
+                                                        <div class="col-1 bolderTitle"> Username </div> <div class="col-3"> {{ studentInfo.parents.gaurdian.username }} </div>
+                                                    </div>
+                                                </div>
+                                                <div class="container-fluid" ng-if="$root.can('students.Attendance')" ng-show="tabs.attendance">
+                                                    <div class="panel panel-info m-0">
+                                                        <div class="panel-heading text-center attendanceHeader">
+                                                            <a class="arrowNavs" ng-click="moveSession('backward')" title="Previous session" tooltip> <i class="fa fa-play-circle fa-rotate-180"></i> </a> 
+                                                            <span class="sessionName"> Academic Session {{ studentInfo.attendances.current }} - {{ studentInfo.attendances.next }} </span>
+                                                            <a class="arrowNavs" ng-click="moveSession('forward')" title="Next session" tooltip> <i class="fa fa-play-circle"></i> </a> 
+                                                        </div>
+                                                    </div>
+                                                    <div class="panel-wrapper collapse in" style="border: 3px solid #41b3f9;">
+                                                        <div class="panel-body">
+                                                            <div class="container-fluid pt-2 pb-2">
+                                                                <div class="row">
+                                                                    <div class="col-12 mb-3">
+                                                                        <div class="table-responsive">
+                                                                            <table id="attendanceTable" class="mt-4 table table-bordered">
+                                                                                <thead>
+                                                                                    <th class="text-center">#</th>
+                                                                                    <th class="text-center" ng-repeat="oneDay in studentInfo.attendances.days track by $index"> {{ oneDay }} </th>
+                                                                                </thead>
+                                                                                <tbody>
+                                                                                    <tr>
+                                                                                        <td class="text-center"><b>Apr</b></td>
+                                                                                        <td class="text-center cellBackColor attenBackColor{{rowData.name}}" ng-repeat="rowData in studentInfo.attendances.data[0] track by $index" title="{{rowData.date}} - {{rowData.day}}" tooltip> {{ rowData.name }} </td>
+                                                                                    </tr>
+                                                                                    <tr>
+                                                                                        <td class="text-center"><b>May</b></td>
+                                                                                        <td class="text-center cellBackColor attenBackColor{{rowData.name}}" ng-repeat="rowData in studentInfo.attendances.data[1] track by $index" title="{{rowData.date}} - {{rowData.day}}" tooltip> {{ rowData.name }} </td>
+                                                                                    </tr>
+                                                                                    <tr>
+                                                                                        <td class="text-center"><b>Jun</b></td>
+                                                                                        <td class="text-center cellBackColor attenBackColor{{rowData.name}}" ng-repeat="rowData in studentInfo.attendances.data[2] track by $index" title="{{rowData.date}} - {{rowData.day}}" tooltip> {{ rowData.name }} </td>
+                                                                                    </tr>
+                                                                                    <tr>
+                                                                                        <td class="text-center"><b>Jul</b></td>
+                                                                                        <td class="text-center cellBackColor attenBackColor{{rowData.name}}" ng-repeat="rowData in studentInfo.attendances.data[3] track by $index" title="{{rowData.date}} - {{rowData.day}}" tooltip> {{ rowData.name }} </td>
+                                                                                    </tr>
+                                                                                    <tr>
+                                                                                        <td class="text-center"><b>Aug</b></td>
+                                                                                        <td class="text-center cellBackColor attenBackColor{{rowData.name}}" ng-repeat="rowData in studentInfo.attendances.data[4] track by $index" title="{{rowData.date}} - {{rowData.day}}" tooltip> {{ rowData.name }} </td>
+                                                                                    </tr>
+                                                                                    <tr>
+                                                                                        <td class="text-center"><b>Sep</b></td>
+                                                                                        <td class="text-center cellBackColor attenBackColor{{rowData.name}}" ng-repeat="rowData in studentInfo.attendances.data[5] track by $index" title="{{rowData.date}} - {{rowData.day}}" tooltip> {{ rowData.name }} </td>
+                                                                                    </tr>
+                                                                                    <tr>
+                                                                                        <td class="text-center"><b>Oct</b></td>
+                                                                                        <td class="text-center cellBackColor attenBackColor{{rowData.name}}" ng-repeat="rowData in studentInfo.attendances.data[6] track by $index" title="{{rowData.date}} - {{rowData.day}}" tooltip> {{ rowData.name }} </td>
+                                                                                    </tr>
+                                                                                    <tr>
+                                                                                        <td class="text-center"><b>Nov</b></td>
+                                                                                        <td class="text-center cellBackColor attenBackColor{{rowData.name}}" ng-repeat="rowData in studentInfo.attendances.data[7] track by $index" title="{{rowData.date}} - {{rowData.day}}" tooltip> {{ rowData.name }} </td>
+                                                                                    </tr>
+                                                                                    <tr>
+                                                                                        <td class="text-center"><b>Dec</b></td>
+                                                                                        <td class="text-center cellBackColor attenBackColor{{rowData.name}}" ng-repeat="rowData in studentInfo.attendances.data[8] track by $index" title="{{rowData.date}} - {{rowData.day}}" tooltip> {{ rowData.name }} </td>
+                                                                                    </tr>
+                                                                                    <tr>
+                                                                                        <td class="text-center"><b>Jan</b></td>
+                                                                                        <td class="text-center cellBackColor attenBackColor{{rowData.name}}" ng-repeat="rowData in studentInfo.attendances.data[9] track by $index" title="{{rowData.date}} - {{rowData.day}}" tooltip> {{ rowData.name }} </td>
+                                                                                    </tr>
+                                                                                    <tr>
+                                                                                        <td class="text-center"><b>Feb</b></td>
+                                                                                        <td class="text-center cellBackColor attenBackColor{{rowData.name}}" ng-repeat="rowData in studentInfo.attendances.data[10] track by $index" title="{{rowData.date}} - {{rowData.day}}" tooltip> {{ rowData.name }} </td>
+                                                                                    </tr>
+                                                                                    <tr>
+                                                                                        <td class="text-center"><b>Mar</b></td>
+                                                                                        <td class="text-center cellBackColor attenBackColor{{rowData.name}}" ng-repeat="rowData in studentInfo.attendances.data[11] track by $index" title="{{rowData.date}} - {{rowData.day}}" tooltip> {{ rowData.name }} </td>
+                                                                                    </tr>
+                                                                                </tbody>
+                                                                            </table>
+                                                                        </div>
+                                                                    </div>
+                                                                    <div class="col-12 text-center">
+                                                                        <label class="btn btn-md btn-warning text-white"> <b> Total Holidays: {{ studentInfo.attendances.total.holidays }} </b> </label>
+                                                                        <label class="btn btn-md btn-info text-white"> <b> Total Weekends: {{ studentInfo.attendances.total.weekends }} </b> </label>
+                                                                        <label class="btn btn-md btn-success text-white"> <b> Total Presents: {{ studentInfo.attendances.total.presents }} </b> </label>
+                                                                        <label class="btn btn-md btn-danger text-white"> <b> Total Absents: {{ studentInfo.attendances.total.absents }} </b> </label>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="container-fluid" ng-if="$root.can('students.Marksheet')" ng-show="tabs.marksheet">
+                                                    <div class="row" ng-repeat="marksheet in studentInfo.marksheets track by $index">
+                                                        <div class="col-12"> <b> {{ marksheet.name }} </b> </div>
+                                                        <div class="col-12">
+                                                            <div class="table-responsive">
+                                                                <table class="table table-bordered table-hover">
+                                                                    <thead>
+                                                                        <th> Subject </th>
+                                                                        <th> Total Marks </th>
+                                                                        <th> Pass Grade </th>
+                                                                        <th> Final Grade </th>
+                                                                        <th> Status </th>
+                                                                        <th> Comments </th>
+                                                                        <tbody>
+                                                                            <tr ng-repeat="subject in marksheet.rows track by $index">
+                                                                                <td> {{ subject.name }} </td>
+                                                                                <td> {{ subject.marks }} </td>
+                                                                                <td> {{ subject.pass }} </td>
+                                                                                <td> {{ subject.max }} </td>
+                                                                                <td> {{ subject.status }} </td>
+                                                                                <td> {{ subject.comments }} </td>
+                                                                            </tr>
+                                                                        </tbody>
+                                                                    </thead>
+                                                                </table>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="row" ng-if="!studentInfo.marksheets.length">
+                                                        <div class="col-12 text-center">
+                                                            No Marksheet data available to display
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="container-fluid" ng-if="$root.can('students.invoices')" ng-show="tabs.invoice">
+                                                    <div class="row">
+                                                        <div class="col-12">
+                                                            <div class="table-responsive">
+                                                                <table class="table table-bordered table-hover">
+                                                                    <thead>
+                                                                        <th> # </th>
+                                                                        <th> Invoice Title </th>
+                                                                        <th> Due Date </th>
+                                                                        <th> Status </th>
+                                                                        <th> Fee Amount </th>
+                                                                        <th> Discount </th>
+                                                                        <th> Paid </th>
+                                                                        <th> Fine </th>
+                                                                        <th> Due </th>
+                                                                    </thead>
+                                                                    <tbody>
+                                                                        <tr ng-repeat="invoice in studentInfo.invoices.data track by $index">
+                                                                            <td> {{ $index + 1 }} </td>
+                                                                            <td> <b> {{ invoice.title }} </b> </td>
+                                                                            <td> {{ invoice.dueDate }} </td>
+                                                                            <td>
+                                                                                <span ng-if="invoice.status == 1" class="text-success"> <b>Paid</b> </span>
+                                                                                <span ng-if="invoice.status == 2" class="text-success"> <b>Partially Paid</b> </span>
+                                                                                <span ng-if="invoice.status == 0" class="text-danger"> Not Paid </span>
+                                                                            </td>
+                                                                            <td> {{ invoice.feeAmount }} </td>
+                                                                            <td> {{ invoice.discount }} </td>
+                                                                            <td> {{ invoice.paid }} </td>
+                                                                            <td> {{ invoice.fine }} </td>
+                                                                            <td> {{ invoice.due }} </td>
+                                                                        </tr>
+                                                                        <tr ng-if="studentInfo.invoices.data.length">
+                                                                            <td colspan="4"> Total <i class="fa fa-inr"></i> </td>
+                                                                            <td> {{ studentInfo.invoices.totals.feeAmount }} </td>
+                                                                            <td> {{ studentInfo.invoices.totals.discount }} </td>
+                                                                            <td> {{ studentInfo.invoices.totals.paid }} </td>
+                                                                            <td> {{ studentInfo.invoices.totals.fine }} </td>
+                                                                            <td> {{ studentInfo.invoices.totals.due }} </td>
+                                                                        </tr>
+                                                                        <tr ng-if="!studentInfo.invoices.data.length">
+                                                                            <td class="noTableData" colspan="9"> No Invoices found </td>
+                                                                        </tr>
+                                                                    </tbody>
+                                                                </table>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="container-fluid" ng-if="$root.can('students.docs')" ng-show="tabs.document">
+                                                    <div class="row">
+                                                        <div class="col-12">
+                                                            <div class="pull-right mb-3">
+                                                                <button ng-click="changeAction('add')" class="btn custom-btn-success"> Add Document </button>
+                                                            </div>
+                                                        </div>
+                                                        <div ng-if="!studentInfo.documents.length" class="col-12 text-center">
+                                                            No Documents data available to display
+                                                        </div>
+                                                        <div ng-if="studentInfo.documents.length" class="col-12">
+                                                            <div ng-if="documents.list">
+                                                                <div class="table-responsive mt-3">
+                                                                    <table class="table table-bordered table-hover">
+                                                                        <thead>
+                                                                            <th>#</th>
+                                                                            <th>Title</th>
+                                                                            <th>Notes</th>
+                                                                            <th>Actions</th>
+                                                                        </thead>
+                                                                        <tbody>
+                                                                            <tr ng-repeat="doc in studentInfo.documents track by $index">
+                                                                                <td> {{ $index + 1 }} </td>
+                                                                                <td> {{ doc.file_title }} </td>
+                                                                                <td> {{ doc.file_notes }} </td>
+                                                                                <td>
+                                                                                    <a class="btn btn-xs custom-btn-success text-white" href="{{'index.php/document/download/'+doc.id}}" target="_blank" title="Download" tooltip> <i class="fa fa-download"></i> </a>
+                                                                                    <button class="btn btn-xs btn-info" ng-click="editDoc($index)" title="Edit" tooltip> <i class="fa fa-pencil"></i> </button>
+                                                                                    <button class="btn btn-xs btn-danger" ng-click="removeDoc($index)" title="Remove" tooltip> <i class="fa fa-trash"></i> </button>
+                                                                                </td>
+                                                                            </tr>
+                                                                        </tbody>
+                                                                    </table>
+                                                                </div>
+                                                            </div>
+                                                            <div ng-if="documents.add" class="row">
+                                                                <div class="col-12">
+                                                                    <div class="row">
+                                                                        <div class="col-12 mb-3">
+                                                                            <button ng-click="changeAction('list')" class="btn btn-danger pull-right"> Cancel </button>
+                                                                        </div>
+                                                                        <div class="col-12 mt-3">
+                                                                            <form class="form-horizontal" name="addDocument" role="form" novalidate>
+                                                                                <div class="form-group row" ng-class="{'has-error': addDocument.docTitle.$invalid}">
+                                                                                    <label class="col-sm-2 text-right control-label col-form-label">Title * </label>
+                                                                                    <div class="col-sm-10">
+                                                                                        <input type="text" name="docTitle" ng-model="docForm.title" class="form-control" required />
+                                                                                    </div>
+                                                                                </div>
+                                                                                <div class="form-group row">
+                                                                                    <label class="col-sm-2 text-right control-label col-form-label">Note </label>
+                                                                                    <div class="col-sm-10">
+                                                                                        <textarea class="form-control" ng-model="docForm.notes"></textarea>
+                                                                                    </div>
+                                                                                </div>
+                                                                                <div class="form-group row">
+                                                                                    <label class="col-sm-2 text-right control-label col-form-label">Document </label>
+                                                                                    <div class="col-sm-10">
+                                                                                        <input type="file" name="docFile" id="docFile" ng-model="docForm.file" class="form-control" />
+                                                                                    </div>
+                                                                                </div>
+                                                                                <div class="form-group row">
+                                                                                    <div class="offset-sm-2 col-sm-10">
+                                                                                        <button ng-if="isUploading == false" ng-click="uploadDocument()" class="btn custom-btn-success waves-effect waves-light" ng-disabled="addDocument.$invalid"> <i class="fa fa-plus-circle"></i> Add Document </button>
+                                                                                        <button ng-if="isUploading == true" class="btn custom-btn-success waves-effect waves-light" disabled><i class="fa fa-spinner fa-spin fa-fw"></i> Uploading</button>
+                                                                                    </div>
+                                                                                </div>
+                                                                            </form>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                            <div ng-if="documents.edit" class="row">
+                                                                <div class="col-12">
+                                                                    <div class="row">
+                                                                        <div class="col-12 mb-3">
+                                                                            <button ng-click="changeAction('list')" class="btn btn-danger pull-right"> Cancel </button>
+                                                                        </div>
+                                                                        <div class="col-12 mt-3">
+                                                                            <form class="form-horizontal" name="editDocument" role="form" novalidate>
+                                                                                <div class="form-group row" ng-class="{'has-error': editDocument.docTitle.$invalid}">
+                                                                                    <label class="col-sm-2 text-right control-label col-form-label">Title * </label>
+                                                                                    <div class="col-sm-10">
+                                                                                        <input type="text" name="docTitle" ng-model="docForm.title" class="form-control" required />
+                                                                                    </div>
+                                                                                </div>
+                                                                                <div class="form-group row">
+                                                                                    <label class="col-sm-2 text-right control-label col-form-label">Note </label>
+                                                                                    <div class="col-sm-10">
+                                                                                        <textarea class="form-control" ng-model="docForm.notes"></textarea>
+                                                                                    </div>
+                                                                                </div>
+                                                                                <div class="form-group row">
+                                                                                    <label class="col-sm-2 text-right control-label col-form-label">Document </label>
+                                                                                    <div class="col-sm-10">
+                                                                                        <input type="file" name="editDocFile" id="editDocFile" ng-model="docForm.file" class="form-control" />
+                                                                                    </div>
+                                                                                </div>
+                                                                                <div class="form-group row">
+                                                                                    <div class="offset-sm-2 col-sm-10">
+                                                                                        <button ng-if="isUploading == false" ng-click="updateDocument()" class="btn btn-info waves-effect waves-light" ng-disabled="editDocument.$invalid"> <i class="fa fa-save"></i> Edit Document </button>
+                                                                                        <button ng-if="isUploading == true" class="btn btn-info waves-effect waves-light" disabled><i class="fa fa-spinner fa-spin fa-fw"></i> Uploading</button>
+                                                                                    </div>
+                                                                                </div>
+                                                                            </form>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="container-fluid" ng-if="$root.can('students.transport')" ng-show="tabs.transportaion">
+                                                    <div class="row">
+                                                        <div class="col-3"> Vehicle No. </div> <div class="col-3"> {{studentInfo.transport.name}} </div>
+                                                        <div class="col-3"> Stoppage </div> <div class="col-3"> {{studentInfo.transport.stoppage}} </div>
+                                                    </div>
+                                                    <div class="row">
+                                                        <div class="col-3"> Driver Name </div> <div class="col-3"> {{studentInfo.transport.driver}} </div>
+                                                        <div class="col-3"> Assistant Name </div> <div class="col-3"> {{studentInfo.transport.assistant}} </div>
+                                                    </div>
+                                                    <div class="row">
+                                                        <div class="col-3"> Fare </div> <div class="col-3"> {{studentInfo.transport.fare}} </div>
+                                                    </div>
+                                                </div>
+                                                <div class="container-fluid" ng-if="$root.can('students.hostel')" ng-show="tabs.hostel">
+                                                    <div class="row">
+                                                        <div class="col-3"> Hostel Name </div> <div class="col-3"> {{studentInfo.hostels.name}} </div>
+                                                        <div class="col-3"> Room </div> <div class="col-3"> {{studentInfo.hostels.room}} </div>
+                                                    </div>
+                                                    <div class="row">
+                                                        <div class="col-3"> Warden Name </div> <div class="col-3"> {{studentInfo.hostels.warden}} </div>
+                                                        <div class="col-3"> Supervisor Name </div> <div class="col-3"> {{studentInfo.hostels.supervisor}} </div>
+                                                    </div>
+                                                    <div class="row">
+                                                        <div class="col-3"> Fare </div> <div class="col-3"> {{studentInfo.hostels.fare}} </div>
+                                                    </div>
+                                                </div>
+                                                <div class="container-fluid" ng-if="$root.can('students.discipline')" ng-show="tabs.discipline">
+                                                    <div class="row">
+                                                        <div class="col-12">
+                                                            <div class="table-responsive">
+                                                                <table class="table table-bordered table-hover">
+                                                                    <thead>
+                                                                        <th> # </th>
+                                                                        <th> Title </th>
+                                                                        <th> Description </th>
+                                                                        <th style="width: 110px;"> Status </th>
+                                                                        <th style="width: 150px;"> Date </th>
+                                                                        <th style="width: 150px;"> Trial </th>
+                                                                        <th style="width: 180px;"> Operations </th>
+                                                                    </thead>
+                                                                    <tbody>
+                                                                        <tr ng-repeat="discipline in studentInfo.disciplines track by $index">
+                                                                            <td> {{ $index + 1 }} </td>
+                                                                            <td> {{ discipline.title }} </td>
+                                                                            <td> {{ discipline.description }} </td>
+                                                                            <td>
+                                                                                <span ng-if="discipline.status_id == 1"> <i class="fa fa-exclamation-triangle text-warning"></i> Pending </span>
+                                                                                <span ng-if="discipline.status_id == 2"> <i class="fa fa-check-circle text-success"></i> Solved </span>
+                                                                            </td>
+                                                                            <td> <i class="fa fa-clock-o" title="{{discipline.creationToolTip}}" tooltip></i> {{ discipline.creationH }} </td>
+                                                                            <td> <i class="fa fa-clock-o" title="{{discipline.trialToolTip}}" tooltip></i> {{ discipline.trialH }} </td>
+                                                                            <td>
+                                                                                <button ng-click="disciplineUsers($index)" class="btn btn-primary btn-xs" title="View the parties" tooltip> <i class="fa fa-users"></i> </button>
+                                                                                <button ng-click="disciplineComments($index)" class="btn btn-info btn-xs" title="View comments" tooltip> <i class="fa fa-comments"></i> </button>
+                                                                                <button ng-click="disciplineSolved($index)" ng-if="discipline.status_id == 1" class="btn custom-btn-success btn-xs" title="Mark as Solved" tooltip> <i class="fa fa-check"></i> </button>
+                                                                                <button ng-click="disciplinePending($index)" ng-if="discipline.status_id == 2" class="btn btn-warning btn-xs" title="Mark as Pending" tooltip> <i class="fa fa-exclamation-triangle"></i> </button>
+                                                                                <button ng-click="disciplineDelete($index)" class="btn btn-danger btn-xs" title="Delete" tooltip> <i class="fa fa-trash"></i> </button>
+                                                                            </td>
+                                                                        </tr>
+                                                                        <tr ng-if="!studentInfo.disciplines.length">
+                                                                            <td colspan="7" class="noTableData"> No disciplines available at the moment </td>
+                                                                        </tr>
+                                                                    </tbody>
+                                                                </table>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row" ng-show="views.edit">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-block">
+                <div class="card-title">
+                    <div class="row mb-3">
+                        <div class="col-10"></div>
+                        <div class="col-2">
+                            <button ng-click="changeView('info')" class="btn btn-danger pull-right"> Cancel </button>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-12" style="padding-left: 5rem;">
+                            <ul class="nav nav-tabs" style="border-bottom-width: 2px; width: 93%;">
+                                <li class="edit-upper-nav-tabs nav-item"> <a ng-click="changeFormTab('details')" ng-class="{'active': formTabs.details}" class="nav-link"> Student Details </a> </li>
+                                <li class="edit-upper-nav-tabs nav-item"> <a ng-click="changeFormTab('siblings')" ng-class="{'active': formTabs.siblings}" class="nav-link"> Guardian & Sibling Details </a> </li>
+                                <li class="edit-upper-nav-tabs nav-item"> <a ng-click="changeFormTab('previous')" ng-class="{'active': formTabs.previous}" class="nav-link"> Previous Details </a> </li>
+                            </ul>
+                        </div>
+                        <div class="col-12 pr-5 pl-5">
+                            <form class="pr-5 pl-5 formFontModifiy" method="post" action="" name="updateStudent" role="form" >
+                                <div class="row" ng-show="formTabs.details">
+                                    <div class="col-12">
+                                        <div class="row mt-4">
+                                            <div class="col-6">
+                                                <div class="form-group row" ng-class="{'has-error': updateStudent.admissionNo.$invalid}">
+                                                    <label class="col-3 pb-2 pl-3 control-label col-form-label">Admission No.<span class="text-danger">*</span></label>
+                                                    <div class="col-9"> <input type="text" ng-model="editForm.admissionNo" class="form-control" required /> </div>
+                                                </div>
+                                            </div>
+                                            <div class="col-6">
+                                                <div class="form-group row">
+                                                    <label class="col-3 pb-2 pl-3 control-label col-form-label">Admission Date</label>
+                                                    <div class="col-9"> <input type="text" class="form-control" ng-model="editForm.admissionDate" placeholder="Select date" date-picker id="admissionDate" /> </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="row mt-2">
+                                            <div class="col-12"> <h3>Personal Details</h3> <hr class='mt-0 mb-5 hr-divider' /> </div>
+                                            <div class="col-12">
+                                                <div class="row">
+                                                    <div class="col-4">
+                                                        <div class="form-group row" ng-class="{'has-error': updateStudent.firstName.$invalid}">
+                                                            <label class="col-4 pb-2 pl-3 control-label col-form-label">First Name<span class="text-danger">*</span></label>
+                                                            <div class="col-8"> <input type="text" class="form-control" ng-model="editForm.firstName" required /> </div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-4">
+                                                        <div class="form-group row">
+                                                            <label class="col-4 pb-2 pl-3 control-label col-form-label">Middle Name</label>
+                                                            <div class="col-8"> <input type="text" class="form-control" ng-model="editForm.middleName" /> </div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-4">
+                                                        <div class="form-group row">
+                                                            <label class="col-4 pb-2 pl-3 control-label col-form-label">Last Name</label>
+                                                            <div class="col-8"> <input type="text" class="form-control" ng-model="editForm.lastName" /> </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="row">
+                                                    <div class="col-4">
+                                                        <div class="form-group row" ng-class="{'has-error': updateStudent.dateOfBirth.$invalid}">
+                                                            <label class="col-4 pb-2 pl-3 control-label col-form-label">Date of Birth<span class="text-danger">*</span></label>
+                                                            <div class="col-8"> <input type="text" class="form-control" ng-model="editForm.dateOfBirth" placeholder="Select date" date-picker id="dateOfBirth" required /> </div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-4">
+                                                        <div class="form-group row" ng-class="{'has-error': updateStudent.studentGender.$invalid}">
+                                                            <label class="col-4 pb-2 pl-3 control-label col-form-label"> Gender </label>
+                                                            <div class="col-8 pt-2">
+                                                                Male <input type="radio" name="gender" ng-model="editForm.gender" value="male" />
+                                                                Female <input type="radio" name="gender" ng-model="editForm.gender" value="female" />
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-4">
+                                                        <div class="form-group row">
+                                                            <label class="col-4 pb-2 pl-3 control-label col-form-label">Blood Group</label>
+                                                            <div class="col-8">
+                                                                <select ng-model="editForm.bloodType" class="form-control select2">
+                                                                    <option value=""> </option>
+                                                                    <option ng-repeat="type in bloodTypes track by $index" value="{{type.id}}"> {{type.name}} </option>
+                                                                </select>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="row">
+                                                    <div class="col-4">
+                                                        <div class="form-group row">
+                                                            <label class="col-4 pb-2 pl-3 control-label col-form-label">Birth Place</label>
+                                                            <div class="col-8"> <input type="text" class="form-control" ng-model="editForm.birthPlace" /> </div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-4">
+                                                        <div class="form-group row">
+                                                            <label class="col-4 pb-2 pl-3 control-label col-form-label">Nationality</label>
+                                                            <div class="col-8"> <input type="text" class="form-control" ng-model="editForm.nationality" /> </div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-4">
+                                                        <div class="form-group row">
+                                                            <label class="col-4 pb-2 pl-3 control-label col-form-label">Religion</label>
+                                                            <div class="col-8"> <input type="text" class="form-control" ng-model="editForm.religion" /> </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="row">
+                                                    <div class="col-4">
+                                                        <div class="form-group row">
+                                                            <label class="col-5 pb-2 pl-3 control-label col-form-label">Student Category</label>
+                                                            <div class="col-7">
+                                                                <select ng-model="editForm.studentCategory" class="form-control">
+                                                                    <option value="">  </option>
+                                                                    <option ng-repeat="category in studentCategory" value="{{ category.id }}"> {{ category.name }} </option>
+                                                                </select>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-8">
+                                                        <div class="form-group row">
+                                                            <label class="col-3 pb-2 pl-3 control-label col-form-label">Change User's Photo</label>
+                                                            <div class="col-9"> <input ng-model="editForm.userPhoto" type="file" id="userPhoto" class="form-control" accept="image/jpg, image/jpeg, image/png" /> </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="row">
+                                                    <div class="col-4">
+                                                        <div class="form-group row">
+                                                            <label class="col-4 pb-2 pl-2 pr-2 control-label col-form-label">Fee Group Type</label>
+                                                            <div class="col-8">
+                                                                <select ng-model="editForm.studentType" class="form-control">
+                                                                    <option value="">  </option>
+                                                                    <option ng-repeat="type in studentType" value="{{ type.id }}"> {{ type.name }} </option>
+                                                                </select>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="row mt-2">
+                                            <div class="col-12"> <h3>Address Details</h3> <hr class='mt-0 hr-divider' /> </div>
+                                            <div class="col-12">
+                                                <div class="row mb-2"> <div class="col-12"> <label class="text-themecolor"> <u>Correspondences Address</u> </label> </div> </div>
+                                                <div class="row">
+                                                    <div class="col-6">
+                                                        <div class="form-group row">
+                                                            <label class="col-3 pb-2 pl-3 control-label col-form-label">Address Line1</label>
+                                                            <div class="col-9"> <input ng-change="checkSameAs()" type="text" class="form-control" ng-model="editForm.corresAddressLine" /> </div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-3">
+                                                        <div class="form-group row">
+                                                            <label class="col-2 pb-2 pl-3 control-label col-form-label">City</label>
+                                                            <div class="col-10"> <input ng-change="checkSameAs()" type="text" class="form-control" ng-model="editForm.corresAddressCity" /> </div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-3">
+                                                        <div class="form-group row">
+                                                            <label class="col-2 pb-2 pl-3 control-label col-form-label">State</label>
+                                                            <div class="col-10"> <input ng-change="checkSameAs()" type="text" class="form-control" ng-model="editForm.corresAddressState" /> </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="row">
+                                                    <div class="col-3">
+                                                        <div class="form-group row">
+                                                            <label class="col-6 pb-2 pl-3 control-label col-form-label">PIN Code</label>
+                                                            <div class="col-6"> <input ng-change="checkSameAs()" type="text" class="form-control" ng-model="editForm.corresAddressPin" /> </div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-3">
+                                                        <div class="form-group row">
+                                                            <label class="col-3 pb-2 pl-3 control-label col-form-label">Country</label>
+                                                            <div class="col-9"> <input ng-change="checkSameAs()" type="text" class="form-control" ng-model="editForm.corresAddressCountry" /> </div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-3">
+                                                        <div class="form-group row">
+                                                            <label class="col-2 pb-2 pl-3 control-label col-form-label">Phone</label>
+                                                            <div class="col-10"> <input ng-change="checkSameAs()" type="text" class="form-control" ng-model="editForm.corresAddressPhone" /> </div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-3">
+                                                        <div class="form-group row">
+                                                            <label class="col-2 pb-2 pl-3 control-label col-form-label">Mobile</label>
+                                                            <div class="col-10"> <input ng-change="checkSameAs()" type="text" class="form-control" ng-model="editForm.corresAddressMobile" /> </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="row">
+                                                    <div class="col-3">
+                                                        <div class="form-group row">
+                                                            <label class="col-6 pb-2 pl-3 control-label col-form-label">Same As</label>
+                                                            <div class="col-6 pt-2"> <input type="checkbox" ng-model="sameAs" ng-change="cloneAddresses()" /> </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="col-12">
+                                                <div class="row mb-2"> <div class="col-12"> <label class="text-themecolor"> <u>Permanent Address</u> </label> </div> </div>
+                                                <div class="row">
+                                                    <div class="col-6">
+                                                        <div class="form-group row">
+                                                            <label class="col-3 pb-2 pl-3 control-label col-form-label">Address Line1</label>
+                                                            <div class="col-9"> <input type="text" class="form-control" ng-model="editForm.permaAddressLine" /> </div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-3">
+                                                        <div class="form-group row">
+                                                            <label class="col-2 pb-2 pl-3 control-label col-form-label">City</label>
+                                                            <div class="col-10"> <input type="text" class="form-control" ng-model="editForm.permaAddressCity" /> </div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-3">
+                                                        <div class="form-group row">
+                                                            <label class="col-2 pb-2 pl-3 control-label col-form-label">State</label>
+                                                            <div class="col-10"> <input type="text" class="form-control" ng-model="editForm.permaAddressState" /> </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="row">
+                                                    <div class="col-3">
+                                                        <div class="form-group row">
+                                                            <label class="col-6 pb-2 pl-3 control-label col-form-label">PIN Code</label>
+                                                            <div class="col-6"> <input type="text" class="form-control" ng-model="editForm.permaAddressPin" /> </div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-3">
+                                                        <div class="form-group row">
+                                                            <label class="col-3 pb-2 pl-3 control-label col-form-label">Country</label>
+                                                            <div class="col-9"> <input type="text" class="form-control" ng-model="editForm.permaAddressCountry" /> </div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-3">
+                                                        <div class="form-group row">
+                                                            <label class="col-2 pb-2 pl-3 control-label col-form-label">Phone</label>
+                                                            <div class="col-10"> <input type="text" class="form-control" ng-model="editForm.permaAddressPhone" /> </div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-3">
+                                                        <div class="form-group row">
+                                                            <label class="col-2 pb-2 pl-3 control-label col-form-label">Mobile</label>
+                                                            <div class="col-10"> <input type="text" class="form-control" ng-model="editForm.permaAddressMobile" /> </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="row mt-2">
+                                            <div class="col-12"> <h3>Class & Section Details</h3> <hr class='mt-0 hr-divider' /> </div>
+                                            <div class="col-12">
+                                                <div class="row">
+                                                    <div class="col-3">
+                                                        <div class="form-group row" ng-class="{'has-error': updateStudent.class.$invalid || !editForm.classId}">
+                                                            <label class="col-3 pb-2 pl-3 control-label col-form-label">Class<span class="text-danger">*</span></label>
+                                                            <div class="col-9">
+                                                                <select ng-model="editForm.classId" ng-change="loadSections()" class="form-control" required >
+                                                                    <option  value="" disabled>  </option >
+                                                                    <option ng-repeat="class in classes" value="{{ class.id }}"> {{ class.name }} </option>
+                                                                </select>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-3">
+                                                        <div class="form-group row" ng-class="{'has-error': updateStudent.section.$invalid || !editForm.sectionId}">
+                                                            <label class="col-3 pb-2 pl-3 control-label col-form-label">Section<span class="text-danger">*</span></label>
+                                                            <div class="col-9">
+                                                                <select ng-model="editForm.sectionId" class="form-control" required>
+                                                                    <option value="" disabled></option>
+                                                                    <option ng-repeat="section in sections" value="{{ section.id }}"> {{ section.name }} </option>
+                                                                </select>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-3">
+                                                        <div class="form-group row">
+                                                            <label class="col-5 pb-2 pl-3 control-label col-form-label">Roll Number</label>
+                                                            <div class="col-7"> <input type="text" class="form-control" ng-model="editForm.rollNo" /> </div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-3">
+                                                        <div class="form-group row">
+                                                            <label class="col-5 pb-2 pl-3 control-label col-form-label">Biometric ID</label>
+                                                            <div class="col-7"> <input type="text" class="form-control" ng-model="editForm.bioId" /> </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="row mt-2">
+                                            <div class="col-12"> <h3> Transportaions Assign </h3> <hr class='mt-0 hr-divider' /> </div>
+                                            <div class="col-12">
+                                                <div class="row">
+                                                    <div class="col-6">
+                                                        <div class="form-group row">
+                                                            <label class="col-4 pb-2 pl-3 control-label col-form-label">Transport vehicle</label>
+                                                            <div class="col-8">
+                                                                <select ng-model="editForm.transport" ng-change="loadStoppages()" class="form-control">
+                                                                    <option value="" disabled></option>
+                                                                    <option ng-repeat="vehicle in vehicles" value="{{ vehicle.id }}"> {{ vehicle.plate }} ({{ vehicle.name }}) </option>
+                                                                </select>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-6">
+                                                        <div class="form-group row">
+                                                            <label class="col-4 pb-2 pl-3 control-label col-form-label">Stoppage</label>
+                                                            <div class="col-8">
+                                                                <select ng-model="editForm.stoppage" class="form-control">
+                                                                    <option value="" disabled></option>
+                                                                    <option ng-repeat="stoppage in stoppages track by $index" value="{{ stoppage.id }}"> {{ stoppage.name }} </option>
+                                                                </select>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="row">
+                                                    <div class="col-4">
+                                                        <div class="form-group row">
+                                                            <label class="col-4 pb-2 pl-3 control-label col-form-label">Hostel</label>
+                                                            <div class="col-8">
+                                                                <select ng-model="editForm.hostel" ng-change="loadRooms()" class="form-control">
+                                                                    <option value="">  </option>
+                                                                    <option ng-repeat="hostel in hostels" value="{{ hostel.id }}"> {{ hostel.name }} </option>
+                                                                </select>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-4">
+                                                        <div class="form-group row">
+                                                            <label class="col-4 pb-2 pl-3 control-label col-form-label">Room</label>
+                                                            <div class="col-8">
+                                                                <select ng-model="editForm.room" class="form-control">
+                                                                    <option value="">  </option>
+                                                                    <option ng-selected="room.id == editForm.room" ng-repeat="room in rooms" value="{{ room.id }}"> {{ room.name }} </option>
+                                                                </select>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-4">
+                                                        <div class="form-group row" ng-class="{'has-error': updateStudent.studentGender.$invalid}">
+                                                            <label class="col-4 pb-2 pl-3 control-label col-form-label"> Communication </label>
+                                                            <div class="col-8 pt-2" style="display: inline-flex;">
+                                                                <div class="form-group mb-0 mr-3"> <input type="checkbox" name="comms" ng-model="editForm.mail" class="mr-1"> Mail </div>
+                                                                <div class="form-group mb-0 mr-3"> <input type="checkbox" name="comms" ng-model="editForm.sms" class="mr-1"> SMS  </div>
+                                                                <div class="form-group mb-0 mr-3"> <input type="checkbox" name="comms" ng-model="editForm.phone" class="mr-1"> Phone </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="row mt-2">
+                                            <div class="col-12"> <h3> Medical History </h3> <hr class='mt-0 hr-divider' /> </div>
+                                            <div class="col-12">
+                                                <div class="row">
+                                                    <div class="col-6">
+                                                        <div class="form-group row">
+                                                            <label class="col-4 pb-2 pl-3 control-label col-form-label">Insurance Policy</label>
+                                                            <div class="col-8"> <input type="text" ng-model="editForm.inspol" class="form-control" /> </div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-6">
+                                                        <div class="form-group row">
+                                                            <label class="col-4 pb-2 pl-3 control-label col-form-label">Blood Group</label>
+                                                            <div class="col-8">
+                                                                <select ng-model="editForm.bloodType" class="form-control">
+                                                                    <option value=""> </option>
+                                                                    <option ng-repeat="type in bloodTypes track by $index" value="{{type.id}}"> {{type.name}} </option>
+                                                                </select>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="row">
+                                                    <div class="col-6">
+                                                        <div class="form-group row">
+                                                            <label class="col-4 pb-2 pl-3 control-label col-form-label">Weight</label>
+                                                            <div class="col-8"> <input type="number" ng-model="editForm.weight" class="form-control" /> </div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-6">
+                                                        <div class="form-group row">
+                                                            <label class="col-4 pb-2 pl-3 control-label col-form-label">Height</label>
+                                                            <div class="col-8"> <input type="number" ng-model="editForm.height" class="form-control" /> </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="row">
+                                                    <div class="col-6">
+                                                        <div class="form-group row">
+                                                            <label class="col-4 pb-2 pl-3 control-label col-form-label">Disability Type</label>
+                                                            <div class="col-8"> <input type="text" ng-model="editForm.disab" class="form-control" /> </div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-6">
+                                                        <div class="form-group row">
+                                                            <label class="col-4 pb-2 pl-3 control-label col-form-label">Contact Information</label>
+                                                            <div class="col-8"> <input type="text" ng-model="editForm.contact" class="form-control" /> </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="row mt-2">
+                                            <div class="col-12 text-center">
+                                                <button role="button" type="button"
+                                                    ng-disabled="!editForm.admissionNo || !editForm.firstName || !editForm.dateOfBirth || !editForm.classId || !editForm.sectionId"
+                                                    ng-click="changeFormTab('siblings')"
+                                                    class="btn btn-dark btn-lg text-white"
+                                                > Proceed <i class="fa fa-arrow-right"></i> </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row" ng-show="formTabs.siblings">
+                                    <div class="col-12">
+                                        <div class="row mt-4">
+                                            <div class="col-12"> <h3>Siblings Details</h3> <hr class='mt-0 mb-5 hr-divider' /> </div>
+                                            <div class="col-12">
+                                                <div ng-if="mySiblings.length" class="form-group row">
+                                                    <div class="col-2 pt-2">
+                                                        <a ng-if="mySiblings.length" ng-click="unlinkSibling()" class="search-Sibling-btn btn btn-danger btn-sm"> <i class="fa fa-unlink"></i> Unlink Sibling </a>
+                                                    </div>
+                                                    <div class="col-9 pt-2">
+                                                        <div class="row" ng-if="mySiblings.length">
+                                                            <div ng-repeat="oneSibling in mySiblings track by $index" class="col-12">
+                                                                <label class="btn btn-sm btn-info"> {{ oneSibling.name }} ({{ oneSibling.admission }}) </label>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div ng-if="!mySiblings.length" class="form-group row">
+                                                    <div class="col-2 pt-2">
+                                                        <a ng-click="searchSibling()" class="search-Sibling-btn btn btn-success btn-sm"> <i class="fa fa-search"></i> Search User </a>
+                                                    </div>
+                                                    <div class="col-10 pt-2">
+                                                        <label ng-if="editForm.guardianId == 0" class="badge badge-danger badge-sm"> Not selected </label>
+                                                        <label ng-if="editForm.guardianId != 0" class="badge badge-info badge-sm"> {{ selectedSibling.studentName }} ({{ selectedSibling.studentAdmission }}) </label>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="row mt-2">
+                                            <div class="col-12"> <h3>Parent Details</h3> <hr class='mt-0 mb-5 hr-divider' /> </div>
+                                            <div class="col-12">
+                                                <div class="row">
+                                                    <div class="col-6">
+                                                        <div class="form-group row">
+                                                            <label class="col-4 pb-2 pl-3 control-label col-form-label">Father's Name</label>
+                                                            <div class="col-8"> <input type="text" ng-model="editForm.fatherName" class="form-control" /> </div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-6">
+                                                        <div class="form-group row">
+                                                            <label class="col-4 pb-2 pl-3 control-label col-form-label">Mother's Name</label>
+                                                            <div class="col-8"> <input type="text" ng-model="editForm.motherName" class="form-control" /> </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="row">
+                                                    <div class="col-6">
+                                                        <div class="form-group row">
+                                                            <label class="col-4 pb-2 pl-3 control-label col-form-label">Father's Mobile</label>
+                                                            <div class="col-8"> <input type="text" ng-model="editForm.fatherPhone" class="form-control" /> </div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-6">
+                                                        <div class="form-group row">
+                                                            <label class="col-4 pb-2 pl-3 control-label col-form-label">Mother's Mobile</label>
+                                                            <div class="col-8"> <input type="text" ng-model="editForm.motherPhone" class="form-control" /> </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="row">
+                                                    <div class="col-6">
+                                                        <div class="form-group row">
+                                                            <label class="col-4 pb-2 pl-3 control-label col-form-label">Father's Job</label>
+                                                            <div class="col-8"> <input type="text" ng-model="editForm.fatherJob" class="form-control" /> </div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-6">
+                                                        <div class="form-group row">
+                                                            <label class="col-4 pb-2 pl-3 control-label col-form-label">Mother's Job</label>
+                                                            <div class="col-8"> <input type="text" ng-model="editForm.motherJob" class="form-control" /> </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="row">
+                                                    <div class="col-6">
+                                                        <div class="form-group row">
+                                                            <label class="col-4 pb-2 pl-3 control-label col-form-label">Father's Qualification</label>
+                                                            <div class="col-8"> <input type="text" ng-model="editForm.fatherQualification" class="form-control" /> </div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-6">
+                                                        <div class="form-group row">
+                                                            <label class="col-4 pb-2 pl-3 control-label col-form-label">Mother's Qualification</label>
+                                                            <div class="col-8"> <input type="text" ng-model="editForm.motherQualification" class="form-control" /> </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="row">
+                                                    <div class="col-6">
+                                                        <div class="form-group row">
+                                                            <label class="col-4 pb-2 pl-3 control-label col-form-label">Email address</label>
+                                                            <div class="col-8"> <input type="email" ng-model="editForm.fatherEmail" class="form-control" /> </div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-6">
+                                                        <div class="form-group row">
+                                                            <label class="col-4 pb-2 pl-3 control-label col-form-label">Email address</label>
+                                                            <div class="col-8"> <input type="email" ng-model="editForm.motherEmail" class="form-control" /> </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="row">
+                                                    <div class="col-6">
+                                                        <div class="form-group row">
+                                                            <label class="col-4 pb-2 pl-3 control-label col-form-label">Change Father's Photo</label>
+                                                            <div class="col-8"> <input ng-model="editForm.fatherPhoto" id="fatherPhoto"  type="file" class="form-control" accept="image/jpg, image/jpeg, image/png" /> </div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-6">
+                                                        <div class="form-group row">
+                                                            <label class="col-4 pb-2 pl-3 control-label col-form-label">Change Mother's Photo</label>
+                                                            <div class="col-8"> <input ng-model="editForm.motherPhoto" id="motherPhoto"  type="file" class="form-control" accept="image/jpg, image/jpeg, image/png" /> </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="row">
+                                                    <div class="col-6">
+                                                        <div class="form-group row">
+                                                            <label class="col-4 pb-2 pl-3 control-label col-form-label">Address</label>
+                                                            <div class="col-8"> <input type="text" ng-model="editForm.fatherAddress" class="form-control" /> </div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-6">
+                                                        <div class="form-group row">
+                                                            <label class="col-4 pb-2 pl-3 control-label col-form-label">Address</label>
+                                                            <div class="col-8"> <input type="text" ng-model="editForm.motherAddress" class="form-control" /> </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="row mt-2">
+                                            <div class="col-9"> <h3> Guardian Details </h3> </div>
+                                            <div class="col-3">
+                                                <div class="pull-right">
+                                                    Father <input type="radio" ng-change="changeGuardianType('father')" value="father" ng-model="editForm.guardianType" />
+                                                    Mother <input type="radio" ng-change="changeGuardianType('mother')" value="mother" ng-model="editForm.guardianType" />
+                                                    Other <input type="radio" ng-change="changeGuardianType('others')" value="others" ng-model="editForm.guardianType" />
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="row mt-0 mb-0"> <div class="col-12"> <hr class='mt-0 hr-divider' /> </div> </div>
+                                        <div class="row mt-2">
+                                            <div class="col-12">
+                                                <div class="row">
+                                                    <div class="col-4">
+                                                        <div class="form-group row" ng-class="{'has-error': updateStudent.guardianName.$invalid}">
+                                                            <label class="col-4 pb-2 pl-3 control-label col-form-label">Name</label>
+                                                            <div class="col-8"> <input type="text" ng-model="editForm.guardianName" class="form-control" required /> </div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-4">
+                                                        <div class="form-group row" ng-class="{'has-error': updateStudent.guardianRelation.$invalid}">
+                                                            <label class="col-4 pb-2 pl-3 control-label col-form-label">Relation</label>
+                                                            <div class="col-8"> <input type="text" ng-model="editForm.guardianRelation" class="form-control" required /> </div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-4">
+                                                        <div class="form-group row" ng-class="{'has-error': updateStudent.guardianMobileNo.$invalid}">
+                                                            <label class="col-4 pb-2 pl-3 control-label col-form-label">Mobile No.</label>
+                                                            <div class="col-8"> <input type="text" ng-model="editForm.guardianPhone" ng-change="updateUsernameByMobile()" class="form-control" required /> </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="row">
+                                                    <div class="col-4">
+                                                        <div class="form-group row" ng-class="{'has-error': updateStudent.guardianEmail.$invalid}">
+                                                            <label class="col-4 pb-2 pl-3 control-label col-form-label">E-mail</label>
+                                                            <div class="col-8"> <input type="email" ng-model="editForm.gaurdianMail" class="form-control" /> </div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-4">
+                                                        <div class="form-group row" ng-class="{'has-error': updateStudent.guardianUsername.$invalid}">
+                                                            <label class="col-4 pb-2 pl-3 control-label col-form-label">Username</label>
+                                                            <div class="col-8"> <input type="text" ng-model="editForm.guardianUsername" ng-change="updatePasswordByUsername()" class="form-control" required /> </div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-4">
+                                                        <div class="form-group row" ng-class="{'has-error': updateStudent.guardianPassword.$invalid}">
+                                                            <label class="col-4 pb-2 pl-3 control-label col-form-label">Password</label>
+                                                            <div class="col-8">
+                                                                <div class="input-group">
+                                                                    <input ng-if="!isPassShown" type="password" ng-model="editForm.guardianPassword" class="form-control" required />
+                                                                    <input ng-if="isPassShown" type="text" ng-model="editForm.guardianPassword" class="form-control" required />
+                                                                    <div class="input-group-append">
+                                                                        <span class="input-group-text">
+                                                                            <i ng-if="!isPassShown" ng-click="togglePassVisibilty()" class="togglePassVisibilty fa fa-eye"></i>
+                                                                            <i ng-if="isPassShown" ng-click="togglePassVisibilty()" class="togglePassVisibilty fa fa-eye-slash"></i>
+                                                                        </span>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="row">
+                                                    <div class="col-4">
+                                                        <div class="form-group row" ng-class="{'has-error': updateStudent.guardianJob.$invalid}">
+                                                            <label class="col-4 pb-2 pl-3 control-label col-form-label">Job</label>
+                                                            <div class="col-8"> <input type="text" ng-model="editForm.guardianJob" class="form-control" required /> </div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-8">
+                                                        <div class="form-group row" ng-class="{'has-error': updateStudent.guardianAddress.$invalid}">
+                                                            <label class="col-2 pb-2 pl-3 control-label col-form-label">Address</label>
+                                                            <div class="col-10"> <input type="text" ng-model="editForm.guardianAddress" class="form-control" required /> </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="row mt-2">
+                                            <div class="col-12 text-center">
+                                                <button class="btn btn-dark btn-lg text-white" ng-click="changeFormTab('details')"> <i class="fa fa-arrow-left"></i> Back </button>
+                                                <button role="button" type="button"
+                                                    ng-disabled="!editForm.admissionNo || !editForm.firstName || !editForm.dateOfBirth || !editForm.classId || !editForm.sectionId || !editForm.guardianName || !editForm.guardianRelation || !editForm.guardianPhone || !editForm.guardianAddress || !editForm.guardianJob || !editForm.guardianUsername || !editForm.guardianPassword"
+                                                    ng-click="changeFormTab('previous')"
+                                                    class="btn btn-dark btn-lg text-white"
+                                                > Proceed <i class="fa fa-arrow-right"></i> </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row" ng-show="formTabs.previous">
+                                    <div class="col-12">
+                                        <div class="row mt-2">
+                                            <div class="col-12"> <h3>Previous Educational Details</h3> <hr class='mt-0 mb-5 hr-divider' /> </div>
+                                            <div class="col-12">
+                                                <div class="form-group row">
+                                                    <label class="col-2 pb-2 pl-3 control-label col-form-label"> Institution Name </label>
+                                                    <div class="col-10">
+                                                        <input type="text" class="form-control" ng-model="editForm.previousInstitution"/>
+                                                    </div>
+                                                </div>
+                                                <div class="form-group row">
+                                                    <label class="col-2 pb-2 pl-3 control-label col-form-label"> Class </label>
+                                                    <div class="col-10">
+                                                        <input type="text" class="form-control" ng-model="editForm.previousClass"/>
+                                                    </div>
+                                                </div>
+                                                <div class="form-group row">
+                                                    <label class="col-2 pb-2 pl-3 control-label col-form-label"> Year </label>
+                                                    <div class="col-10">
+                                                        <input type="text" class="form-control" ng-model="editForm.previousYear"/>
+                                                    </div>
+                                                </div>
+                                                <div class="form-group row">
+                                                    <label class="col-2 pb-2 pl-3 control-label col-form-label"> Percentage </label>
+                                                    <div class="col-10">
+                                                        <input type="text" class="form-control" ng-model="editForm.previousPercentage"/>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="row mt-2">
+                                            <div class="col-4"> </div>
+                                            <div class="col-1"> <button role="button" type="button" class="btn btn-dark btn-md text-white" ng-click="changeFormTab('siblings')"> <i class="fa fa-arrow-left"></i> Back </button> </div>
+                                            <div class="col-5">
+                                                <button role="button" type="button"
+                                                    ng-disabled="!editForm.admissionNo || !editForm.firstName || !editForm.dateOfBirth || !editForm.classId || !editForm.sectionId || !editForm.guardianName || !editForm.guardianRelation || !editForm.guardianPhone || !editForm.guardianAddress || !editForm.guardianJob || !editForm.guardianUsername || !editForm.guardianPassword || editProcessingStatus"
+                                                    class="btn btn-dark btn-md text-white"
+                                                    ng-click="doEditStudent()"
+                                                >
+                                                    <span ng-if="!editProcessingStatus"> <i class="fa fa-save"></i> Save </span>
+                                                    <span ng-if="editProcessingStatus"> <i class="fa fa-spinner fa-spin fa-fw"></i> Saving </span>
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<modal visible="partiesModal">
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-6">
+                <div class="mb-3">
+                    <b class="text-primary">Complained by :</b>
+                    <div style="font-size: 12px" ng-repeat="user in complained_by"> {{ user.name }} - {{ user.role }} </div>
+                </div>
+            </div>
+            <div class="col-6">
+                <div class="mb-3">
+                    <b class="text-primary">Complained against :</b>
+                    <div style="font-size: 12px" ng-repeat="user in complained_against"> {{ user.name }} - {{ user.role }} </div>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-6">
+                <div class="mb-3">
+                    <b class="text-primary">Jury :</b>
+                    <div style="font-size: 12px" ng-repeat="user in jury"> {{ user.name }} - {{ user.role }} </div>
+                </div>
+            </div>
+            <div class="col-6">
+                <div class="mb-3">
+                    <b class="text-primary">Responsible officials :</b>
+                    <div style="font-size: 12px" ng-repeat="user in responsible_officials"> {{ user.name }} - {{ user.role }} </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</modal>
+
+<modal visible="commentsModal">
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-12">
+                <ul class="chat-list" id="chat-box" chat-box>
+                    <li class="mt-1" ng-repeat="commentsOne in comments" ng-class="{'reverse': commentsOne.owner == true}">
+                        <div class="row" ng-show="commentsOne.owner == true">
+                            <div class="col-10 pull-right pr-0 pl-0">
+                                <div class="chat-content pr-0 pl-0" style=" width: 75% !important;">
+                                    <h5> {{commentsOne.fullName}}</h5>
+                                    <div style="text-align: right !important; float: right !important;" class="box chat-bubble-main chat-bubble-me custom-width-75" ng-class="{'bg-light-inverse': commentsOne.owner == true,'bg-light-info': commentsOne.owner == false }">
+                                        {{commentsOne.comment}}
+                                        <br />
+                                        <span class="chat-bubble-time pull-left" title="{{ commentsOne.dateToolTip }}" tooltip>
+                                            <i class="fa fa-clock-o"></i> {{ commentsOne.dateH }} - {{ commentsOne.dateHour }}
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-2 text-center pr-4">
+                                <div class="chat-img"><img ng-src="{{'index.php/dashboard/profileImage/'+commentsOne.id}}" style="width: 45px;height: 45px;" alt="{{commentsOne.fullName}}" /></div>
+                            </div>
+                        </div>
+                        <div class="row" ng-show="commentsOne.owner == false">
+                            <div class="col-2 text-left pl-3">
+                                <div class="chat-img"><img ng-src="{{'index.php/dashboard/profileImage/'+commentsOne.id}}" alt="{{commentsOne.fullName}}" /></div>
+                            </div>
+                            <div class="col-10 pr-0 pl-0">
+                                <div class="chat-content pr-5 pl-0 custom-width-75">
+                                    <h5 class="pull-left">{{commentsOne.fullName}}</h5>
+                                    <div style="text-align: left !important; width: 100% !important; float: left !important;" class="box chat-bubble-main chat-bubble-stranger" ng-class="{'bg-light-inverse': commentsOne.owner == true,'bg-light-info': commentsOne.owner == false}">
+                                        {{commentsOne.comment}}
+                                        <br />
+                                        <span class="chat-bubble-time pull-right" title="{{ commentsOne.dateToolTip }}" tooltip>
+                                            <i class="fa fa-clock-o"></i> {{ commentsOne.dateH }} - {{ commentsOne.dateHour }}
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </li>
+                </ul>
+            </div>
+        </div>
+        <hr ng-if="comments.length != 0" />
+        <div class="row">
+            <div class="col-10"> <textarea ng-disabled="sendingReply == true" class="form-control" ng-enter="replyComment()" ng-model="commentReply" ng-change="typeComment()" id="commentReply" placeholder="Type a comment"></textarea> </div>
+            <div class="col-2">
+                <button ng-if="sendingReply == false" class="btn btn-info mt-3" ng-disabled="!commentReply.trim() || commentReply == '' || complainId == 0" ng-click="replyComment()"> <i class="fa fa-paper-plane"></i> Comment </button>
+                <button ng-if="sendingReply == true" class="btn btn-info mt-3" disabled> <i class="fa fa-spinner fa-spin fa-fw"></i> commenting </button>
+            </div>
+        </div>
+    </div>
+</modal>
+
+<modalnotify visible="uploadModal">
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-12">
+                <div class="text-center mt-2 mb-2"> <b> Uploading document </b> </div>
+                <div class="mt-2" ng-if="progress != 'NONE'">
+                    <div class="progress">
+                        <div class="progress-bar progress-bar-striped progress-bar-animated bg-info" role="progressbar" aria-valuenow="{{progress}}" aria-valuemin="0" aria-valuemax="100" ng-style="{'width': progress}">
+                            {{progress}}
+                        </div>
+                    </div>
+                    <div class="text-center"> <b class="text-info text-center"> {{progress}} </b> </div>
+                </div>
+                <div class="text-center" ng-if="isUploaded == true"> <b class="text-success text-center"> <i class="fa fa-check"></i> Upload Completed </b> </div>
+            </div>
+        </div>
+    </div>
+</modalnotify>
+
+<modal visible="showModal">
+    <div class="row">
+        <div class="col-9">
+            <input type="text" ng-enter="doSearch()" class="form-control" ng-model="searchSiblingString" id="searchSiblingString" placeholder="Type student name / username / E-mail address">
+        </div>
+        <div class="col-2">
+            <button ng-if="searchSiblingStatus == false" ng-disabled="searchSiblingString.length == 0" ng-click="doSearch()" class="btn btn-danger btn-flat"> <i class="fa fa-search"></i> Search </button>
+            <button ng-if="searchSiblingStatus == true" class="btn btn-danger btn-flat" disabled> <i class="fa fa-spinner fa-spin fa-fw"></i> Searching </button>
+        </div>
+    </div>
+    <div ng-if="siblingsCount != 'NONE'" class="row mt-3">
+        <div class="col-12">
+            <table class="table table-bordered table-hover">
+                <tbody>
+                    <tr>
+                        <th> Student </th>
+                        <th> Guardian </th>
+                        <th> Relation </th>
+                        <th> Actions </th>
+                    </tr>
+                    <tr ng-repeat="sibling in siblings track by $index">
+                        <td> {{ sibling.studentName }} </td>
+                        <td> {{ sibling.gaurdianName }} </td>
+                        <td> {{ sibling.relation }} </td>
+                        <td>
+                            <a ng-if="editForm.guardianId != sibling.gaurdianId" class="btn btn-sm btn-success setAsGuardian" ng-click="setAsGuardian( sibling.gaurdianId )"> Set as sibling </a>
+                            <a ng-if="editForm.guardianId == sibling.gaurdianId" class="btn btn-sm btn-danger resetGuardian" ng-click="removeGuardian( sibling.gaurdianId )"> Remove sibling </a>
+                        </td>
+                    </tr>
+                    <tr ng-if="siblingsCount == 0">
+                        <td class="noTableData" colspan="4"> No Matches found </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</modal>

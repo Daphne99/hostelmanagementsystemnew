@@ -1,0 +1,125 @@
+<style>
+    .custom-btn-success, .custom-btn-success.disabled { background: #7ace4c; border: 1px solid #7ace4c; color: white !important; }
+    .custom-btn-success:hover { background: #7ace4c; opacity: .8; border: 1px solid #7ace4c; }
+    .label-success { background-color: #7ace4c !important; }
+    .custom-rounded-img { border: 3px solid #ccc !important; border-radius: 50% !important; width: 128px !important; height: 128px !important; padding: 5px !important; }
+    .upper-nav-tabs { font-size: small; }
+    .profile-navs .nav-link { cursor: pointer; }
+    .profile-navs .nav-link:hover { background-color: #fff; border-color: #ddd #ddd #fff; border-bottom-color: #009efb !important; border-bottom-width: 3px; }
+    .nav-link.active { font-weight: 500; border-bottom-color: #009efb !important; border-bottom-width: 3px; }
+    .dashed-hr { border-top: 1px dotted rgb(204, 204, 204) !important; }
+    .gaurdianRow { font-size: small; }
+    .noTableData { text-align: center !important; }
+    .chat-bubble-main { color: white !important; padding: 18px 20px !important; line-height: 26px !important; font-size: 16px !important; border-radius: 7px !important; }
+    .chat-bubble-me { background-color: #94C2ED !important; }
+    .chat-bubble-stranger { background-color: #86BB71 !important; }
+    .chat-bubble-time { color: #cad9d9 !important; font-size: x-small !important; cursor: pointer; }
+    .chat-bubble-time:hover { color: white !important; }
+    .custom-width-75 {  width: 75% !important; }
+    .custom-width-100 {  width: 100% !important; }
+    #chat-box { height: 100% !important; }
+    .custom-table-bordered { border: 1px solid #ced2d3 !important; }
+    .custom-table-bordered thead { border: 1px solid #ced2d3 !important; }
+    .custom-table-bordered thead tr { border: 1px solid #ced2d3 !important; }
+    .custom-table-bordered thead tr th { border: 1px solid #ced2d3 !important; }
+    .custom-table-bordered tbody { border: 1px solid #ced2d3 !important; }
+    .custom-table-bordered tbody tr { border: 1px solid #ced2d3 !important; }
+    .custom-table-bordered tbody tr td { border: 1px solid #ced2d3 !important; }
+    .borderBottomed { border-bottom: 1px solid #ced2d3 !important; }
+</style>
+<div class="row page-titles">
+    <div class="col-6 align-self-center"> <h3 class="text-themecolor m-b-0 m-t-0">Teacher availability</h3> </div>
+</div>
+
+<div class="row" ng-show="views.list">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-block">
+                <div class="card-title">
+                    <form class="form-horizontal" name="filterTeachers">
+                        <div class="row mb-3">
+                            <div class="col-5">
+                                <div class="form-group row">
+                                    <label class="col-sm-2 text-right control-label col-form-label">Class</label>
+                                    <div class="col-sm-10">
+                                        <select ng-change="changeClass()" class="form-control" ng-model="form.class">
+                                            <option value=""> All Classes </option>
+                                            <option ng-repeat="class in classes" value="{{class.id}}">{{class.name}}</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-5">
+                                <div class="form-group row">
+                                    <label class="col-sm-3 text-right control-label col-form-label">Section</label>
+                                    <div class="col-sm-9">
+                                        <select class="form-control selectpicker"
+                                                data-actions-box="true"
+                                                  data-live-search="true"
+                                                ng-model="form.section"
+                                                multiple>
+                                            <option ng-repeat="section in sections" value="{{section.id}}">{{section.name}}</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                            <!-- <div class="col-2">
+                                <div class="form-group row">
+                                    <label class="col-5 pr-0 pl-0 text-right control-label col-form-label">Subject</label>
+                                    <div class="col-7 pr-0 pl-0">
+                                        <select class="form-control" ng-model="form.subject">
+                                            <option value=""> All Subjects </option>
+                                            <option ng-repeat="subject in subjects" value="{{subject.id}}">{{subject.name}}</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div> -->
+                            <!-- <div class="col-2">
+                                <div class="form-group row">
+                                    <label class="col-5 pr-0 pl-0 text-right control-label col-form-label">Teachers</label>
+                                    <div class="col-7 pr-0 pl-0">
+                                        <select class="form-control" ng-model="form.teacher">
+                                            <option value=""> All Teachers </option>
+                                            <option ng-repeat="teacher in teachers" value="{{teacher.id}}">{{teacher.name}}</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div> -->
+                            <div class="col-2">
+                                <button class="btn btn-info pull-right" ng-if="loadingIcon == false" ng-click="doFilter()" ng-disabled="form.class == '' && form.section == '' && form.subject == '' && form.teacher == ''"> <i class="fa fa-search"></i> Filter </button>
+                                <button class="btn btn-info pull-right" ng-if="loadingIcon == true" disabled> <i class="fa fa-spinner fa-spin fa-fw"></i> Filtering </button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-12">
+                            <div class="table-responsive">
+                                <table class="table table-bordered table-hover custom-table-bordered">
+                                    <thead>
+                                        <th class="text-center"> Class </th>
+                                        <th class="text-center"> Section </th>
+                                        <th class="text-center"> Teacher </th>
+                                        <th class="text-center"> Subject </th>
+                                    </thead>
+                                    <tbody>
+                                        <tr ng-repeat="teacher in teachersRows track by $index">
+                                            <td class="text-center align-middle" ng-if="teacher.class.span != 0" rowspan="{{teacher.class.span}}"> {{ teacher.class.name }} </td>
+                                            <td class="text-center align-middle" ng-if="teacher.section.span != 0" rowspan="{{teacher.section.span}}"> {{ teacher.section.name }} </td>
+                                            <td class="text-center align-middle" ng-if="teacher.teacher.span != 0" rowspan="{{teacher.teacher.span}}"> {{ teacher.teacher.name }} </td>
+                                            <td class="text-center align-middle" ng-if="teacher.subject.span != 0" rowspan="{{teacher.subject.span}}"> {{ teacher.subject.name }} </td>
+                                        </tr>
+                                        <tr ng-if="!teachersRows.length">
+                                            <td class="noTableData" colspan="4"> No Data to display </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
